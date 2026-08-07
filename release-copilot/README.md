@@ -8,10 +8,16 @@ Paste your `git log` output — or PR titles/descriptions — into the chat, and
 
 ## Features
 
-- **Chat-driven UI** — CopilotKit-powered chat panel drives the whole flow, no separate form
-- **Git log parsing** — paste raw `git log` text; an agent tool classifies commits into feature/fix/breaking-change buckets
-- **PR parsing** — paste a PR title alone, or title + description; classified the same way as git log commits
-- **Multi-platform output** — generates release notes formatted for GitHub (markdown), App Store/TestFlight (character-limited plain text), and Google Play (plain text)
+- **Commit management** — paste `git log` output or a PR title/description; each entry is
+  classified (`FEAT` / `FIX` / `CHORE` badges) and shown with author, relative timestamp, and
+  monospace hash. Filter tabs (All / Feat / Fix) and per-commit checkboxes let you pick exactly
+  which entries feed the release notes.
+- **Release notes preview and export** — a platform switcher (GitHub / App Store-TestFlight /
+  Google Play) drives a live Markdown preview with bold section headers, emoji bullets, and
+  code-styled commit IDs. 1-click Copy, plus export to Markdown, plain text, or JSON.
+- **Interactive AI copilot** — a CopilotKit chat panel drafts release notes from the selected
+  commits and edits them on request (e.g. "Draft for TestFlight", "Make it sound less
+  technical").
 
 ## Project Structure
 
@@ -24,6 +30,7 @@ src/
   layouts/                                 # page shells (header/nav + outlet)
   components/
     chat/                                  # CopilotKit chat panel wrapper
+    commit-list/                           # commit list: badges, filter tabs, select checkboxes
     release-notes/                         # generated-notes preview/editor
     platform-selector/                     # GitHub / App Store-TestFlight / Google Play picker
   providers/                               # composed React context providers
@@ -31,6 +38,7 @@ src/
   lib/
     git/                                   # framework-agnostic git-log parsing engine
     pr/                                    # framework-agnostic PR title/description parsing engine
+    export/                                # framework-agnostic MD/TXT/JSON export formatting
   services/                                # calls into the Mastra backend, isolated from UI
   utils/                                   # small generic helpers
   constants/                               # route paths, platform labels, char limits
