@@ -33,7 +33,7 @@ importers:
         specifier: ^1.16.5
         version: 1.16.5(@mastra/core@1.57.0(@bufbuild/protobuf@2.13.0)(express@5.2.1)(rxjs@7.8.1)(zod@4.4.3))(zod@4.4.3)
       '@tanstack/react-query':
-        specifier: 5.101.4
+        specifier: ^5.101.4
         version: 5.101.4(react@19.2.8)
       mastra:
         specifier: ^1.23.0
@@ -44,24 +44,27 @@ importers:
       react-dom:
         specifier: ^19.2.8
         version: 19.2.8(react@19.2.8)
+      react-markdown:
+        specifier: 10.1.0
+        version: 10.1.0(@types/react@19.2.18)(react@19.2.8)
       react-router:
-        specifier: 8.3.0
+        specifier: ^8.3.0
         version: 8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       zod:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
       '@commitlint/cli':
-        specifier: 21.2.1
+        specifier: ^21.2.1
         version: 21.2.1(@types/node@24.13.3)(conventional-commits-parser@7.1.2)(typescript@6.0.3)
       '@commitlint/config-conventional':
-        specifier: 21.2.0
+        specifier: ^21.2.0
         version: 21.2.0
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.8.0(jiti@2.7.0))
       '@tailwindcss/vite':
-        specifier: 4.3.3
+        specifier: ^4.3.3
         version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
       '@types/node':
         specifier: ^24.13.3
@@ -88,19 +91,19 @@ importers:
         specifier: ^17.7.0
         version: 17.9.0
       husky:
-        specifier: 9.1.7
+        specifier: ^9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: 17.3.0
+        specifier: ^17.3.0
         version: 17.3.0
       prettier:
-        specifier: 3.9.6
+        specifier: ^3.9.6
         version: 3.9.6
       prettier-plugin-tailwindcss:
-        specifier: 0.8.1
+        specifier: ^0.8.1
         version: 0.8.1(prettier@3.9.6)
       tailwindcss:
-        specifier: 4.3.3
+        specifier: ^4.3.3
         version: 4.3.3
       typescript:
         specifier: ~6.0.2
