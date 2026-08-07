@@ -7,9 +7,23 @@
 
 ## SHOULD
 
-- Files: kebab-case for everything — `weather-tool.ts`, `platform-selector.tsx` —
-  matching existing folders (`platform-selector/`, `release-notes/`).
-- Components / Types / Interfaces: PascalCase.
+- Folders: kebab-case, always — `platform-selector/`, `release-notes/`, `lib/git/`.
+  No exception (PascalCase never applies to folder names, even when the folder holds
+  a PascalCase component file).
+- Files: kebab-case by default — `weather-tool.ts`, `parse-git-log.ts`. Applies to
+  every non-`.tsx` file regardless of what it exports (`.ts` tools, hooks, types,
+  lib functions, config).
+- `.tsx` files that default-export a React component: PascalCase filename matching
+  the component identifier — `AppProviders.tsx`, `PlatformSelector.tsx`,
+  `CommitList.tsx`. Applies per-file, not per-folder: a `platform-selector/` folder
+  can contain `PlatformSelector.tsx` (the component) alongside kebab-case
+  non-component files.
+- `.tsx` files that do NOT default-export a component (route config objects, etc.):
+  kebab-case, same as any other file — e.g. `router.tsx` exports `router`
+  (a `createBrowserRouter` config, not a component), so it stays kebab-case.
+- `main.tsx` is a fixed exception (Vite entrypoint convention, not a component file).
+- Components / Types / Interfaces (the identifier, always — regardless of filename
+  case): PascalCase.
 - Variables / functions: camelCase.
 - Mastra resource ids (`id: 'get-weather'` etc.): kebab-case, verb-first for tools.
 
