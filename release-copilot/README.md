@@ -84,5 +84,6 @@ Other scripts: `pnpm build` (typecheck + production build), `pnpm lint`, `pnpm p
 | `GROQ_API_KEY` | Yes | API key for the Groq-hosted model the Mastra agent uses |
 | `MASTRA_PLATFORM_ACCESS_TOKEN` | No | Enables sending observability events to Mastra Platform |
 | `MASTRA_PROJECT_ID` | No | Mastra Platform project identifier, used alongside the access token |
+| `VITE_COPILOTKIT_RUNTIME_URL` | Yes | Copilot Runtime endpoint the frontend connects to (`VITE_` prefix required for Vite to expose it to the browser) |
 
 Copy `.env.example` to `.env` and fill these in before running `pnpm dev`.
