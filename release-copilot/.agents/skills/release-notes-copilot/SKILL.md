@@ -113,3 +113,10 @@ The AI copilot does two things via chat, not just one:
 - `src/services/` — client-side calls into the Mastra backend, kept isolated from UI components
 - `src/types/` — shared `Release`/`Commit`/`Platform` types (`Commit` includes author,
   timestamp, hash, and classification badge) used across the above
+- `src/constants/` — hardcoded literals shared across ≥2 files, or forming an implicit
+  contract between decoupled layers (e.g. a Mastra agent registry key that a
+  CopilotKit component also references by string). One file per purpose
+  (`agents.ts`, `copilotkit.ts`, `storage.ts`, `server.ts`), not a catch-all
+  `constants.ts`. See the Constants rule in `.agents/rules/conventions.md` for when
+  extraction is (and isn't) warranted — don't extract single-use literals just
+  because they look like config.
