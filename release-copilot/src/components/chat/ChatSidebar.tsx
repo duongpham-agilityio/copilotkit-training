@@ -1,5 +1,5 @@
 import { CopilotSidebar } from '@copilotkit/react-core/v2';
-import { WEATHER_AGENT_ID } from '../../constants/agents';
+import { WEATHER_AGENT_ID } from '@/constants/agents';
 
 const ChatSidebar = () => (
   <CopilotSidebar
