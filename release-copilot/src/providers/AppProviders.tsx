@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { CopilotKit } from '@copilotkit/react-core';
+import { CopilotKit } from '@copilotkit/react-core/v2';
 
 const queryClient = new QueryClient();
 
