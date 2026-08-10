@@ -1,0 +1,53 @@
+/*
+ * Retheme @copilotkit/react-core/v2 (CopilotSidebar, CopilotChat, ...) to the
+ * design tokens in ./theme.css. CopilotKit renders every one of its own
+ * elements with a `data-copilotkit` attribute and reads shadcn-style CSS
+ * variables (--primary, --card, --sidebar, ...) scoped to that selector — see
+ * node_modules/@copilotkit/react-core/dist/v2/index.css. Re-declaring the
+ * same variables here retargets the whole widget without touching its JSX.
+ *
+ * Deliberately NOT inside `@layer` (see src/index.css for why): unlayered
+ * rules always beat layered ones regardless of import order, so this wins
+ * over CopilotKit's own `[data-copilotkit]` defaults without caring whether
+ * this file loads before or after `@copilotkit/react-core/v2/styles.css`.
+ */
+[data-copilotkit] {
+  --background: var(--color-surface);
+  --foreground: var(--color-on-surface);
+
+  --card: var(--color-surface-container-lowest);
+  --card-foreground: var(--color-on-surface);
+
+  --popover: var(--color-surface-container-lowest);
+  --popover-foreground: var(--color-on-surface);
+
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-on-primary);
+
+  --secondary: var(--color-primary-fixed);
+  --secondary-foreground: var(--color-on-primary-fixed-variant);
+
+  --muted: var(--color-surface-container);
+  --muted-foreground: var(--color-on-surface-variant);
+
+  --accent: var(--color-secondary-container);
+  --accent-foreground: var(--color-on-secondary-container);
+
+  --destructive: var(--color-error);
+  --destructive-foreground: var(--color-on-error);
+
+  --border: var(--color-outline-variant);
+  --input: var(--color-outline-variant);
+  --ring: var(--color-primary);
+
+  --radius: 0.5rem;
+
+  --sidebar: var(--color-surface-container-lowest);
+  --sidebar-foreground: var(--color-on-surface);
+  --sidebar-primary: var(--color-primary);
+  --sidebar-primary-foreground: var(--color-on-primary);
+  --sidebar-accent: var(--color-surface-container-low);
+  --sidebar-accent-foreground: var(--color-on-surface);
+  --sidebar-border: var(--color-outline-variant);
+  --sidebar-ring: var(--color-primary);
+}
