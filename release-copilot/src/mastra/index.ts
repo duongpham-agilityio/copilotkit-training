@@ -12,8 +12,23 @@ import {
 import { registerCopilotKit } from '@ag-ui/mastra/copilotkit';
 import { weatherWorkflow } from './workflows/weather-workflow';
 import { weatherAgent } from './agents/weather-agent';
-import { WEATHER_AGENT_ID } from '../constants/agents';
-import { COPILOTKIT_ROUTE_PATH, COPILOTKIT_RESOURCE_ID } from '../constants/copilotkit';
+import { supervisorAgent } from './agents/supervisor-agent';
+import { supportAgent } from './agents/support-agent';
+import { analyzeInputAgent } from './agents/analyze-input-agent';
+import { buildReleaseAgent } from './agents/build-release-agent';
+import { checkGrammarAgent } from './agents/check-grammar-agent';
+import {
+  WEATHER_AGENT_ID,
+  SUPERVISOR_AGENT_ID,
+  SUPPORT_AGENT_ID,
+  ANALYZE_INPUT_AGENT_ID,
+  BUILD_RELEASE_AGENT_ID,
+  CHECK_GRAMMAR_AGENT_ID,
+} from '../constants/agents';
+import {
+  COPILOTKIT_ROUTE_PATH,
+  COPILOTKIT_RESOURCE_ID,
+} from '../constants/copilotkit';
 import { MASTRA_CORS_CONFIG, MASTRA_LOGGER_NAME } from '../constants/server';
 import { MASTRA_BUNDLER_EXTERNALS } from '../constants/bundler';
 import {
@@ -25,7 +40,14 @@ import { MASTRA_OBSERVABILITY_SERVICE_NAME } from '../constants/observability';
 
 export const mastra = new Mastra({
   workflows: { weatherWorkflow },
-  agents: { [WEATHER_AGENT_ID]: weatherAgent },
+  agents: {
+    [WEATHER_AGENT_ID]: weatherAgent,
+    [SUPERVISOR_AGENT_ID]: supervisorAgent,
+    [SUPPORT_AGENT_ID]: supportAgent,
+    [ANALYZE_INPUT_AGENT_ID]: analyzeInputAgent,
+    [BUILD_RELEASE_AGENT_ID]: buildReleaseAgent,
+    [CHECK_GRAMMAR_AGENT_ID]: checkGrammarAgent,
+  },
   server: {
     cors: MASTRA_CORS_CONFIG,
     apiRoutes: [
