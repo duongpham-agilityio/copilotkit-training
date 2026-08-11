@@ -9,6 +9,11 @@ Load the `mastra` skill BEFORE any Mastra work. Never rely on cached knowledge â
 For git-log/PR classification rules, per-platform formatting rules, or deciding which
 folder new code belongs in, load the `release-notes-copilot` skill.
 
+## Load `bug-fix-report` skill after fixing a bug
+
+After fixing and verifying a bug (lint/build/tests actually run and passing), load
+the `bug-fix-report` skill to produce the report before committing.
+
 ## Rules
 
 @.agents/rules/code-style.md
