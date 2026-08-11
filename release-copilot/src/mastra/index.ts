@@ -16,14 +16,12 @@ import { supervisorAgent } from './agents/supervisor-agent';
 import { supportAgent } from './agents/support-agent';
 import { analyzeInputAgent } from './agents/analyze-input-agent';
 import { buildReleaseAgent } from './agents/build-release-agent';
-import { checkGrammarAgent } from './agents/check-grammar-agent';
 import {
   WEATHER_AGENT_ID,
   SUPERVISOR_AGENT_ID,
   SUPPORT_AGENT_ID,
   ANALYZE_INPUT_AGENT_ID,
   BUILD_RELEASE_AGENT_ID,
-  CHECK_GRAMMAR_AGENT_ID,
 } from '../constants/agents';
 import {
   COPILOTKIT_ROUTE_PATH,
@@ -46,7 +44,6 @@ export const mastra = new Mastra({
     [SUPPORT_AGENT_ID]: supportAgent,
     [ANALYZE_INPUT_AGENT_ID]: analyzeInputAgent,
     [BUILD_RELEASE_AGENT_ID]: buildReleaseAgent,
-    [CHECK_GRAMMAR_AGENT_ID]: checkGrammarAgent,
   },
   server: {
     cors: MASTRA_CORS_CONFIG,
