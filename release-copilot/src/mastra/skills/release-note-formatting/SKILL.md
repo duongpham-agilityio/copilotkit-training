@@ -3,6 +3,9 @@ name: release-note-formatting
 description: Use when rendering a release-notes draft for GitHub, App Store/TestFlight, or Google Play from a classified commit list, or when editing an existing draft.
 ---
 
+> Reference only — not loaded at runtime. These rules are inlined verbatim in
+> `src/mastra/agents/release-copilot-agent.ts`; edit both together.
+
 # Release Note Formatting
 
 Render the same classified, selected commit list into all 3 platform formats every

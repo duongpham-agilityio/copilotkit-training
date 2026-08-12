@@ -10,16 +10,8 @@ import {
   SensitiveDataFilter,
 } from '@mastra/observability';
 import { registerCopilotKit } from '@ag-ui/mastra/copilotkit';
-import { supervisorAgent } from './agents/supervisor-agent';
-import { supportAgent } from './agents/support-agent';
-import { analyzeInputAgent } from './agents/analyze-input-agent';
-import { buildReleaseAgent } from './agents/build-release-agent';
-import {
-  SUPERVISOR_AGENT_ID,
-  SUPPORT_AGENT_ID,
-  ANALYZE_INPUT_AGENT_ID,
-  BUILD_RELEASE_AGENT_ID,
-} from '../constants/agents';
+import { releaseCopilotAgent } from './agents/release-copilot-agent';
+import { RELEASE_COPILOT_AGENT_ID } from '../constants/agents';
 import {
   COPILOTKIT_ROUTE_PATH,
   COPILOTKIT_RESOURCE_ID,
@@ -35,10 +27,7 @@ import { MASTRA_OBSERVABILITY_SERVICE_NAME } from '../constants/observability';
 
 export const mastra = new Mastra({
   agents: {
-    [SUPERVISOR_AGENT_ID]: supervisorAgent,
-    [SUPPORT_AGENT_ID]: supportAgent,
-    [ANALYZE_INPUT_AGENT_ID]: analyzeInputAgent,
-    [BUILD_RELEASE_AGENT_ID]: buildReleaseAgent,
+    [RELEASE_COPILOT_AGENT_ID]: releaseCopilotAgent,
   },
   server: {
     cors: MASTRA_CORS_CONFIG,

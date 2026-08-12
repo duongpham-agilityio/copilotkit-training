@@ -3,6 +3,9 @@ name: commit-classification
 description: Use when classifying git-log commits or PR titles/descriptions into Feature, Fix, Breaking change, or excluded categories.
 ---
 
+> Reference only — not loaded at runtime. These rules are inlined verbatim in
+> `src/mastra/agents/release-copilot-agent.ts`; edit both together.
+
 # Commit Classification
 
 Classify each commit message or PR title using Conventional Commits prefixes:
