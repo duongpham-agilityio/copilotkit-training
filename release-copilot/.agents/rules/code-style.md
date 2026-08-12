@@ -4,6 +4,19 @@
 
 - TypeScript strict. Don't weaken `tsconfig.app.json` (`noUnusedLocals`,
   `noUnusedParameters`, `verbatimModuleSyntax`) to silence an error — fix the code.
+  Exception already made deliberately: `erasableSyntaxOnly` is off so fixed-set values
+  can use `const enum` — see next bullet. Don't extend this exception to justify
+  further weakening.
+- Where a fixed set of values is needed as both a type and a runtime value (e.g. a
+  `variant`/`size`/`emphasis` prop, a status/mode constant referenced elsewhere in
+  code), use `const enum`, not a string-literal union — one place to add/rename a
+  member instead of updating every literal call site. Note: this project's bundler
+  (esbuild, via Vite) doesn't support cross-file const-enum inlining — it compiles
+  `const enum` to the same runtime object as a plain `enum` — so pick `const enum` for
+  the "declared as read-only, one canonical definition" intent, not for a code-size
+  win. Plain string-literal unions are still fine for values that are only ever a type
+  (never constructed or compared as a runtime value, e.g. narrowing an API response
+  field).
 - `import type` for type-only imports (required by `verbatimModuleSyntax`).
 - Explicit `.ts`/`.tsx` extensions on relative imports (bundler resolution style,
   already used in `src/main.tsx`).

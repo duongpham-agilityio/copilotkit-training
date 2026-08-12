@@ -1,0 +1,82 @@
+# Shared domain types — Spec
+
+Date: 2026-08-12
+Status: Approved
+Part of: [UI Component Library overview](./00-overview-design.md)
+
+## Responsibility
+
+Domain types consumed by the feature components in units 15-22 (`PlatformTabs`,
+`CommitListItem`, `CommitListPanel`, `ReleaseHistoryListItem`, `ReleaseHistoryList`,
+`ReleaseVersionDetail`). Grouped as one push: three files, each a handful of lines of
+pure type declarations with no independent behavior to review separately.
+
+## Files
+
+- Create: `src/types/commit.ts`
+- Create: `src/types/platform.ts`
+- Create: `src/types/release.ts`
+
+## API
+
+`src/types/commit.ts`:
+
+```ts
+export const enum CommitType {
+  Feat = 'feat',
+  Fix = 'fix',
+  Chore = 'chore',
+}
+
+export interface Commit {
+  hash: string;
+  type: CommitType;
+  message: string;
+  author: string;
+  timestamp: string;
+}
+```
+
+`src/types/platform.ts`:
+
+```ts
+export const enum Platform {
+  Github = 'github',
+  AppStore = 'app-store',
+  GooglePlay = 'google-play',
+}
+```
+
+`src/types/release.ts`:
+
+```ts
+export const enum ReleaseStatus {
+  Published = 'published',
+  Draft = 'draft',
+  Archived = 'archived',
+}
+
+export interface ReleaseSummary {
+  version: string;
+  status: ReleaseStatus;
+  title: string;
+  date: string;
+  featCount: number;
+  fixCount: number;
+}
+```
+
+`timestamp`/`date` are `string` (ISO 8601), not `Date` — these types cross the
+server/client boundary (Mastra tool output → React props) where `Date` doesn't
+serialize; formatting to a display string happens at render time in the consuming
+component, not in the type.
+
+## Composes
+
+Nothing — leaf type declarations, zero runtime dependencies.
+
+## Verification
+
+- `pnpm lint` and `pnpm build` clean. No visual check (types only) — correctness is
+  proven by units 15-22 successfully importing and using these types without `any` or
+  type-error workarounds.
