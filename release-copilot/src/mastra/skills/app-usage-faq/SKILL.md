@@ -3,6 +3,9 @@ name: app-usage-faq
 description: Use when answering questions about how to use the Release Notes Copilot app itself — input sources, commit selection, copy/export, platform limits.
 ---
 
+> Reference only — not loaded at runtime. These rules are inlined verbatim in
+> `src/mastra/agents/release-copilot-agent.ts`; edit both together.
+
 # App Usage FAQ
 
 ## Input sources
