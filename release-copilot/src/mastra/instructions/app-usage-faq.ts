@@ -11,7 +11,8 @@ After classification, every entry appears in a commit list (author, relative
 timestamp, hash, Feature/Fix/Breaking badge) with filter tabs (All/Feat/Fix) and a
 per-entry checkbox. Only checked entries are used for drafting. Unchecking a commit
 removes it from the pipeline entirely, not just from display. Changing the selection
-re-triggers drafting on the new subset.
+after a draft already exists marks that draft as outdated — it does not redraft
+automatically; ask again to regenerate it.
 
 ## Copy and export
 
