@@ -14,8 +14,11 @@ in that folder; read the task's linked spec for the full rationale behind its AP
 implementing — this plan repeats the code, not the reasoning.
 
 **Tech Stack:** React 19, TypeScript (strict, `const enum` enabled — see Global
-Constraints), Tailwind v4 (`@theme inline` tokens from `docs/design/theme.md`), no new
-dependencies.
+Constraints), Tailwind v4 (`@theme inline` tokens from `docs/design/theme.md`). "No new
+dependencies" as originally written; reversed piecemeal during implementation at the
+user's explicit request — `clsx`, `tailwind-merge` (Task 1), `storybook` +
+`@storybook/react-vite`/`addon-a11y`/`addon-docs` (Task 1.5), `lucide-react` (Task 10)
+are now dependencies. See each task's notes for the specific reversal.
 
 ## Global Constraints
 
@@ -812,7 +815,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/10-input-design.md
 - Consumes: `cn`.
 - Produces: default-exported `Input` — consumed by `ReleaseHistoryList` (Task 21).
 
-- [ ] **Step 1: Write `src/components/common/Input.tsx`**
+- [x] **Step 1: Write `src/components/common/Input.tsx`**
 
 ```tsx
 import type { InputHTMLAttributes, ReactNode } from 'react';
@@ -845,16 +848,30 @@ const Input = ({ icon, className, ...rest }: InputProps) => (
 export default Input;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/Input.stories.tsx`**
+
+Stories: `Plain`, `WithIcon`. `WithIcon` originally used a hand-drawn inline
+placeholder SVG per this plan's text — barely visible in practice (thin
+`stroke-current` circle+line at 16px, easy to miss against the white input
+background). Post-review (2026-08-12): installed `lucide-react` and swapped in its
+`Search` icon (`<Search className="h-4 w-4" />`) instead — a real dependency
+decision, not just a story tweak, since `icon` is a `ReactNode` prop any consumer can
+fill with whatever icon source they use; `lucide-react` is now this library's icon
+source going forward, at the user's explicit request. This is a new dependency beyond
+this plan's original "no new dependencies" tech-stack line (Global Constraints),
+alongside the earlier `clsx`/`tailwind-merge`/Storybook reversals.
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render one `Input` without `icon` and one with a placeholder
-search-icon SVG ad hoc. Confirm the icon variant's text doesn't overlap the icon. Focus
-the input, confirm a visible violet focus ring. Revert before committing.
+~~Manual visual check: render...~~ superseded by the stories above, viewed via
+`pnpm storybook` (screenshot-checked): `WithIcon`'s `Search` icon renders clearly at
+the left, placeholder text doesn't overlap it (`pl-10`). Focused the `Plain` story's
+input — confirmed a visible violet focus ring.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add Input component`
 
@@ -875,7 +892,9 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/11-app-header-desi
 - Produces: `AppNav` const enum, default-exported `AppHeader` — consumed by `AppShell`
   (Task 12).
 
-- [ ] **Step 1: Write `src/layouts/AppHeader.tsx`**
+- [x] **Step 1: Write `src/layouts/AppHeader.tsx`**
+
+`text-headline-sm` substituted with `text-headline-md` (see Global Constraints note).
 
 ```tsx
 import type { ReactNode } from 'react';
@@ -899,7 +918,7 @@ const NAV_ITEMS: TabItem[] = [
 
 const AppHeader = ({ activeNav, onNavigate, actions }: AppHeaderProps) => (
   <header className="border-outline-variant bg-surface-container-lowest flex items-center justify-between border-b px-6 py-4">
-    <span className="text-headline-sm text-on-surface font-semibold">
+    <span className="text-headline-md text-on-surface font-semibold">
       Release Copilot
     </span>
     <Tabs
@@ -915,16 +934,124 @@ const AppHeader = ({ activeNav, onNavigate, actions }: AppHeaderProps) => (
 export default AppHeader;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/layouts/stories/AppHeader.stories.tsx`**
+
+One story, `Dashboard` — custom `render` with local `useState` for `activeNav`/
+`onNavigate` (controlled component).
+
+- [x] **Step 1.6: Fix responsiveness (post-review, 2026-08-12)**
+
+User review: "doesn't support responsive." Verified by screenshotting the story at
+375/640/1024/1440px — at 375px the `text-headline-md` title wrapped to two lines
+("Release" / "Copilot") because the flex-row title `<span>` had neither
+`whitespace-nowrap` nor `shrink-0`, so it shrank as a flex item and its text wrapped.
+First fix attempt (`overflow-x-auto` on the header, letting it scroll horizontally
+instead of wrapping) was rejected by the user — a scrolling header reads as broken,
+not responsive. Replaced with the standard pattern instead: `Tabs` now renders only at
+`sm:` and up (`hidden sm:block`); below `sm`, a hamburger `IconButton` (`Menu` icon
+from `lucide-react`, Task 10's icon dependency) toggles a dropdown panel
+(`useState<boolean>`) listing the same `NAV_ITEMS`, closing itself after a selection.
+Title now has `shrink-0 whitespace-nowrap` so it never wraps at any width. Verified:
+no horizontal overflow at any of the 4 widths; at 375px the hamburger renders and
+`Tabs` doesn't; clicking the hamburger sets `aria-expanded="true"` and shows the
+dropdown (screenshot-checked); clicking "History" in the dropdown fires `onNavigate`
+and closes the menu (`aria-expanded` back to `false`).
+
+Final `src/layouts/AppHeader.tsx` (supersedes the Step 1 code block above):
+
+```tsx
+import { useState, type ReactNode } from 'react';
+import { Menu } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import Tabs, { TabsVariant, type TabItem } from '@/components/common/Tabs.tsx';
+import IconButton from '@/components/common/IconButton.tsx';
+
+export const enum AppNav {
+  Dashboard = 'dashboard',
+  History = 'history',
+}
+
+interface AppHeaderProps {
+  activeNav: AppNav;
+  onNavigate: (nav: AppNav) => void;
+  actions?: ReactNode;
+}
+
+const NAV_ITEMS: TabItem[] = [
+  { value: AppNav.Dashboard, label: 'Dashboard' },
+  { value: AppNav.History, label: 'History' },
+];
+
+const AppHeader = ({ activeNav, onNavigate, actions }: AppHeaderProps) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNavigate = (nav: AppNav) => {
+    onNavigate(nav);
+    setMenuOpen(false);
+  };
+
+  return (
+    <header className="border-outline-variant bg-surface-container-lowest relative border-b px-6 py-4">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-headline-md text-on-surface shrink-0 font-semibold whitespace-nowrap">
+          Release Copilot
+        </span>
+        <div className="hidden sm:block">
+          <Tabs
+            items={NAV_ITEMS}
+            value={activeNav}
+            onChange={(value) => handleNavigate(value as AppNav)}
+            variant={TabsVariant.Underline}
+          />
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
+          {actions}
+          <IconButton
+            icon={<Menu className="h-5 w-5" />}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+            className="sm:hidden"
+          />
+        </div>
+      </div>
+      {menuOpen && (
+        <div className="border-outline-variant bg-surface-container-lowest absolute inset-x-0 top-full z-10 border-b py-2 sm:hidden">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => handleNavigate(item.value as AppNav)}
+              className={cn(
+                'text-body-md block w-full cursor-pointer px-6 py-2 text-left font-medium',
+                item.value === activeNav
+                  ? 'text-primary'
+                  : 'text-on-surface-variant',
+              )}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default AppHeader;
+```
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render `<AppHeader activeNav={AppNav.Dashboard} onNavigate={() =>
-{}} />` ad hoc. Confirm the Dashboard tab shows a violet underline and History does not.
-Click History, confirm the handler fires. Revert before committing.
+~~Manual visual check: render...~~ superseded by the story above, viewed via
+`pnpm storybook` (screenshot-checked, before/after click): `Dashboard` tab shows a
+violet underline, `History` does not. Clicked `History` — confirmed `onNavigate` fires
+and the underline moves to `History`.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add AppHeader layout component`
 
@@ -943,7 +1070,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/12-app-shell-desig
 - Consumes: default-exported `AppHeader`, `AppNav` from `./AppHeader.tsx` (Task 11).
 - Produces: default-exported `AppShell`.
 
-- [ ] **Step 1: Write `src/layouts/AppShell.tsx`**
+- [x] **Step 1: Write `src/layouts/AppShell.tsx`**
 
 ```tsx
 import type { ReactNode } from 'react';
@@ -975,16 +1102,24 @@ const AppShell = ({
 export default AppShell;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/layouts/stories/AppShell.stories.tsx`**
+
+One story, `Dashboard` — custom `render` with local `useState` for `activeNav`/
+`onNavigate`, wrapping a plain `Content` div as `children`.
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render `<AppShell activeNav={AppNav.Dashboard} onNavigate={() =>
-{}}>Content</AppShell>` ad hoc. Confirm the header sits above the content with no
-gap/overlap, and content has a visible margin on all sides. Revert before committing.
+~~Manual visual check: render...~~ superseded by the story above, viewed via
+`pnpm storybook` (screenshot-checked): header sits flush above content with no
+gap/overlap, content has visible margin on all sides. Given the responsiveness gap
+found in Task 11's `AppHeader`, also proactively checked `AppShell` at 375px and
+1024px (learning from that review) — no horizontal overflow at either width, and
+`AppShell` correctly inherits `AppHeader`'s mobile hamburger-menu behavior.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add AppShell layout component`
 
