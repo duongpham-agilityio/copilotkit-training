@@ -1137,7 +1137,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/13-split-pane-desi
 
 - Produces: default-exported `SplitPane`.
 
-- [ ] **Step 1: Write `src/layouts/SplitPane.tsx`**
+- [x] **Step 1: Write `src/layouts/SplitPane.tsx`**
 
 ```tsx
 import type { ReactNode } from 'react';
@@ -1163,14 +1163,17 @@ const SplitPane = ({ left, right, leftWidthPercent = 65 }: SplitPaneProps) => (
 export default SplitPane;
 ```
 
-- [ ] **Step 2: Verify**
+Written exactly per plan, no substitutions.
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render `<SplitPane left={<div>Left</div>} right={<div>Right</div>}
-/>` ad hoc, confirm left is visibly ~65% width. Pass `leftWidthPercent={50}`, confirm an
-even split. Revert before committing.
+Manual visual check done via `src/layouts/stories/SplitPane.stories.tsx` (`Default` at
+65/35, `EvenSplit` at 50/50) in the running Storybook instance instead of an ad hoc
+render, per this project's established story-per-component convention — no revert
+needed since the story is a permanent artifact, not a throwaway.
 
 - [ ] **Step 3: Commit**
 
@@ -1193,7 +1196,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/14-shared-types-de
 - Produces: `CommitType` const enum + `Commit` interface; `Platform` const enum;
   `ReleaseStatus` const enum + `ReleaseSummary` interface. Consumed by Tasks 15-22.
 
-- [ ] **Step 1: Write `src/types/commit.ts`**
+- [x] **Step 1: Write `src/types/commit.ts`**
 
 ```ts
 export const enum CommitType {
@@ -1211,7 +1214,7 @@ export interface Commit {
 }
 ```
 
-- [ ] **Step 2: Write `src/types/platform.ts`**
+- [x] **Step 2: Write `src/types/platform.ts`**
 
 ```ts
 export const enum Platform {
@@ -1221,7 +1224,7 @@ export const enum Platform {
 }
 ```
 
-- [ ] **Step 3: Write `src/types/release.ts`**
+- [x] **Step 3: Write `src/types/release.ts`**
 
 ```ts
 export const enum ReleaseStatus {
@@ -1240,10 +1243,10 @@ export interface ReleaseSummary {
 }
 ```
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean. No visual check applies (types only).
+Result: both clean (2026-08-13). No visual check applies (types only).
 
 - [ ] **Step 5: Commit**
 
@@ -1266,7 +1269,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/15-platform-tabs-d
 - Produces: default-exported `PlatformTabs` — consumed by `ReleaseVersionDetail`
   (Task 22).
 
-- [ ] **Step 1: Write `src/components/platform-selector/PlatformTabs.tsx`**
+- [x] **Step 1: Write `src/components/platform-selector/PlatformTabs.tsx`**
 
 ```tsx
 import Tabs, { TabsVariant, type TabItem } from '@/components/common/Tabs.tsx';
@@ -1295,14 +1298,15 @@ const PlatformTabs = ({ value, onChange }: PlatformTabsProps) => (
 export default PlatformTabs;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render `<PlatformTabs value={Platform.Github} onChange={() => {}}
-/>` ad hoc, confirm "GitHub" shows as the active pill. Click "App Store", confirm the
-handler fires. Revert before committing.
+Manual visual check done via `src/components/platform-selector/stories/PlatformTabs.stories.tsx`
+(`Default`, local `useState`) in the running Storybook instance, per this project's
+story-per-component convention — confirmed "GitHub" active by default, clicking
+"App Store"/"Google Play" moves the active pill.
 
 - [ ] **Step 3: Commit**
 
@@ -1325,7 +1329,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/16-commit-list-ite
 - Produces: default-exported `CommitListItem` — consumed by `CommitListPanel`
   (Task 17).
 
-- [ ] **Step 1: Write `src/components/commit-list/CommitListItem.tsx`**
+- [x] **Step 1: Write `src/components/commit-list/CommitListItem.tsx`**
 
 ```tsx
 import Checkbox from '@/components/common/Checkbox.tsx';
@@ -1371,14 +1375,16 @@ const CommitListItem = ({
 export default CommitListItem;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render one `CommitListItem` per `CommitType` ad hoc. Confirm
-`Feat` shows an emerald badge, `Fix` shows rose, `Chore` shows gray. Toggle a checkbox,
-confirm `onToggle` fires with the hash. Revert before committing.
+Manual visual check done via `src/components/commit-list/stories/CommitListItem.stories.tsx`
+(`Feat`/`Fix`/`Chore`, one story per `CommitType`, local `useState` for `selected`) in
+the running Storybook instance, per this project's story-per-component convention —
+confirmed `Feat` shows emerald badge, `Fix` shows rose, `Chore` shows gray, and
+clicking the checkbox toggles `selected`.
 
 - [ ] **Step 3: Commit**
 
