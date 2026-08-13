@@ -102,12 +102,18 @@ The AI copilot does two things via chat, not just one:
 - `src/mastra/agents/` — the release-notes agent that orchestrates the tools (draft +
   edit-in-place, per the chat-driven drafting rules above)
 - `src/mastra/workflows/` — the end-to-end workflow (parse → classify → select → format)
+- `src/components/common/` — base, reusable UI primitives with no feature knowledge
+  (`Button`, `Badge`, `Card`, `Tabs`, `Checkbox`, `Input`, `Avatar`, `MonoTag`)
+- `src/layouts/` — app structural chrome, route-agnostic (`AppHeader`, `AppShell`,
+  `SplitPane`)
 - `src/components/chat/` — CopilotKit chat panel UI
 - `src/components/commit-list/` — commit list: badges, filter tabs (All/Feat/Fix),
   per-entry select checkboxes (the pre-filter step above)
 - `src/components/release-notes/` — live preview/editor for the generated output, plus
   Copy button and export-format trigger
 - `src/components/platform-selector/` — UI to pick GitHub / App Store-TestFlight / Google Play
+- `src/components/history/` — release history list + per-version detail view (search,
+  status badge, per-platform notes)
 - `src/hooks/` — hooks wrapping CopilotKit chat/agent state and commit-selection state for
   the release-notes flow
 - `src/services/` — client-side calls into the Mastra backend, kept isolated from UI components
