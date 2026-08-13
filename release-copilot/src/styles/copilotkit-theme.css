@@ -51,3 +51,76 @@
   --sidebar-border: var(--color-outline-variant);
   --sidebar-ring: var(--color-primary);
 }
+
+/*
+ * CopilotChatInput's visible "pill" (the rounded-[28px]/bg-white/shadow box)
+ * is a separate inner div from the one the `input` slot's `className` prop
+ * reaches — its shape is hardcoded with no corresponding slot, so it can't
+ * be reshaped from React props at all. Overridden here instead, on its
+ * stable `data-testid`, for the same unlayered-beats-layered reason as
+ * above.
+ */
+[data-testid='copilot-chat-input'] {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  height: 46px;
+}
+
+/*
+ * Same "no slot reaches this node" problem for the rest of the input's
+ * internals: CopilotChatInput lays its textarea + attach/mic/send buttons
+ * out as three grid columns with a 50px min-height, sized for a multi-
+ * action toolbar. Figma's box is a single-line textarea with fixed
+ * pt-15/pr-49/pb-14/pl-17 padding (46px total height) and a send button
+ * absolutely overlaid top-right — a different layout model the grid can't
+ * produce via props, so it's collapsed to block flow and the button is
+ * pulled out of flow to match.
+ */
+[data-testid='copilot-chat-input'] > div {
+  display: block;
+  padding: 15px 49px 14px 17px;
+}
+
+[data-testid='copilot-chat-input'] > div > div:first-child {
+  display: none;
+}
+
+[data-testid='copilot-chat-input'] > div > div:nth-child(2) {
+  min-height: 0;
+}
+
+[data-testid='copilot-chat-input'] textarea {
+  font-size: 14px;
+  line-height: normal;
+}
+
+[data-testid='copilot-chat-input'] > div > div:last-child {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+[data-testid='copilot-chat-input'] > div > div:last-child > div {
+  margin: 0;
+}
+
+/*
+ * Same layering problem as above: CopilotChatInput's `sendButton.className`
+ * prop lands on this node alongside the component's own hardcoded
+ * `cpk:bg-black`/`cpk:disabled:bg-[#00000014]` utilities, which win the
+ * cascade regardless of class order since they compile into the same
+ * Tailwind utilities layer as our own `bg-primary`/`text-on-primary`. Figma's
+ * send button (node 1:760) is solid primary-purple with no distinct disabled
+ * look, so it's forced here, unlayered, rather than via the ineffective prop.
+ */
+[data-testid='copilot-send-button'] {
+  width: 30px;
+  height: 28px;
+  border-radius: 4px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}

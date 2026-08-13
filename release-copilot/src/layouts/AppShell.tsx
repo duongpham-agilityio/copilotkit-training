@@ -14,13 +14,15 @@ const AppShell = ({
   headerActions,
   children,
 }: AppShellProps) => (
-  <div className="bg-surface min-h-screen">
+  <div className="bg-surface flex h-screen flex-col overflow-hidden">
     <AppHeader
       activeNav={activeNav}
       onNavigate={onNavigate}
       actions={headerActions}
     />
-    <main className="px-6 py-6">{children}</main>
+    <main className="min-h-0 flex-1 overflow-hidden px-6 py-6">
+      {children}
+    </main>
   </div>
 );
 

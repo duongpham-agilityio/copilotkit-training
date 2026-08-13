@@ -43,16 +43,21 @@ const CommitListPanel = ({
       : commits.filter((commit) => commit.type === filter);
 
   return (
-    <Card emphasis={CardEmphasis.Raised}>
+    <Card emphasis={CardEmphasis.Outlined}>
       <Card.Header>
-        <Tabs
-          items={filterItems}
-          value={filter}
-          onChange={setFilter}
-          variant={TabsVariant.Pill}
-        />
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-headline-md text-on-surface font-semibold">
+            Parsed Commits
+          </span>
+          <Tabs
+            items={filterItems}
+            value={filter}
+            onChange={setFilter}
+            variant={TabsVariant.Pill}
+          />
+        </div>
       </Card.Header>
-      <div className="divide-outline-variant divide-y">
+      <div className="flex flex-col gap-4">
         {visibleCommits.map((commit) => (
           <CommitListItem
             key={commit.hash}
