@@ -1666,7 +1666,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/20-release-history
 - Produces: default-exported `ReleaseHistoryListItem` — consumed by
   `ReleaseHistoryList` (Task 21).
 
-- [ ] **Step 1: Write `src/components/history/ReleaseHistoryListItem.tsx`**
+- [x] **Step 1: Write `src/components/history/ReleaseHistoryListItem.tsx`**
 
 ```tsx
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
@@ -1714,15 +1714,16 @@ const ReleaseHistoryListItem = ({
 export default ReleaseHistoryListItem;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render one `ReleaseHistoryListItem` per `ReleaseStatus` ad hoc.
-Confirm `Published` shows emerald, `Draft` shows `warning-purple` (not amber),
-`Archived` shows gray. Click a row, confirm `onSelect` fires with `release.version`.
-Revert before committing.
+Manual visual check done via `src/components/history/stories/ReleaseHistoryListItem.stories.tsx`
+(`Published`/`Draft`/`Archived`, one story per `ReleaseStatus`) in the running
+Storybook instance — confirmed `Published` shows emerald, `Draft` shows
+`warning-purple` (not amber), `Archived` shows gray, and clicking the card fires
+`onSelect` without error.
 
 - [ ] **Step 3: Commit**
 
@@ -1744,7 +1745,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/21-release-history
   `ReleaseHistoryListItem` (Task 20), `ReleaseSummary` (Task 14).
 - Produces: default-exported `ReleaseHistoryList`.
 
-- [ ] **Step 1: Write `src/components/history/ReleaseHistoryList.tsx`**
+- [x] **Step 1: Write `src/components/history/ReleaseHistoryList.tsx`**
 
 ```tsx
 import { useState } from 'react';
@@ -1790,15 +1791,15 @@ const ReleaseHistoryList = ({
 export default ReleaseHistoryList;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render `ReleaseHistoryList` ad hoc with 3+ releases. Type a partial
-title into the search box, confirm the list filters live. Clear the search, confirm all
-releases return. Click a row, confirm `onSelectVersion` fires with the right version.
-Revert before committing.
+Manual visual check done via `src/components/history/stories/ReleaseHistoryList.stories.tsx`
+(`Default`, 3 releases across all `ReleaseStatus` values) in the running Storybook
+instance — confirmed typing "history" filters to only "History components", clearing
+the search restores all 3, and clicking a row fires `onSelectVersion`.
 
 - [ ] **Step 3: Commit**
 
@@ -1821,7 +1822,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/22-release-version
   (Task 18), `ReleaseSummary`/`ReleaseStatus` (Task 14), `Platform` (Task 14).
 - Produces: default-exported `ReleaseVersionDetail`.
 
-- [ ] **Step 1: Write `src/components/history/ReleaseVersionDetail.tsx`**
+- [x] **Step 1: Write `src/components/history/ReleaseVersionDetail.tsx`**
 
 ```tsx
 import { useState } from 'react';
@@ -1892,15 +1893,17 @@ export default ReleaseVersionDetail;
 rather than imported — both are small module-local constants, and `Task 20`'s component
 doesn't export it. Promote to a shared helper only if a third consumer needs it.
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render `ReleaseVersionDetail` ad hoc with sample
-`notesByPlatform` for all 3 platforms. Switch platform tabs, confirm the markdown
-preview updates. Click "Copy", confirm `onCopy(activePlatform)` fires with the
-currently active platform. Revert before committing.
+Manual visual check done via `src/components/history/stories/ReleaseVersionDetail.stories.tsx`
+(`Default`, sample `notesByPlatform` for all 3 platforms) in the running Storybook
+instance — confirmed switching from "GitHub" to "App Store" updates the markdown
+preview content, "Copy" renders in the secondary-container violet tone (distinct
+from the primary-violet "Export" in `LivePreviewPanel`), and clicking it fires
+`onCopy(activePlatform)` without error.
 
 - [ ] **Step 3: Commit**
 
@@ -1921,7 +1924,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/23-skill-doc-sync-
 - Consumes: nothing (documentation only).
 - Produces: nothing (documentation only).
 
-- [ ] **Step 1: Edit `.claude/skills/release-notes-copilot/SKILL.md`**
+- [x] **Step 1: Edit `.claude/skills/release-notes-copilot/SKILL.md`**
 
 Insert two new bullets immediately before the existing `src/components/chat/` bullet,
 and one new bullet immediately after the existing `src/components/platform-selector/`
@@ -1944,11 +1947,13 @@ bullet, leaving every other line in the section unchanged:
    the release-notes flow
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
-Re-read the edited section. Confirm every folder created in Tasks 1-22 now has a
-bullet, and no existing bullet's wording changed beyond the three insertions above. No
-`pnpm lint`/`pnpm build` check applies (Markdown, not source).
+Re-read the edited section (2026-08-13). Confirmed every folder created in Tasks 1-22
+now has a bullet (`common/`, `layouts/`, `platform-selector/`, `commit-list/`,
+`release-notes/`, `history/`), and no existing bullet's wording changed beyond the
+three insertions above. No `pnpm lint`/`pnpm build` check applies (Markdown, not
+source).
 
 - [ ] **Step 3: Commit**
 
