@@ -1406,7 +1406,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/17-commit-list-pan
   `CommitListItem` (Task 16), `Commit`/`CommitType` (Task 14).
 - Produces: default-exported `CommitListPanel`.
 
-- [ ] **Step 1: Write `src/components/commit-list/CommitListPanel.tsx`**
+- [x] **Step 1: Write `src/components/commit-list/CommitListPanel.tsx`**
 
 ```tsx
 import { useState } from 'react';
@@ -1468,19 +1468,51 @@ const CommitListPanel = ({
 export default CommitListPanel;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render `CommitListPanel` ad hoc with a mixed list of `feat`/
-`fix`/`chore` commits. Confirm "All" shows every row; clicking "Feat" filters to only
-`feat` commits. Toggle a checkbox, confirm `onToggle` bubbles up with the right hash.
-Revert before committing.
+Manual visual check done via `src/components/commit-list/stories/CommitListPanel.stories.tsx`
+(`Default`, 4 mixed `feat`/`fix`/`chore` commits, local `useState<Set<string>>` for
+selection) in the running Storybook instance, per this project's story-per-component
+convention — confirmed "All" shows every row, clicking "Feat" filters to only `feat`
+commits, and toggling a checkbox updates the selection set for the right hash.
+
+**Post-commit revision (2026-08-13):** requested by the user — some teams use custom
+commit-type prefixes beyond `feat`/`fix`/`chore` (e.g. `hotfix:`), so a hardcoded
+`FILTER_ITEMS` list can't represent them. Changed, confirmed with the user via
+`AskUserQuestion` before implementing (widening the shared type is a bigger call than
+this component alone):
+
+- `src/types/commit.ts`: `Commit.type` widened from `CommitType` to `string` — the
+  `CommitType` const enum still exists and still names the three well-known values
+  with dedicated badge colors, but a commit is no longer restricted to only those
+  three at the type level.
+- `CommitListPanel.tsx`: `FILTER_ITEMS` replaced with a `useMemo`-derived `filterItems`
+  computed from the distinct `type` values actually present in the `commits` prop
+  (`All` plus one tab per distinct type found, label auto-capitalized for unrecognized
+  types via `filterLabelForType`). A team with a `hotfix:` commit now gets a "Hotfix"
+  filter tab automatically, with no code change.
+- `CommitListItem.tsx`: `COMMIT_TYPE_BADGE_VARIANT` lookup replaced with
+  `badgeVariantForType`, which falls back to `BadgeVariant.Neutral` for any type
+  outside the three known `CommitType` values (so a `hotfix` badge renders gray
+  instead of erroring / rendering `undefined`).
+- Story added: `CustomType` in `CommitListPanel.stories.tsx`, appending a `hotfix:`
+  commit to the `Default` fixture — screenshot-verified (Playwright) that the "Hotfix"
+  tab appears and filtering to it shows only that commit with a gray badge.
+
+Re-verified: `pnpm lint && pnpm build` clean after the change.
 
 - [ ] **Step 3: Commit**
 
 `feat: add CommitListPanel component`
+
+Note: given the post-commit revision above, if `CommitListPanel` was already committed
+before this change landed, split into two commits instead — the original
+`feat: add CommitListPanel component`, plus a follow-up such as
+`feat: derive commit-list filter tabs from data to support custom commit types`
+covering the `Commit.type` widening and its ripple into `CommitListItem`.
 
 ---
 
@@ -1498,7 +1530,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/18-markdown-previe
 - Produces: default-exported `MarkdownPreview` — consumed by `LivePreviewPanel`
   (Task 19), `ReleaseVersionDetail` (Task 22).
 
-- [ ] **Step 1: Write `src/components/release-notes/MarkdownPreview.tsx`**
+- [x] **Step 1: Write `src/components/release-notes/MarkdownPreview.tsx`**
 
 ```tsx
 import ReactMarkdown from 'react-markdown';
@@ -1526,15 +1558,27 @@ const MarkdownPreview = ({ markdown }: MarkdownPreviewProps) => (
 export default MarkdownPreview;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render `MarkdownPreview` ad hoc with markdown containing an `h1`,
-`h2`, a paragraph, a bullet list, and inline `` `code` ``. Confirm each element uses the
-`theme.md` type-scale token, not browser-default styling, and inline code renders in
-`font-mono`. Revert before committing.
+Manual visual check done via `src/components/release-notes/stories/MarkdownPreview.stories.tsx`
+(`Default`, markdown containing `h1`/`h2`/paragraphs/bullets/inline code) in the
+running Storybook instance — confirmed via computed styles (`h1` font-size 32px
+matching `--text-headline-lg`, inline `code` font-family `"JetBrains Mono", ...`
+matching `font-mono`) and a screenshot.
+
+**Incident during verification (2026-08-13):** an earlier `rm -rf node_modules/.vite`
+(run to relieve memory pressure before `pnpm build`/`pnpm lint`, see Task 13/14 notes)
+had deleted Storybook's dependency pre-bundle cache while its dev server was still
+live. `MarkdownPreview` is the first component to import `react-markdown`, and Vite
+couldn't re-optimize that dependency into the now-missing cache dir for the running
+process — every story request 404/504'd with "Failed to fetch dynamically imported
+module". Fixed by restarting the Storybook dev server (confirmed with the user first,
+since "don't restart Storybook between tasks" was an established rule — this was the
+exception, not a routine restart). Working normally after restart; no code change
+required, `MarkdownPreview.tsx` itself was correct throughout.
 
 - [ ] **Step 3: Commit**
 
@@ -1556,7 +1600,11 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/19-live-preview-pa
   `MarkdownPreview` (Task 18).
 - Produces: default-exported `LivePreviewPanel`.
 
-- [ ] **Step 1: Write `src/components/release-notes/LivePreviewPanel.tsx`**
+- [x] **Step 1: Write `src/components/release-notes/LivePreviewPanel.tsx`**
+
+`text-headline-sm` substituted with `text-headline-md` (2026-08-13: same missing-token
+gap noted for earlier tasks — `text-headline-sm` doesn't exist in `index.css`'s
+`@theme inline` map; confirmed via grep, no match).
 
 ```tsx
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
@@ -1587,14 +1635,15 @@ const LivePreviewPanel = ({ markdown, onExport }: LivePreviewPanelProps) => (
 export default LivePreviewPanel;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Result: both clean (2026-08-13).
 
-Manual visual check: render `LivePreviewPanel` ad hoc with sample markdown. Confirm
-"Export" is primary-violet and top-right aligned. Click it, confirm `onExport` fires.
-Revert before committing.
+Manual visual check done via `src/components/release-notes/stories/LivePreviewPanel.stories.tsx`
+(`Default`, sample markdown) in the running Storybook instance — confirmed "Export"
+renders `rgb(99, 14, 212)` (primary-violet), top-right aligned via `justify-between`,
+and clicking it fires `onExport` without error.
 
 - [ ] **Step 3: Commit**
 

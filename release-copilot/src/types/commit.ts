@@ -6,7 +6,7 @@ export const enum CommitType {
 
 export interface Commit {
   hash: string;
-  type: CommitType;
+  type: string;
   message: string;
   author: string;
   timestamp: string;

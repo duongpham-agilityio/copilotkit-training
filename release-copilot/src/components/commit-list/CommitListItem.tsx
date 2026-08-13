@@ -16,6 +16,10 @@ const COMMIT_TYPE_BADGE_VARIANT: Record<CommitType, BadgeVariant> = {
   [CommitType.Chore]: BadgeVariant.Neutral,
 };
 
+const badgeVariantForType = (type: string): BadgeVariant =>
+  (COMMIT_TYPE_BADGE_VARIANT as Record<string, BadgeVariant>)[type] ??
+  BadgeVariant.Neutral;
+
 const CommitListItem = ({
   commit,
   selected,
@@ -27,9 +31,7 @@ const CommitListItem = ({
       onChange={() => onToggle(commit.hash)}
       aria-label={`Select commit ${commit.hash}`}
     />
-    <Badge variant={COMMIT_TYPE_BADGE_VARIANT[commit.type]}>
-      {commit.type}
-    </Badge>
+    <Badge variant={badgeVariantForType(commit.type)}>{commit.type}</Badge>
     <span className="text-body-md text-on-surface flex-1 truncate">
       {commit.message}
     </span>
