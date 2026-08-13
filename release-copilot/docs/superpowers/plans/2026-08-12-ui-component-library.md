@@ -21,9 +21,12 @@ dependencies.
 
 - No hardcoded hex or arbitrary Tailwind values anywhere a `theme.md` token exists —
   see spec `00-overview-design.md` "Design Correction".
-- No Storybook, no unit-test framework. Verification per task is `pnpm lint` + `pnpm
-build` (`tsc -b`) clean, plus a manual visual check (mount ad hoc in `src/App.tsx`,
-  view in `pnpm dev`, then revert the ad hoc mount before committing) — see spec
+- No unit-test framework. Storybook *is* used — reversed 2026-08-12 during
+  implementation at the user's explicit request; see spec `00-overview-design.md`
+  "Out of scope". Verification per task is `pnpm lint` + `pnpm build` (`tsc -b`)
+  clean, plus a Storybook story (`<Component>.stories.tsx` under that component
+  folder's `stories/` subfolder — e.g. `src/components/common/stories/Badge.stories.tsx`)
+  with one export per prop-driven visual state, viewed via `pnpm storybook` — see spec
   `00-overview-design.md` "Verification strategy".
 - Fixed sets of values used as both a type and a runtime value (`variant`, `size`,
   `emphasis`, status/mode constants) are `const enum`, not string-literal unions —
@@ -36,8 +39,15 @@ build` (`tsc -b`) clean, plus a manual visual check (mount ad hoc in `src/App.ts
   `src/routes/router.tsx`).
 - Arrow functions only, `const` by default, named exports except default-exported React
   components (`.agents/rules/code-style.md`).
-- No `clsx`/`tailwind-merge`, no `@tailwindcss/typography` — see spec
-  `00-overview-design.md` "Out of scope" for why.
+- No `@tailwindcss/typography` — see spec `00-overview-design.md` "Out of scope" for
+  why. (`clsx`/`tailwind-merge` *are* used, via `cn` in Task 1 — reversed 2026-08-12
+  during implementation at the user's explicit request.)
+- `text-label-md` and `text-headline-sm`, used in the original task code below for
+  Avatar/Button/Tabs/AppHeader/LivePreviewPanel, do not exist in `theme.css`/
+  `index.css`'s `@theme inline` map (confirmed 2026-08-12 during implementation —
+  Tailwind v4 silently drops undefined `text-*` utilities). Substituted throughout:
+  `text-label-md` → `text-body-md` (14px), `text-headline-sm` → `text-headline-md`
+  (20px). Each affected task notes the substitution inline.
 - Every task's final step is a commit. Conventional Commits, per
   `.agents/rules/git-rules.md`: `feat:` for every new component (net-new capability,
   even before it's wired into a page), `docs:` for the skill-doc-sync task.
@@ -57,23 +67,51 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/01-cn-util-design.
 - Produces: `cn(...classes: (string | false | null | undefined)[]): string` — used by
   every subsequent component task.
 
-- [ ] **Step 1: Write `src/lib/cn.ts`**
+- [x] **Step 1: Install `clsx` and `tailwind-merge`, write `src/lib/cn.ts`**
+
+Run: `pnpm add clsx tailwind-merge`
 
 ```ts
-type ClassValue = string | false | null | undefined;
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
-export const cn = (...classes: ClassValue[]): string =>
-  classes.filter(Boolean).join(' ');
+export const cn = (...classes: ClassValue[]): string => twMerge(clsx(classes));
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits each task themselves)
 
 `feat: add cn classname join utility`
+
+---
+
+### Task 1.5: Storybook setup (inserted 2026-08-12 during implementation)
+
+Not in the original plan — added at the user's explicit request. See spec
+`00-overview-design.md` "Out of scope" and "Verification strategy" for full rationale.
+
+- [x] Ran `storybook init`, then trimmed the scaffold to just `storybook`,
+  `@storybook/react-vite`, `@storybook/addon-a11y`, `@storybook/addon-docs`,
+  `eslint-plugin-storybook` — removed `@storybook/addon-vitest` (+ the `vitest`,
+  `playwright`, `@vitest/browser-playwright`, `@vitest/coverage-v8` deps it pulled in),
+  `@chromatic-com/storybook`, and `@storybook/addon-mcp` as unrelated scope creep.
+  Reverted `vite.config.ts` to its original state (init had wired in the Vitest
+  browser-testing config). Deleted the default demo content (`src/stories/`,
+  `vitest.shims.d.ts`).
+- [x] `.storybook/preview.tsx` imports `../src/index.css` so stories render with real
+  theme tokens, not browser defaults.
+- [x] Convention: `<Component>.stories.tsx` lives in a `stories/` subfolder inside that
+  component's folder (e.g. `src/components/common/stories/Badge.stories.tsx`,
+  importing `../Badge.tsx`), not co-located next to the component file.
+- [x] Verified: `pnpm lint` / `pnpm build` clean; `pnpm storybook` serves and correctly
+  renders theme-styled stories (screenshot-checked).
+- [ ] **Commit** (pending — user commits themselves)
+
+`feat: add Storybook with a11y and docs addons`
 
 ---
 
@@ -131,20 +169,26 @@ const Badge = ({ variant, children }: BadgeProps) => (
 export default Badge;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/Badge.stories.tsx`** (backfilled
+  2026-08-12; supersedes the ad-hoc-`App.tsx` check below — see Task 1.5)
+
+One story per `BadgeVariant`: `Success` (`feat`), `Error` (`fix`), `Warning`
+(`draft`), `Neutral` (`chore`).
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
-Expected: both clean.
+Expected: both clean. (Required disabling `react-refresh/only-export-components` in
+`eslint.config.js` — co-locating a component with its const-enum export trips that
+rule; confirmed with the user, applies project-wide since 5 more components in this
+plan hit the same pattern.)
 
-Manual visual check: in `src/App.tsx`, temporarily render
-`<><Badge variant={BadgeVariant.Success}>feat</Badge><Badge
-variant={BadgeVariant.Error}>fix</Badge><Badge
-variant={BadgeVariant.Warning}>draft</Badge><Badge
-variant={BadgeVariant.Neutral}>chore</Badge></>`, `pnpm dev`, confirm `Success` is
-emerald (not orange) and `Warning` is `warning-purple` (not amber). Revert the ad hoc
-render before committing.
+~~Manual visual check: in `src/App.tsx`, temporarily render...~~ superseded — verified
+instead via the `stories/Badge.stories.tsx` above in the `pnpm storybook` dev server
+(screenshot-checked): `Success` renders emerald, `Error` rose, `Warning`
+`warning-purple` (not amber), `Neutral` gray.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add Badge component`
 
@@ -164,7 +208,11 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/03-avatar-design.m
 - Produces: `AvatarSize` const enum, default-exported `Avatar` — consumed by
   `CommitListItem` (Task 16).
 
-- [ ] **Step 1: Write `src/components/common/Avatar.tsx`**
+- [x] **Step 1: Write `src/components/common/Avatar.tsx`**
+
+`text-label-md` substituted with `text-body-md` (2026-08-12: `text-label-md` doesn't
+exist in `theme.css`/`index.css`'s `@theme inline` map — confirmed with the user, see
+Global Constraints note on the missing-token gap).
 
 ```tsx
 import { cn } from '@/lib/cn';
@@ -176,7 +224,7 @@ export const enum AvatarSize {
 
 const SIZE_CLASSES: Record<AvatarSize, string> = {
   [AvatarSize.Sm]: 'w-6 h-6 text-label-sm',
-  [AvatarSize.Md]: 'w-8 h-8 text-label-md',
+  [AvatarSize.Md]: 'w-8 h-8 text-body-md',
 };
 
 interface AvatarProps {
@@ -211,17 +259,25 @@ const Avatar = ({ name, src, size = AvatarSize.Md }: AvatarProps) => {
 export default Avatar;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/Avatar.stories.tsx`**
+
+Stories: `InitialMd`, `InitialSm` (both no `src`, so render the initials fallback),
+`PhotoMd` (`src="https://placekitten.com/64/64"`).
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render one `<Avatar name="Ada Lovelace" src="https://placekitten.com/64/64" />`
-and one `<Avatar name="Ada Lovelace" />` ad hoc in `src/App.tsx`. Confirm the first is a
-circular photo, the second is a circular "A" on a `secondary-container`-tinted
-background. Revert before committing.
+~~Manual visual check: render...~~ superseded by the stories above, viewed via
+`pnpm storybook` (screenshot-checked): `InitialMd`/`InitialSm` render a circular "A" on
+a `secondary-container`-tinted background at the two sizes. `PhotoMd`'s `<img>` element
+renders with the correct classes, but `placekitten.com` isn't reachable from this
+sandbox — the actual photo crop/fit is unverified (network limitation, not a component
+issue; the img tag and `object-cover`/`rounded-full` classes are identical to the
+working fallback path).
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add Avatar component`
 
@@ -239,7 +295,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/04-mono-tag-design
 
 - Produces: default-exported `MonoTag` — consumed by `CommitListItem` (Task 16).
 
-- [ ] **Step 1: Write `src/components/common/MonoTag.tsx`**
+- [x] **Step 1: Write `src/components/common/MonoTag.tsx`**
 
 ```tsx
 interface MonoTagProps {
@@ -255,15 +311,20 @@ const MonoTag = ({ children }: MonoTagProps) => (
 export default MonoTag;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/MonoTag.stories.tsx`**
+
+One story, `CommitHash` (`children: 'a1b2c3d'`).
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render `<MonoTag>a1b2c3d</MonoTag>` ad hoc, confirm it renders in
-JetBrains Mono (visibly distinct from surrounding Inter text). Revert before committing.
+~~Manual visual check: render...~~ superseded by the story above, viewed via
+`pnpm storybook` (screenshot-checked): renders in JetBrains Mono, visibly distinct
+from surrounding Inter text, on the `surface-container` gray pill background.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add MonoTag component`
 
@@ -284,7 +345,9 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/05-button-design.m
   and reused by `IconButton`, Task 6), default-exported `Button` — consumed by
   `LivePreviewPanel` (Task 19) and `ReleaseVersionDetail` (Task 22).
 
-- [ ] **Step 1: Write `src/components/common/Button.tsx`**
+- [x] **Step 1: Write `src/components/common/Button.tsx`**
+
+`text-label-md` substituted with `text-body-md` (see Global Constraints note).
 
 ```tsx
 import type { ButtonHTMLAttributes } from 'react';
@@ -315,7 +378,7 @@ const Button = ({
   <button
     type="button"
     className={cn(
-      'text-label-md rounded-xl px-4 py-2 font-medium transition-colors disabled:pointer-events-none disabled:opacity-50',
+      'text-body-md cursor-pointer rounded-xl px-4 py-2 font-medium transition-colors disabled:pointer-events-none disabled:cursor-default disabled:opacity-50',
       BUTTON_VARIANT_CLASSES[variant],
       className,
     )}
@@ -326,16 +389,32 @@ const Button = ({
 export default Button;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/Button.stories.tsx`**
+
+Stories: `Primary`, `Secondary`, `Ghost`, `Disabled` (`variant: Primary, disabled: true`).
+
+- [x] **Step 1.6: Fix cursor (post-review, 2026-08-12)**
+
+User review caught: native `<button>` has no `cursor: pointer` by default (verified —
+Tailwind v4's `preflight.css` only sets cursor for Safari's number-input spinner
+buttons, nothing for general buttons). Added `cursor-pointer` to the base classes,
+plus `disabled:cursor-default` so the disabled state doesn't look clickable. Verified
+via computed style in the running Storybook (`getComputedStyle(button).cursor`):
+`Primary` → `pointer`, `Disabled` → `default`. (This same gap applies to `IconButton`,
+Task 6 — fix it there from the start rather than retrofitting.)
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render all 3 variants ad hoc. Confirm `Primary` background is
-violet `#630ed4` (not the Figma mock's orange). Add `disabled` to one, confirm it dims
-and stops responding to click. Revert before committing.
+~~Manual visual check: render all 3 variants...~~ superseded by the stories above,
+viewed via `pnpm storybook` (screenshot-checked): `Primary` background is violet
+`#630ed4` (not orange), `Secondary` shows the tinted container, `Ghost` is transparent
+with violet text, `Disabled` renders visibly dimmed (`opacity-50`) with a default
+(non-pointer) cursor.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add Button component`
 
@@ -355,7 +434,11 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/06-icon-button-des
   (Task 5).
 - Produces: default-exported `IconButton`.
 
-- [ ] **Step 1: Write `src/components/common/IconButton.tsx`**
+- [x] **Step 1: Write `src/components/common/IconButton.tsx`**
+
+`cursor-pointer` / `disabled:cursor-default` added from the start (same missing-cursor
+gap found in Button's post-review fix, Task 5 Step 1.6 — no native browser default,
+verified against `preflight.css`).
 
 ```tsx
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
@@ -377,7 +460,7 @@ const IconButton = ({
   <button
     type="button"
     className={cn(
-      'inline-flex h-8 w-8 items-center justify-center rounded-xl transition-colors disabled:pointer-events-none disabled:opacity-50',
+      'inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl transition-colors disabled:pointer-events-none disabled:cursor-default disabled:opacity-50',
       BUTTON_VARIANT_CLASSES[variant],
       className,
     )}
@@ -390,16 +473,22 @@ const IconButton = ({
 export default IconButton;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/IconButton.stories.tsx`**
+
+Stories: `Ghost` (default variant), `Primary`, `Disabled`.
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render `<IconButton icon={<span>×</span>} aria-label="Close" />`
-ad hoc, confirm it's a 32×32 square with a transparent `Ghost` background until hover.
-Revert before committing.
+~~Manual visual check: render...~~ superseded by the stories above, viewed via
+`pnpm storybook` (screenshot + computed-style checked): 32×32 square in both cases;
+`Ghost` transparent background with violet "×", `Primary` solid violet background with
+white "×"; `cursor` computed style is `pointer` on `Ghost`/`Primary`, `default` on
+`Disabled`.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add IconButton component`
 
@@ -421,7 +510,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/07-card-design.md`
   `LivePreviewPanel` (Task 19), `ReleaseHistoryListItem`/`ReleaseHistoryList`/
   `ReleaseVersionDetail` (Tasks 20-22).
 
-- [ ] **Step 1: Write `src/components/common/Card.tsx`**
+- [x] **Step 1: Write `src/components/common/Card.tsx`**
 
 ```tsx
 import type { MouseEventHandler, ReactNode } from 'react';
@@ -481,18 +570,22 @@ directly on a `const` arrow-function binding trips `verbatimModuleSyntax`/strict
 reassignment concerns less cleanly than `Object.assign`, and keeps `Card` itself
 `const`-only per `.agents/rules/code-style.md`.
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/Card.stories.tsx`**
+
+Stories: `Raised`, `Outlined`, `WithHeader` (custom `render`, since it demonstrates the
+`Card.Header` compound sub-component rather than a plain `args` shape).
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render one `<Card emphasis={CardEmphasis.Raised}>Raised</Card>` and
-one `<Card emphasis={CardEmphasis.Outlined}>Outlined</Card>` ad hoc. Confirm `Raised` has
-a visible shadow and no border; `Outlined` has a 1px border and no shadow. Render one
-with a `<Card.Header>` child, confirm the header's bottom border and the `mb-4` spacing
-below it. Revert before committing.
+~~Manual visual check: render...~~ superseded by the stories above, viewed via
+`pnpm storybook` (screenshot-checked): `Raised` has a visible shadow and no border;
+`Outlined` has a 1px border and no shadow; `WithHeader` shows the header's bottom
+border and `mb-4` spacing above the body content.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add Card component`
 
@@ -513,7 +606,11 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/08-tabs-design.md`
   default-exported `Tabs` — consumed by `AppHeader` (Task 11), `PlatformTabs`
   (Task 15), `CommitListPanel` (Task 17).
 
-- [ ] **Step 1: Write `src/components/common/Tabs.tsx`**
+- [x] **Step 1: Write `src/components/common/Tabs.tsx`**
+
+`text-label-md` substituted with `text-body-md` (see Global Constraints note).
+`cursor-pointer` added to the tab buttons proactively — same missing-cursor gap as
+Button/IconButton (Task 5 Step 1.6), fixed at write time instead of retrofitting.
 
 ```tsx
 import { cn } from '@/lib/cn';
@@ -548,7 +645,7 @@ const activeTabClasses = (variant: TabsVariant) =>
 const inactiveTabClasses = (variant: TabsVariant) =>
   variant === TabsVariant.Pill
     ? 'text-on-surface-variant px-3 py-1.5'
-    : 'text-on-surface-variant pb-3';
+    : 'text-on-surface-variant border-b-2 border-transparent pb-3';
 
 const Tabs = ({
   items,
@@ -564,7 +661,7 @@ const Tabs = ({
         aria-selected={item.value === value}
         onClick={() => onChange(item.value)}
         className={cn(
-          'text-label-md font-medium transition-colors',
+          'text-body-md cursor-pointer font-medium transition-all',
           item.value === value
             ? activeTabClasses(variant)
             : inactiveTabClasses(variant),
@@ -579,22 +676,47 @@ const Tabs = ({
 export default Tabs;
 ```
 
+- [x] **Step 2.5: Fix janky active-tab transition (post-review, 2026-08-12)**
+
+User review: "the animate not smooth" on tab switch. Verified root cause via
+`getComputedStyle` before changing anything — `transition-colors`' computed
+`transition-property` is `color, background-color, border-color, outline-color,
+text-decoration-color, fill, stroke, ...`; `box-shadow` is not in that list. So
+`Pill`'s active-tab `shadow-sm` popped in/out instantly while background-color eased
+over 150ms, and `Underline`'s `border-b-2` (a width/style change from "no border" to
+2px solid, not just a color change) can't animate smoothly regardless of
+`transition-property` since border-style itself isn't animatable. Two fixes: (1)
+`transition-colors` → `transition-all` on the tab button (safe here — active/inactive
+share identical padding in both variants, so no layout properties are actually
+animated, just visual ones); (2) `Underline`'s inactive state now always renders
+`border-b-2 border-transparent` instead of no border, so switching only ever animates
+`border-color` (already covered), never width/style. Verified via computed style:
+`Pill` button's `transition-property` is now `all`; both `Underline` tabs report
+`border-bottom-width: 2px` regardless of active state. Re-screenshotted both variants
+before/after click — no visual regression.
+
 `Tabs` is default-exported like every other common component
 (`.agents/rules/code-style.md`); `TabsVariant` and `TabItem` stay named exports
 alongside it in the same file, since every consumer needs both the component and its
 types.
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/Tabs.stories.tsx`**
+
+Stories: `Pill` (3 items, custom `render` with local `useState` for `value`/`onChange`
+since `Tabs` is controlled), `Underline` (2 items, same pattern).
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render one `Pill` `Tabs` with 3 items (confirm the active pill has
-a white background + shadow) and one `Underline` `Tabs` with 2 items (confirm the active
-tab shows a violet underline, not orange). Click through items, confirm the active
-indicator moves. Revert before committing.
+~~Manual visual check: render...~~ superseded by the stories above, viewed via
+`pnpm storybook` (screenshot-checked, before/after click): `Pill`'s active tab has a
+white background + shadow; `Underline`'s active tab shows a violet underline (not
+orange). Clicked a different tab in each story and confirmed the active indicator
+moved to the clicked item.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add Tabs component`
 
@@ -613,7 +735,7 @@ Spec: `docs/superpowers/specs/2026-08-12-ui-component-library/09-checkbox-design
 - Consumes: `cn`.
 - Produces: default-exported `Checkbox` — consumed by `CommitListItem` (Task 16).
 
-- [ ] **Step 1: Write `src/components/common/Checkbox.tsx`**
+- [x] **Step 1: Write `src/components/common/Checkbox.tsx`**
 
 ```tsx
 import { cn } from '@/lib/cn';
@@ -654,17 +776,24 @@ const Checkbox = ({ checked, onChange, ...rest }: CheckboxProps) => (
 export default Checkbox;
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 1.5: Add `src/components/common/stories/Checkbox.stories.tsx`**
+
+Stories: `Unchecked`, `Checked` — both custom `render` with local `useState`, since
+`Checkbox` is controlled.
+
+- [x] **Step 2: Verify**
 
 Run: `pnpm lint && pnpm build`
 Expected: both clean.
 
-Manual visual check: render one unchecked and one checked `Checkbox` ad hoc. Confirm the
-checked box is violet-filled with a white checkmark. Click to toggle, confirm the state
-updates. Tab to it with keyboard and press Space, confirm it toggles (native input
-semantics). Revert before committing.
+~~Manual visual check: render...~~ superseded by the stories above, viewed/driven via
+`pnpm storybook` (screenshot + interaction-checked, not just static): `Checked` is
+violet-filled with a white checkmark, `Unchecked` is an empty outline. Clicked the
+label on the `Unchecked` story — `checked` went `false → true`. Separately, on a fresh
+load, pressed Tab (confirmed the hidden `sr-only` input receives focus) then Space
+(confirmed `checked` toggled `false → true`) — native input semantics preserved.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Commit** (pending — user commits themselves)
 
 `feat: add Checkbox component`
 

@@ -34,3 +34,6 @@ mastra.duckdb*
 *.njsproj
 *.sln
 *.sw?
+
+*storybook.log
+storybook-static

@@ -6,9 +6,11 @@ Part of: [UI Component Library overview](./00-overview-design.md)
 
 ## Responsibility
 
-Single shared classname-join helper used by every component in this library. Filters
-out falsy values (`false`/`null`/`undefined`) so conditional Tailwind classes can be
-written inline without a template-literal mess.
+Single shared classname-join helper used by every component in this library. Wraps
+`clsx` (conditional class composition — filters falsy values, accepts arrays/objects)
+and `tailwind-merge` (resolves conflicting Tailwind utility classes, last one wins) so
+callers can pass a caller-supplied `className` alongside a component's own classes
+without producing duplicate/conflicting utilities in the DOM.
 
 ## Files
 
@@ -17,9 +19,10 @@ written inline without a template-literal mess.
 ## API
 
 ```ts
-type ClassValue = string | false | null | undefined;
-export const cn = (...classes: ClassValue[]): string =>
-  classes.filter(Boolean).join(' ');
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export const cn = (...classes: ClassValue[]): string => twMerge(clsx(classes));
 ```
 
 No default export (utility, not a component) — named export per
@@ -27,13 +30,13 @@ No default export (utility, not a component) — named export per
 
 ## Composes
 
-Nothing — leaf utility, zero dependencies.
+`clsx` and `tailwind-merge` — the library's only two runtime dependencies beyond React
+itself.
 
 ## Out of scope
 
-`clsx` / `tailwind-merge` are not used — see overview "Out of scope" for why. Do not add
-class-conflict resolution here; components that need to avoid conflicting utility
-strings (e.g. `Card`) use an explicit variant prop instead.
+N/A — `clsx`/`tailwind-merge` are now in use (see overview "Out of scope" — decision
+reversed 2026-08-12 at the user's explicit request during implementation).
 
 ## Verification
 

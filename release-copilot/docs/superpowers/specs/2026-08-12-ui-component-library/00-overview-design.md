@@ -63,36 +63,51 @@ Tailwind values are used anywhere a token exists.
 - **Page assembly / routing.** `AppShell`/`AppHeader` take `activeNav`/`onNavigate` as
   props; they render no `react-router` `Link`/`Route`. Wiring `/dashboard` and `/history`
   routes is a separate follow-up plan.
-- **Automated component tests and Storybook.** Confirmed with the user: no Vitest/RTL,
-  no Storybook — neither is being added for this pass. See "Verification strategy" below.
+- **Automated component tests (Vitest/RTL).** Still out of scope — no unit-test runner
+  added for this pass.
+- ~~Storybook~~ **Reversed 2026-08-12 during implementation, at the user's explicit
+  request:** Storybook is now installed (`@storybook/react-vite`, `addon-a11y`,
+  `addon-docs` only — the default `storybook init` scaffold also pulled in
+  `@storybook/addon-vitest` + Vitest + Playwright browser testing, Chromatic, and an
+  MCP addon; all four were removed as unrelated scope creep, keeping the "no
+  Vitest/RTL" decision intact). `.storybook/preview.tsx` imports `src/index.css` so
+  stories render with real theme tokens. Each component folder gets its own
+  `stories/` subfolder (e.g. `src/components/common/stories/Badge.stories.tsx`,
+  importing `../Badge.tsx`) rather than co-locating `*.stories.tsx` next to the
+  component — every task from here on adds a story under that folder's `stories/`
+  alongside its component file. See "Verification strategy" below.
 - `@tailwindcss/typography` — not installed; `theme.md` defines its own type scale that
   the plugin's opinionated defaults would fight. `MarkdownPreview` styles markdown
   elements directly with theme tokens instead.
-- `clsx` / `tailwind-merge` — not added. A 3-line local `cn` (join + filter falsy) is
-  enough; no component in this pass needs merging two conflicting utility strings
-  (`Card`'s `emphasis` prop exists specifically to avoid that).
+- ~~`clsx` / `tailwind-merge` — not added.~~ **Reversed 2026-08-12 during
+  implementation, at the user's explicit request:** both are now installed and `cn`
+  (Task 1 / spec `01-cn-util-design.md`) wraps `twMerge(clsx(classes))`. No other task
+  changes as a result — every consumer still just calls `cn(...)`.
 
 ## Verification strategy
 
-Confirmed with the user: no unit-test runner and no Storybook for this pass. Each unit's
-own spec is verified by:
+Still no unit-test runner for this pass. Each unit's own spec is verified by:
 
 - `pnpm lint` and `pnpm build` (`tsc -b`) clean — the only automated correctness check in
   this pass, per the project's existing MUST rule in `.agents/rules/code-style.md`
-- A manual visual check, where one is possible: mount the component ad hoc inside
-  `src/App.tsx` (or another already-rendered route) with representative props, view it in
-  the running dev server, then revert the ad hoc mount before moving on — components in
-  this pass have no real page to render on yet (page assembly is out of scope), so this
-  is a scratch check, not a permanent demo route. Each unit's spec below names the
+- A Storybook story (CSF3, `<Component>.stories.tsx` under that component's
+  `stories/` subfolder — see "Out of scope" above for the reversal): one story export
+  per prop-driven visual state (e.g. `Badge`'s `Success`/`Error`/`Warning`/`Neutral`),
+  viewed in the running `pnpm storybook` dev server. Each unit's spec below names the
   specific visual detail to check (e.g. "success badge background is `#059669` emerald,
-  not orange").
+  not orange"). Components with no meaningfully distinct states still get a single
+  default-args story, since the story is also this pass's substitute for the
+  previously-planned "mount ad hoc in `src/App.tsx`" scratch check.
 
 ## File naming note
 
 `.agents/rules/conventions.md` requires non-component `.tsx`/`.ts` files to be
 kebab-case. `.tsx` files that default-export a React component use PascalCase (memory
-`feedback_file-naming-exception`). No further exception is needed for this pass — there
-are no Storybook story files.
+`feedback_file-naming-exception`). Story files (`<Component>.stories.tsx`) follow the
+component-file convention — PascalCase matching the component they cover — since they
+default-export a `Meta` object describing that component, not a component themselves,
+but the pairing with `<Component>.tsx` is the more useful signal to keep obvious at a
+glance.
 
 ## Unit index
 
