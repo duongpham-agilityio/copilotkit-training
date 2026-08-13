@@ -8,13 +8,13 @@ interface SplitPaneProps {
 
 const SplitPane = ({ left, right, leftWidthPercent = 65 }: SplitPaneProps) => (
   <div
-    className="grid gap-6"
+    className="grid h-full gap-6"
     style={{
       gridTemplateColumns: `${leftWidthPercent}% ${100 - leftWidthPercent}%`,
     }}
   >
-    <div>{left}</div>
-    <div>{right}</div>
+    <div className="h-full min-h-0 overflow-y-auto">{left}</div>
+    <div className="h-full min-h-0">{right}</div>
   </div>
 );
 

@@ -1,22 +1,42 @@
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
+import MonoTag from '@/components/common/MonoTag.tsx';
+import PlatformTabs from '@/components/platform-selector/PlatformTabs.tsx';
 import MarkdownPreview from './MarkdownPreview.tsx';
+import type { Platform } from '@/types/platform.ts';
 
 interface LivePreviewPanelProps {
   markdown: string;
-  onExport: () => void;
+  platform: Platform;
+  onPlatformChange: (platform: Platform) => void;
+  onCopy: () => void;
 }
 
-const LivePreviewPanel = ({ markdown, onExport }: LivePreviewPanelProps) => (
+const LivePreviewPanel = ({
+  markdown,
+  platform,
+  onPlatformChange,
+  onCopy,
+}: LivePreviewPanelProps) => (
   <Card emphasis={CardEmphasis.Outlined}>
     <Card.Header>
-      <div className="flex items-center justify-between">
-        <span className="text-headline-md text-on-surface font-semibold">
-          Preview
-        </span>
-        <Button variant={ButtonVariant.Primary} onClick={onExport}>
-          Export
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="text-headline-md text-on-surface font-semibold">
+            Live Preview
+          </span>
+          <MonoTag>RELEASE_NOTES.md</MonoTag>
+        </div>
+        <div className="flex items-center gap-3">
+          <PlatformTabs value={platform} onChange={onPlatformChange} />
+          <Button
+            variant={ButtonVariant.Ghost}
+            className="border-primary border"
+            onClick={onCopy}
+          >
+            Copy
+          </Button>
+        </div>
       </div>
     </Card.Header>
     <MarkdownPreview markdown={markdown} />
