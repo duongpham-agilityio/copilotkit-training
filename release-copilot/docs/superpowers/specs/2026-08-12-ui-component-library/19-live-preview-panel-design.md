@@ -43,7 +43,7 @@ export default LivePreviewPanel;
 <Card emphasis={CardEmphasis.Outlined}>
   <Card.Header>
     <div className="flex items-center justify-between">
-      <span className="text-headline-sm text-on-surface font-semibold">
+      <span className="text-headline-md text-on-surface font-semibold">
         Preview
       </span>
       <Button variant={ButtonVariant.Primary} onClick={onExport}>
@@ -54,6 +54,10 @@ export default LivePreviewPanel;
   <MarkdownPreview markdown={markdown} />
 </Card>
 ```
+
+`text-headline-sm` substituted with `text-headline-md` (2026-08-13: `text-headline-sm`
+doesn't exist in `index.css`'s `@theme inline` map — same missing-token gap noted for
+`Badge`/`Avatar` earlier in this plan).
 
 ## Composes
 

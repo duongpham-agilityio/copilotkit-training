@@ -77,3 +77,23 @@ when mixing type-only and value imports from one file.
   `Success` (emerald) badge, `Fix` shows `Error` (rose), `Chore` shows `Neutral` (gray)
   — not a 1:1 color-name coincidence, an explicit mapping. Toggle the checkbox, confirm
   `onToggle` fires with `commit.hash`.
+
+## Revised 2026-08-13: fallback badge for unrecognized types
+
+`Commit.type` widened from `CommitType` to `string` in unit 14 (custom commit-type
+prefix support, e.g. `hotfix:` — see unit 17's spec for the full rationale). Direct
+`COMMIT_TYPE_BADGE_VARIANT[commit.type]` lookup no longer type-checks (a plain
+`string` can't index a `Record<CommitType, BadgeVariant>`) and would be `undefined`
+for any type outside the three known values. Replaced with:
+
+```ts
+const badgeVariantForType = (type: string): BadgeVariant =>
+  (COMMIT_TYPE_BADGE_VARIANT as Record<string, BadgeVariant>)[type] ??
+  BadgeVariant.Neutral;
+```
+
+`COMMIT_TYPE_BADGE_VARIANT` itself is unchanged — still the single explicit mapping
+for the three well-known types. Any other type (e.g. `hotfix`) falls back to
+`BadgeVariant.Neutral` (gray), same as `Chore`, rather than rendering an `undefined`
+variant. Verification addendum: render a `Commit` with `type: 'hotfix'`, confirm the
+badge renders gray, not broken/blank.

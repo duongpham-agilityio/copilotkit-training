@@ -30,12 +30,20 @@ export const enum CommitType {
 
 export interface Commit {
   hash: string;
-  type: CommitType;
+  type: string;
   message: string;
   author: string;
   timestamp: string;
 }
 ```
+
+**Revised 2026-08-13:** `Commit.type` was originally `CommitType` (closed to the three
+enum values). Widened to `string` at the user's request — teams may use custom commit
+prefixes beyond `feat`/`fix`/`chore` (e.g. `hotfix:`), and the closed enum couldn't
+represent them. `CommitType` itself is unchanged and still names the three well-known
+values with dedicated badge colors in `CommitListItem` (Task 16); it's now a
+recognized-subset helper rather than the exhaustive type. See `CommitListPanel`
+(Task 17)'s spec for the consumer-side change (filter tabs derived from data).
 
 `src/types/platform.ts`:
 

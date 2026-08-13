@@ -88,3 +88,42 @@ filter selection, only the final `selectedHashes`.
 - Manual visual check: render with a mixed list of `feat`/`fix`/`chore` commits.
   Confirm "All" shows every row; clicking "Feat" filters to only `feat` commits.
   Toggle a checkbox, confirm `onToggle` bubbles up with the correct hash.
+
+## Revised 2026-08-13: data-driven filter tabs
+
+Requested by the user: some teams use custom commit-type prefixes beyond
+`feat`/`fix`/`chore` (e.g. `hotfix:`) — a hardcoded `FILTER_ITEMS` list can't
+represent an arbitrary one. Depends on the `Commit.type: string` widening in unit 14.
+
+`FILTER_ITEMS` (module-level constant) replaced with `filterItems`, a
+`useMemo`-derived value computed from the distinct `type` values present in the
+`commits` prop:
+
+```tsx
+const KNOWN_TYPE_LABEL: Record<CommitType, string> = {
+  [CommitType.Feat]: 'Feat',
+  [CommitType.Fix]: 'Fix',
+  [CommitType.Chore]: 'Chore',
+};
+
+const filterLabelForType = (type: string): string =>
+  (KNOWN_TYPE_LABEL as Record<string, string>)[type] ??
+  `${type.charAt(0).toUpperCase()}${type.slice(1)}`;
+
+const filterItems = useMemo<TabItem[]>(() => {
+  const types = Array.from(new Set(commits.map((commit) => commit.type)));
+  return [
+    { value: 'all', label: 'All' },
+    ...types.map((type) => ({ value: type, label: filterLabelForType(type) })),
+  ];
+}, [commits]);
+```
+
+The three well-known `CommitType` values still get their canonical label
+(`Feat`/`Fix`/`Chore`); any other type present in the data gets an auto-capitalized
+tab (`hotfix` → `Hotfix`) with no code change required per new prefix.
+
+Verification addendum: render with a `hotfix:` commit added to the mixed
+`feat`/`fix`/`chore` fixture. Confirm a "Hotfix" tab appears automatically and
+filtering to it shows only that commit (screenshot-verified via Playwright against
+the `CustomType` story in `CommitListPanel.stories.tsx`).
