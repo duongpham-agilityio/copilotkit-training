@@ -6,7 +6,7 @@ import MarkdownPreview from './MarkdownPreview.tsx';
 import type { Platform } from '@/types/platform.ts';
 
 interface LivePreviewPanelProps {
-  markdown: string;
+  markdown: string | null;
   platform: Platform;
   onPlatformChange: (platform: Platform) => void;
   onCopy: () => void;
@@ -33,6 +33,7 @@ const LivePreviewPanel = ({
             variant={ButtonVariant.Ghost}
             className="border-primary border"
             onClick={onCopy}
+            disabled={!markdown}
           >
             Copy
           </Button>
