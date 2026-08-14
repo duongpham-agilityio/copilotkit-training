@@ -4,15 +4,20 @@ import { ProviderHistoryCompat } from '@mastra/core/processors';
 import { RELEASE_COPILOT_MODEL } from '../../constants/models';
 import { stripGroqLlamaReasoningContent } from '../processors/strip-groq-llama-reasoning';
 import { RELEASE_COPILOT_INSTRUCTIONS } from '../instructions';
+import { renderReleaseNotesPreviewTool } from '../tools/render-release-notes-preview-tool';
+import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../../constants/tools';
 
-// The classification, formatting and FAQ rules are inlined into instructions (see
-// ../instructions) rather than loaded as Mastra skills. Activating a
-// skill goes through Groq's tool calling, which fails about half the time for this
-// agent — the model emits a call Groq's own validator then rejects with 500 "Failed
-// to call a function". Measured 3/6 successful requests with qwen3.6-27b and 1/6 with
-// llama-3.3-70b, unchanged by switching to `createSkill()` inline skills or disabling
-// parallel tool calls. With no tools at all there is nothing to fail, and the whole
-// rule set is under ~1.2k tokens.
+// The classification and FAQ rules stay inlined into instructions (see
+// ../instructions) rather than loaded as Mastra skills — activating a skill goes
+// through Groq's tool calling, which failed about half the time in earlier testing
+// (model emits a call, Groq's own validator rejects with 500 "Failed to call a
+// function"; measured 3/6 with qwen3.6-27b, 1/6 with llama-3.3-70b, unchanged by
+// `createSkill()` or disabling parallel tool calls). That failure was specific to
+// skill activation though: a spike with a single plain `createTool()` (this render
+// tool) against the same llama-3.3-70b-versatile model completed 13/13 calls
+// correctly, with zero instances of that validator error — so this one tool is
+// registered despite the earlier no-tools decision. Watch for the 500 error
+// resurfacing if this stops being reliable.
 export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
   name: 'Release Copilot',
@@ -20,6 +25,9 @@ export const releaseCopilotAgent = new Agent({
     'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for all 3 platforms, edits a draft in place, and answers questions about using the app.',
   instructions: RELEASE_COPILOT_INSTRUCTIONS,
   model: RELEASE_COPILOT_MODEL,
+  tools: {
+    [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
+  },
   inputProcessors: [
     new ProviderHistoryCompat({
       additionalRules: [stripGroqLlamaReasoningContent],

@@ -27,4 +27,4 @@ truncating mid-sentence.
 
 When asked to revise a draft in place (tone, length, wording), apply the edit to the
 already-rendered text without re-running commit classification, then re-render all 3
-platform outputs from the edited content.
+platform outputs from the edited content and call the render-preview tool again.

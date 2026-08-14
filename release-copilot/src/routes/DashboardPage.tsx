@@ -5,8 +5,10 @@ import CopilotAssistantPanel from '@/components/chat/CopilotAssistantPanel.tsx';
 import SplitPane from '@/layouts/SplitPane.tsx';
 import { useShowEntryListTool } from '@/hooks/use-show-entry-list-tool.ts';
 import { useEntrySelectionContext } from '@/hooks/use-entry-selection-context.ts';
+import { useRenderReleaseNotesPreviewTool } from '@/hooks/use-render-release-notes-preview-tool.tsx';
 import type { Commit } from '@/types/commit.ts';
 import type { ReleaseEntry } from '@/types/release-entry.ts';
+import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 import { Platform } from '@/types/platform.ts';
 
 // 'breaking' isn't a CommitType member — Commit.type is deliberately a loose
@@ -20,27 +22,10 @@ const toCommit = (entry: ReleaseEntry): Commit => ({
   timestamp: entry.timestamp,
 });
 
-const MARKDOWN_BY_PLATFORM: Record<Platform, string> = {
-  [Platform.Github]: `# 🚀 What's New in MVP v1.0
-
-We are thrilled to announce the first major release of our platform! Here is what is included:
-
-## ✨ New Features
-
-- **Offline Sync:** Seamlessly continue working without an internet connection. Changes will sync automatically when back online. \`a1b2c3d\`
-- **Dark Mode Support:** Easy on the eyes for those late-night coding sessions.
-
-## 🐛 Bug Fixes
-
-- Resolved critical null pointer exception in the primary authentication flow. \`e4f5g6h\`
-`,
-  [Platform.AppStore]: `What's New in v1.0
-
-- Work offline — changes sync automatically when you're back online
-- Added Dark Mode support
-- Fixed a crash that could occur when signing in
-`,
-  [Platform.GooglePlay]: `Offline sync, Dark Mode, and a fix for a sign-in crash. Update now!`,
+const DRAFT_FIELD_BY_PLATFORM: Record<Platform, keyof ReleaseNotesDraft> = {
+  [Platform.Github]: 'github',
+  [Platform.AppStore]: 'appStore',
+  [Platform.GooglePlay]: 'googlePlay',
 };
 
 const DashboardPage = () => {
@@ -48,6 +33,7 @@ const DashboardPage = () => {
   const [selectedHashes, setSelectedHashes] = useState<Set<string>>(new Set());
   const [entries, setEntries] = useState<ReleaseEntry[]>([]);
   const [platform, setPlatform] = useState<Platform>(Platform.AppStore);
+  const [draft, setDraft] = useState<ReleaseNotesDraft | null>(null);
 
   useShowEntryListTool({
     onEntryListShown: (nextEntries) => {
@@ -57,6 +43,8 @@ const DashboardPage = () => {
       setEntries(nextEntries);
     },
   });
+
+  useRenderReleaseNotesPreviewTool({ onDraftRendered: setDraft });
 
   const activeEntries = entries.filter((entry) => selectedHashes.has(entry.id));
 
@@ -74,8 +62,11 @@ const DashboardPage = () => {
     });
   };
 
+  const markdown = draft ? draft[DRAFT_FIELD_BY_PLATFORM[platform]] : null;
+
   const handleCopy = () => {
-    void navigator.clipboard.writeText(MARKDOWN_BY_PLATFORM[platform]);
+    if (!markdown) return;
+    void navigator.clipboard.writeText(markdown);
   };
 
   return (
@@ -89,7 +80,7 @@ const DashboardPage = () => {
             onToggle={handleToggle}
           />
           <LivePreviewPanel
-            markdown={MARKDOWN_BY_PLATFORM[platform]}
+            markdown={markdown}
             platform={platform}
             onPlatformChange={setPlatform}
             onCopy={handleCopy}

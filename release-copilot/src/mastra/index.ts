@@ -11,7 +11,9 @@ import {
 } from '@mastra/observability';
 import { registerCopilotKit } from '@ag-ui/mastra/copilotkit';
 import { releaseCopilotAgent } from './agents/release-copilot-agent';
+import { renderReleaseNotesPreviewTool } from './tools/render-release-notes-preview-tool';
 import { RELEASE_COPILOT_AGENT_ID } from '../constants/agents';
+import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/tools';
 import {
   COPILOTKIT_ROUTE_PATH,
   COPILOTKIT_RESOURCE_ID,
@@ -28,6 +30,9 @@ import { MASTRA_OBSERVABILITY_SERVICE_NAME } from '../constants/observability';
 export const mastra = new Mastra({
   agents: {
     [RELEASE_COPILOT_AGENT_ID]: releaseCopilotAgent,
+  },
+  tools: {
+    [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
   },
   server: {
     cors: MASTRA_CORS_CONFIG,
