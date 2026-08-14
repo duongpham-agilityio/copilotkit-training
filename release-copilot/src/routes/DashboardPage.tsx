@@ -4,6 +4,7 @@ import LivePreviewPanel from '@/components/release-notes/LivePreviewPanel.tsx';
 import CopilotAssistantPanel from '@/components/chat/CopilotAssistantPanel.tsx';
 import SplitPane from '@/layouts/SplitPane.tsx';
 import { useShowEntryListTool } from '@/hooks/use-show-entry-list-tool.ts';
+import { useEntrySelectionContext } from '@/hooks/use-entry-selection-context.ts';
 import type { Commit } from '@/types/commit.ts';
 import type { ReleaseEntry } from '@/types/release-entry.ts';
 import { Platform } from '@/types/platform.ts';
@@ -45,15 +46,21 @@ We are thrilled to announce the first major release of our platform! Here is wha
 const DashboardPage = () => {
   const [commits, setCommits] = useState<Commit[]>([]);
   const [selectedHashes, setSelectedHashes] = useState<Set<string>>(new Set());
+  const [entries, setEntries] = useState<ReleaseEntry[]>([]);
   const [platform, setPlatform] = useState<Platform>(Platform.AppStore);
 
   useShowEntryListTool({
-    onEntryListShown: (entries) => {
-      const nextCommits = entries.map(toCommit);
+    onEntryListShown: (nextEntries) => {
+      const nextCommits = nextEntries.map(toCommit);
       setCommits(nextCommits);
       setSelectedHashes(new Set(nextCommits.map((commit) => commit.hash)));
+      setEntries(nextEntries);
     },
   });
+
+  const activeEntries = entries.filter((entry) => selectedHashes.has(entry.id));
+
+  useEntrySelectionContext({ entries: activeEntries });
 
   const handleToggle = (hash: string) => {
     setSelectedHashes((current) => {

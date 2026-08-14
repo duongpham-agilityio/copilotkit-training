@@ -12,7 +12,9 @@ timestamp, hash, Feature/Fix/Breaking badge) with filter tabs (All/Feat/Fix) and
 per-entry checkbox. Only checked entries are used for drafting. Unchecking a commit
 removes it from the pipeline entirely, not just from display. Changing the selection
 after a draft already exists marks that draft as outdated — it does not redraft
-automatically; ask again to regenerate it.
+automatically; ask again to regenerate it. Asking to draft with nothing selected: the
+agent will ask you to pick at least one entry first rather than generating an empty
+draft.
 
 ## Copy and export
 

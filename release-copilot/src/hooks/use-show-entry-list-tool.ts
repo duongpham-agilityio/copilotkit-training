@@ -32,10 +32,6 @@ export const useShowEntryListTool = ({
     parameters: EntryListToolSchema,
     agentId: RELEASE_COPILOT_AGENT_ID,
     handler: async (args) => {
-      console.log({
-        args,
-      });
-
       const result = EntryListToolSchema.safeParse(args);
       if (!result.success) {
         console.warn('[showEntryList] received invalid args', result.error);
