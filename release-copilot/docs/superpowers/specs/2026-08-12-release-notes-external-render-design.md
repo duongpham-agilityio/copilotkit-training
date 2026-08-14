@@ -2,6 +2,8 @@
 
 Date: 2026-08-12
 Status: Approved
+Updated: 2026-08-13 — `showEntryList` implemented (see "Client-side tool —
+implemented" below); `showReleaseNotes` still deferred.
 
 ## Purpose
 
@@ -46,8 +48,9 @@ check before calling any tool).
 
 **In scope (this pass, spec only — no implementation yet):**
 
-- 2 frontend tools: `showEntryList`, `showReleaseNotes` — the mechanism for getting
-  data out of chat
+- 2 frontend tools: `showEntryList` (**implemented 2026-08-13**, see "Client-side
+  tool — implemented" below), `showReleaseNotes` (still spec-only) — the mechanism
+  for getting data out of chat
 - Shared Zod schemas as the single source of truth for both the tool payload shape and
   the behavioral rules attached to each field
 - One unified entry schema covering both input sources (git-log commits and PR
@@ -221,7 +224,14 @@ export const ReleaseEntrySchema = z.object({
     .describe(
       'Optional longer body — PR description, or a commit message body/footer (e.g. a BREAKING CHANGE: footer). Used for breaking-change detection.',
     ),
-  type: z.enum(['feat', 'fix']),
+  type: z
+    .string()
+    .min(1)
+    .describe(
+      'The classification label for this entry, e.g. "feat", "fix", "chore", ' +
+        'or a team-specific custom label — whatever best fits the ' +
+        'classification rules applied.',
+    ),
   breaking: z.boolean(),
 });
 
@@ -247,6 +257,13 @@ export const ReleaseNotesToolSchema = z.object({
     ),
 });
 ```
+
+**Correction (2026-08-13):** `type` was originally drafted as `z.enum(['feat', 'fix'])`.
+Changed to an open `z.string()` — a team may classify with labels beyond feat/fix
+(e.g. its own `chore`/`docs` conventions for entries that still warrant a mention), and
+`CommitType` elsewhere in this codebase (`src/types/commit.ts`) is deliberately a loose
+`string` for the same reason. `breaking` stays a separate boolean since it's orthogonal
+to `type` — a `fix` or a `feat` can each independently be breaking.
 
 Deliberately **not** repeating "ask the user if missing" on individual fields — that
 behavior is generic (applies to _any_ required field, present or added later) and
@@ -277,6 +294,58 @@ rule, and the single-combined-call requirement for `showReleaseNotes` — moved 
 Principle section above as guidance for the tool `description` fields, which is
 deferred, client-side work (not part of this pass).
 
+## Client-side tool — implemented (2026-08-13, revised 2026-08-13)
+
+`showEntryList` is implemented in `src/hooks/use-show-entry-list-tool.ts`.
+`ReleaseEntrySchema`/`ReleaseEntry`/`EntryListToolSchema` live in
+`src/types/release-entry.ts` (not the hook file) — per this repo's `src/types/`
+convention for shared domain types, and so a future `showReleaseNotes` can import the
+same schema without reaching into a hook file.
+
+- `ReleaseEntrySchema`/`EntryListToolSchema` match the corrected schema above (`type`
+  as open `z.string()`).
+- **Revised after cross-model testing:** switching the underlying model showed the
+  original `description` wasn't a strong enough signal for some models to reliably
+  decide to call the tool at all (as opposed to answering in chat text). Rewritten so
+  the trigger condition is the first sentence in imperative voice, with an explicit
+  anti-pattern callout ("never describe the entries as chat text... instead of
+  calling this tool") — the other mechanics (completeness check, `git log` fix-it
+  suggestion, retry-once, one-call-per-batch) stay on the tool per the Principle
+  above, just reordered so the call-or-not decision isn't buried after them. Field
+  `.describe()`s on `type` and `breaking` gained an explicit "Required." prefix for
+  the same reason.
+- **Revised again (2026-08-13):** the trigger condition now explicitly covers the
+  case where the user asks to draft/build release notes directly, skipping any
+  separate "classify this" request. Per `intro.ts` item 2, drafting always starts
+  from classified entries even when the user never asked for classification as its
+  own step — so `showEntryList` must still fire with those entries before/alongside
+  the draft, specifically so the user can see which commits/PRs were parsed and not
+  just the final draft text. This anticipates `showReleaseNotes` (still not
+  implemented): once it exists, a "draft release notes from this log" request must
+  produce **two** tool calls (`showEntryList` then `showReleaseNotes`), not one.
+- Per the "Important gap" finding above (CopilotKit doesn't validate args against the
+  schema before invoking the handler), the handler calls
+  `EntryListToolSchema.safeParse(args)` itself; on failure it logs a warning via
+  `console.warn` and returns without calling `onEntryListShown`, leaving whatever
+  state the caller holds untouched — matches the "Tool args fail Zod validation" row
+  in Edge cases below.
+- The hook takes an `onEntryListShown(entries)` callback rather than owning state
+  itself, so the caller decides what "externally-readable state" means — consistent
+  with this spec's stance that the state layer itself is a separate concern.
+- Wired into `src/routes/DashboardPage.tsx`: `onEntryListShown` maps each
+  `ReleaseEntry` to the existing `Commit` shape (`id`→`hash`, `title`→`message`;
+  `breaking: true` maps to the type string `'breaking'` rather than the entry's own
+  `type`, matching this codebase's Breaking-change-takes-priority classification
+  rule) and replaces `commits`/`selectedHashes` state entirely (all-new-hashes
+  selected) — `CommitListPanel`/`CommitListItem` needed no changes since `Commit.type`
+  is already a loose string with graceful fallback rendering for unrecognized values.
+  `MOCK_COMMITS` removed.
+- Manually verified on the dev server: pasted a real git log into the chat, confirmed
+  the agent called `showEntryList` and `CommitListPanel` rendered the classified
+  entries.
+
+`showReleaseNotes` remains spec-only — not implemented.
+
 ## Edge cases
 
 | Case                                                                                                            | Handling                                                                                                                                                                                                                                                        |
@@ -299,12 +368,18 @@ deferred, client-side work (not part of this pass).
 
 No test runner is configured in this repo (`package.json` has no `vitest`/`jest`).
 
-**For the agent-side pass done now:** `pnpm lint` and `pnpm build` (`tsc -b`) clean —
-verified, both changed files are plain string constants with no type surface. Full
-behavioral verification below can't run yet: `showEntryList`/`showReleaseNotes` don't
-exist until the deferred client-side tool work lands.
+**For the agent-side pass (2026-08-12):** `pnpm lint` and `pnpm build` (`tsc -b`)
+clean — verified, both changed files are plain string constants with no type surface.
 
-**Bar for the full flow, once the client-side tool work also lands:**
+**For `showEntryList` (2026-08-13):** `pnpm lint` and `pnpm build` (`tsc -b`) clean.
+Manually verified on the dev server: pasted a real git log into the chat, confirmed
+the agent called `showEntryList` and the classified entries logged correctly. Not yet
+verified: the missing-field prompt + `git log` fix-it suggestion, the retry-once
+behavior, and the PR-source path (no command suggestion) — these depend on the
+model's actual behavior at runtime, not just the schema/description text, and weren't
+exercised by the one manual test run so far.
+
+**Bar for the full flow, once `showReleaseNotes` also lands:**
 
 - `pnpm lint` and `pnpm build` (`tsc -b`) clean
 - Manual verification on the dev server: paste a real git log, verify classification
