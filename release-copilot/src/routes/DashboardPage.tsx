@@ -3,32 +3,21 @@ import CommitListPanel from '@/components/commit-list/CommitListPanel.tsx';
 import LivePreviewPanel from '@/components/release-notes/LivePreviewPanel.tsx';
 import CopilotAssistantPanel from '@/components/chat/CopilotAssistantPanel.tsx';
 import SplitPane from '@/layouts/SplitPane.tsx';
-import { type Commit, CommitType } from '@/types/commit.ts';
+import { useShowEntryListTool } from '@/hooks/use-show-entry-list-tool.ts';
+import type { Commit } from '@/types/commit.ts';
+import type { ReleaseEntry } from '@/types/release-entry.ts';
 import { Platform } from '@/types/platform.ts';
 
-const MOCK_COMMITS: Commit[] = [
-  {
-    hash: 'a1b2c3d4e5f6',
-    type: CommitType.Feat,
-    message: 'Implement real-time sync for offline mode',
-    author: 'Sarah Jenkins',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    hash: 'e4f5g6h7i8j9',
-    type: CommitType.Fix,
-    message: 'Resolve null pointer exception in auth flow',
-    author: 'Alex Chen',
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    hash: 'i7j8k9l0m1n2',
-    type: CommitType.Chore,
-    message: 'Update dependencies and bump version to v1.0',
-    author: 'Dependabot',
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
+// 'breaking' isn't a CommitType member — Commit.type is deliberately a loose
+// string, and CommitListPanel/CommitListItem already fall back gracefully for
+// unrecognized type values (see badgeVariantForType/filterLabelForType).
+const toCommit = (entry: ReleaseEntry): Commit => ({
+  hash: entry.id,
+  type: entry.breaking ? 'breaking' : entry.type,
+  message: entry.title,
+  author: entry.author,
+  timestamp: entry.timestamp,
+});
 
 const MARKDOWN_BY_PLATFORM: Record<Platform, string> = {
   [Platform.Github]: `# 🚀 What's New in MVP v1.0
@@ -54,10 +43,17 @@ We are thrilled to announce the first major release of our platform! Here is wha
 };
 
 const DashboardPage = () => {
-  const [selectedHashes, setSelectedHashes] = useState<Set<string>>(
-    () => new Set(MOCK_COMMITS.map((commit) => commit.hash)),
-  );
+  const [commits, setCommits] = useState<Commit[]>([]);
+  const [selectedHashes, setSelectedHashes] = useState<Set<string>>(new Set());
   const [platform, setPlatform] = useState<Platform>(Platform.AppStore);
+
+  useShowEntryListTool({
+    onEntryListShown: (entries) => {
+      const nextCommits = entries.map(toCommit);
+      setCommits(nextCommits);
+      setSelectedHashes(new Set(nextCommits.map((commit) => commit.hash)));
+    },
+  });
 
   const handleToggle = (hash: string) => {
     setSelectedHashes((current) => {
@@ -81,7 +77,7 @@ const DashboardPage = () => {
       left={
         <div className="flex flex-col gap-6">
           <CommitListPanel
-            commits={MOCK_COMMITS}
+            commits={commits}
             selectedHashes={selectedHashes}
             onToggle={handleToggle}
           />
