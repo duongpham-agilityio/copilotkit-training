@@ -12,6 +12,8 @@ description: Use when answering questions about how to use the Release Notes Cop
 
 Paste either raw `git log` output or a PR title (optionally with a description) into
 the chat. Both feed the same classification pipeline; only the parsing step differs.
+For accurate classification, paste full commit messages (not bare hashes), one per
+line, each with a Conventional Commits prefix (`feat:`, `fix:`, etc.).
 
 ## Commit selection
 
@@ -19,7 +21,10 @@ After classification, every entry appears in a commit list (author, relative
 timestamp, hash, Feature/Fix/Breaking badge) with filter tabs (All/Feat/Fix) and a
 per-entry checkbox. Only checked entries are used for drafting. Unchecking a commit
 removes it from the pipeline entirely, not just from display. Changing the selection
-re-triggers drafting on the new subset.
+after a draft already exists marks that draft as outdated — it does not redraft
+automatically; ask again to regenerate it. Asking to draft with nothing selected: the
+agent will ask you to pick at least one entry first rather than generating an empty
+draft.
 
 ## Copy and export
 

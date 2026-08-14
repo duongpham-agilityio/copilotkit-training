@@ -4,6 +4,8 @@ export const APP_USAGE_FAQ = `# App Usage FAQ
 
 Paste either raw \`git log\` output or a PR title (optionally with a description) into
 the chat. Both feed the same classification pipeline; only the parsing step differs.
+For accurate classification, paste full commit messages (not bare hashes), one per
+line, each with a Conventional Commits prefix (\`feat:\`, \`fix:\`, etc.).
 
 ## Commit selection
 
