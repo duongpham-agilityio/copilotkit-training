@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
-import Button, { ButtonVariant } from '@/components/common/Button.tsx';
+import { ButtonVariant } from '@/components/common/Button.tsx';
+import CopyButton from '@/components/common/CopyButton.tsx';
 import Badge, { BadgeVariant } from '@/components/common/Badge.tsx';
 import PlatformTabs from '@/components/platform-selector/PlatformTabs.tsx';
 import MarkdownPreview from '@/components/release-notes/MarkdownPreview.tsx';
@@ -47,12 +48,10 @@ const ReleaseVersionDetail = ({
       </Card.Header>
       <div className="mb-4 flex items-center justify-between">
         <PlatformTabs value={activePlatform} onChange={setActivePlatform} />
-        <Button
+        <CopyButton
           variant={ButtonVariant.Secondary}
-          onClick={() => onCopy(activePlatform)}
-        >
-          Copy
-        </Button>
+          onCopy={() => onCopy(activePlatform)}
+        />
       </div>
       <MarkdownPreview markdown={notesByPlatform[activePlatform]} />
     </Card>
