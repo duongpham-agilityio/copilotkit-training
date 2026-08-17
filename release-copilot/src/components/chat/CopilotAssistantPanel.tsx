@@ -6,6 +6,7 @@ import {
   type CopilotChatUserMessage,
 } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
+import { useThreadStore } from '@/hooks/use-thread-store.ts';
 import AssistantMessageBubble from './AssistantMessageBubble.tsx';
 import UserMessageBubble from './UserMessageBubble.tsx';
 
@@ -21,6 +22,8 @@ const HideSuggestionView = forwardRef(function Component() {
 });
 
 const CopilotAssistantPanel = () => {
+  const threadId = useThreadStore((state) => state.threadId);
+
   useConfigureSuggestions({
     consumerAgentId: RELEASE_COPILOT_AGENT_ID,
     suggestions: QUICK_ACTION_SUGGESTIONS,
@@ -51,6 +54,7 @@ const CopilotAssistantPanel = () => {
       </div>
       <CopilotChat
         agentId={RELEASE_COPILOT_AGENT_ID}
+        threadId={threadId}
         className="min-h-0 flex-1"
         welcomeScreen={false}
         labels={{ chatInputPlaceholder: 'Ask Copilot to refine notes...' }}

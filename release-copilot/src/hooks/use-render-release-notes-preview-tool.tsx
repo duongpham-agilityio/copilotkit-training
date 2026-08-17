@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useRenderTool } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/tools';
@@ -34,8 +34,9 @@ export const useRenderReleaseNotesPreviewTool = ({
     agentId: RELEASE_COPILOT_AGENT_ID,
     render: (props) => {
       if (props.status === 'inProgress') {
-        return <></>;
+        return <Fragment />;
       }
+
       return (
         <DraftSync draft={props.parameters} onDraftRendered={onDraftRendered} />
       );

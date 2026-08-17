@@ -1,7 +1,10 @@
 import { Agent } from '@mastra/core/agent';
 import { Memory } from '@mastra/memory';
 import { ProviderHistoryCompat } from '@mastra/core/processors';
-import { RELEASE_COPILOT_MODEL } from '../../constants/models';
+import {
+  RELEASE_COPILOT_FALLBACK_MODEL,
+  RELEASE_COPILOT_MODEL,
+} from '../../constants/models';
 import { stripGroqLlamaReasoningContent } from '../processors/strip-groq-llama-reasoning';
 import { RELEASE_COPILOT_INSTRUCTIONS } from '../instructions';
 import { renderReleaseNotesPreviewTool } from '../tools/render-release-notes-preview-tool';
@@ -24,7 +27,19 @@ export const releaseCopilotAgent = new Agent({
   description:
     'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for all 3 platforms, edits a draft in place, and answers questions about using the app.',
   instructions: RELEASE_COPILOT_INSTRUCTIONS,
-  model: RELEASE_COPILOT_MODEL,
+  // Model list, not a single model: Groq intermittently 500s on this workload, and a
+  // failed turn kills the whole chat response. The primary retries twice before the
+  // fallback takes over for one last attempt.
+  model: [
+    {
+      model: RELEASE_COPILOT_MODEL,
+      maxRetries: 2,
+    },
+    {
+      model: RELEASE_COPILOT_FALLBACK_MODEL,
+      maxRetries: 1,
+    },
+  ],
   tools: {
     [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
   },

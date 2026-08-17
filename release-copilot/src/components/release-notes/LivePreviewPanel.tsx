@@ -1,5 +1,6 @@
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
-import Button, { ButtonVariant } from '@/components/common/Button.tsx';
+import { ButtonVariant } from '@/components/common/Button.tsx';
+import CopyButton from '@/components/common/CopyButton.tsx';
 import MonoTag from '@/components/common/MonoTag.tsx';
 import PlatformTabs from '@/components/platform-selector/PlatformTabs.tsx';
 import MarkdownPreview from './MarkdownPreview.tsx';
@@ -29,14 +30,12 @@ const LivePreviewPanel = ({
         </div>
         <div className="flex items-center gap-3">
           <PlatformTabs value={platform} onChange={onPlatformChange} />
-          <Button
+          <CopyButton
             variant={ButtonVariant.Ghost}
             className="border-primary border"
-            onClick={onCopy}
+            onCopy={onCopy}
             disabled={!markdown}
-          >
-            Copy
-          </Button>
+          />
         </div>
       </div>
     </Card.Header>
