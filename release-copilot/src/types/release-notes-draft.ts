@@ -1,8 +1,4 @@
 import { z } from 'zod';
-// Relative, extensionless import (not the `@/` alias): this module is bundled by
-// both Vite (client) and Mastra's own server bundler (via the backend
-// render-release-notes-preview tool), and Mastra's bundler doesn't resolve the `@/`
-// alias — see src/mastra/** for the same convention.
 import { joinLines } from '../lib/text';
 import { Platform } from './platform';
 import {
@@ -12,8 +8,6 @@ import {
   RELEASE_TITLE_CHARACTER_BUDGET,
 } from '../constants/release-notes';
 
-// The store limits apply to the finished text, which the app builds as
-// `<title>\n\n<body>` — so the model's budget is the limit minus the title.
 const APP_STORE_BODY_LIMIT =
   APP_STORE_CHARACTER_LIMIT - RELEASE_TITLE_CHARACTER_BUDGET;
 const GOOGLE_PLAY_BODY_LIMIT =
@@ -86,9 +80,6 @@ export const ReleaseNotesDraftSchema = z.object({
 
 export type ReleaseNotesDraft = z.infer<typeof ReleaseNotesDraftSchema>;
 
-// Spelled out rather than `keyof ReleaseNotesDraft`: the draft also carries
-// releaseDate/titleOverride, which are metadata about the notes, not per-platform
-// bodies — `keyof` would let one of them be mapped to a platform by mistake.
 export const DRAFT_FIELD_BY_PLATFORM: Record<
   Platform,
   'github' | 'appStore' | 'googlePlay'

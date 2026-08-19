@@ -13,12 +13,7 @@ export const releaseCopilotAgent = new Agent({
   name: 'Release Copilot',
   description:
     'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for all 3 platforms, edits a draft in place, and answers questions about using the app.',
-  // A function, not a string: it is evaluated per request, so the date the agent is
-  // told is "today" stays correct in a server process that runs for days.
   instructions: () => buildReleaseCopilotInstructions(),
-  // Model list, not a single model: the primary retries twice before the fallback
-  // takes over for one last attempt, so a single provider outage or rate limit
-  // doesn't fail the whole chat turn.
   model: [
     {
       model: RELEASE_COPILOT_MODEL,
@@ -32,7 +27,5 @@ export const releaseCopilotAgent = new Agent({
   tools: {
     [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
   },
-  // A rendered draft is a large message and only the most recent one is ever edited, so
-  // recall stays capped rather than replaying several full drafts on every turn.
   memory: new Memory({ options: { lastMessages: 6 } }),
 });

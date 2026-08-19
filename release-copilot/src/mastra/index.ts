@@ -46,16 +46,12 @@ export const mastra = new Mastra({
     ],
   },
   bundler: {
-    // The CopilotKit runtime handler pulls in @copilotkit/runtime; excluding it
-    // from the server bundle avoids bundling it twice (also imported client-side).
     externals: MASTRA_BUNDLER_EXTERNALS,
   },
   storage: new MastraCompositeStore({
     id: COMPOSITE_STORAGE_ID,
     default: new LibSQLStore({
       id: MASTRA_STORAGE_ID,
-      // Uses a hosted database when deployed (mastra env db create --kind turso),
-      // and a local file during development.
       url: process.env.TURSO_DATABASE_URL ?? MASTRA_DB_FALLBACK_URL,
       authToken: process.env.TURSO_AUTH_TOKEN,
     }),
@@ -72,11 +68,11 @@ export const mastra = new Mastra({
       default: {
         serviceName: MASTRA_OBSERVABILITY_SERVICE_NAME,
         exporters: [
-          new MastraStorageExporter(), // Persists observability events to Mastra Storage
-          new MastraPlatformExporter(), // Sends observability events to Mastra Platform (if MASTRA_PLATFORM_ACCESS_TOKEN is set)
+          new MastraStorageExporter(),
+          new MastraPlatformExporter(),
         ],
         spanOutputProcessors: [
-          new SensitiveDataFilter(), // Redacts sensitive data like passwords, tokens, keys
+          new SensitiveDataFilter(),
         ],
       },
     },

@@ -35,8 +35,6 @@ const SlackPublishCard = ({
   onSend,
   onCancel,
 }: SlackPublishCardProps) => {
-  // Terminal states replace the whole card: once a draft has been posted or declined,
-  // there is nothing left to decide, and leaving the buttons on invites a double post.
   if (status === SlackPublishStatus.Sent) {
     return (
       <div className="border-outline-variant text-body-md text-on-surface-variant rounded-xl border px-4 py-3">

@@ -14,9 +14,6 @@ import type { ReleaseEntry } from '@/types/release-entry.ts';
 import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 import { Platform } from '@/types/platform.ts';
 
-// 'breaking' isn't a CommitType member — Commit.type is deliberately a loose
-// string, and CommitListPanel/CommitListItem already fall back gracefully for
-// unrecognized type values (see badgeVariantForType/filterLabelForType).
 const toCommit = (entry: ReleaseEntry): Commit => ({
   hash: entry.id,
   type: entry.breaking ? 'breaking' : entry.type,
@@ -62,9 +59,6 @@ const DashboardPage = () => {
     });
   };
 
-  // The agent never writes the title line — composing it here is what guarantees
-  // every platform gets the same, correctly formatted one. The Slack card runs the
-  // same helper on the same draft, so the two can't disagree.
   const markdown = draft ? composeDraftContent(draft, platform) : null;
 
   const handleCopy = () => {
