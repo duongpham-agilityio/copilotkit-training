@@ -13,10 +13,7 @@ import { Platform } from '@/types/platform.ts';
 import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 
 interface UseConfirmSlackPublishToolOptions {
-  // The draft currently in the Live Preview panel — null until one is generated.
   draft: ReleaseNotesDraft | null;
-  // The platform tab the preview panel is on, used as the card's starting choice so
-  // the two never open showing different text.
   platform: Platform;
 }
 
@@ -26,8 +23,6 @@ interface PublishFlowProps {
   respond: (result: unknown) => Promise<void>;
 }
 
-// Closes a tool call that can't be answered with a card. Responding is a side
-// effect, so it belongs in an effect, not in a render body.
 const RespondOnMount = ({
   message,
   respond,
@@ -42,8 +37,6 @@ const RespondOnMount = ({
 };
 
 const PublishFlow = ({ draft, initialPlatform, respond }: PublishFlowProps) => {
-  // Frozen at mount: a later draft must not silently rewrite the text under a card
-  // the user is already looking at. A new draft gets its own confirmation card.
   const [confirmedDraft] = useState(draft);
   const [platform, setPlatform] = useState<Platform>(initialPlatform);
   const [status, setStatus] = useState<SlackPublishStatus>(
@@ -51,8 +44,6 @@ const PublishFlow = ({ draft, initialPlatform, respond }: PublishFlowProps) => {
   );
   const [error, setError] = useState<string | null>(null);
 
-  // Same helper the Live Preview panel uses, on the same draft object — the card
-  // cannot show or post text that differs from what the user is looking at.
   const content = composeDraftContent(confirmedDraft, platform);
 
   const handleSend = async () => {
@@ -67,9 +58,6 @@ const PublishFlow = ({ draft, initialPlatform, respond }: PublishFlowProps) => {
       return;
     }
 
-    // Deliberately does NOT respond: the tool call stays open so the user can fix the
-    // problem and click Send again. Responding here would end the turn and force them to
-    // ask the agent to start over.
     setStatus(SlackPublishStatus.Failed);
     setError(result.error ?? 'Publishing failed.');
   };
@@ -126,9 +114,6 @@ export const useConfirmSlackPublishTool = ({
           );
         }
 
-        // Reachable if the model calls this before rendering a draft, against its
-        // instructions. Close the tool call with the reason rather than leaving the
-        // user staring at an empty card.
         if (!draft) {
           return (
             <RespondOnMount
@@ -147,9 +132,6 @@ export const useConfirmSlackPublishTool = ({
         );
       },
     },
-    // Re-registered when either changes so the card always opens on the current draft
-    // and the platform tab the user is looking at. PublishFlow freezes its own copy,
-    // so an already-open card is unaffected.
     [draft, platform],
   );
 };

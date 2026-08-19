@@ -15,10 +15,6 @@ interface DraftSyncProps {
   onSync: (toolCallId: string, draft: ReleaseNotesDraft) => void;
 }
 
-// The render-release-notes-preview tool runs server-side (see
-// src/mastra/tools/render-release-notes-preview-tool.ts) — this component's only
-// job is to read its already-validated args off the tool-call stream and push them
-// into page state. It renders nothing; the Live Preview panel is the UI for it.
 const DraftSync = ({ toolCallId, draft, onSync }: DraftSyncProps) => {
   useEffect(() => {
     onSync(toolCallId, draft);
@@ -29,11 +25,6 @@ const DraftSync = ({ toolCallId, draft, onSync }: DraftSyncProps) => {
 export const useRenderReleaseNotesPreviewTool = ({
   onDraftRendered,
 }: UseRenderReleaseNotesPreviewToolOptions) => {
-  // `render` runs for EVERY draft tool call still in the chat history, not just the
-  // newest one, and `props.parameters` is a fresh object on each render — so without
-  // this guard an older draft re-publishes itself on any re-render and can overwrite
-  // the current one in the preview. Keyed by tool call id: each draft is applied
-  // exactly once, and a remounted old message can no longer clobber a newer draft.
   const appliedToolCallIds = useRef(new Set<string>());
 
   const syncDraft = useCallback(

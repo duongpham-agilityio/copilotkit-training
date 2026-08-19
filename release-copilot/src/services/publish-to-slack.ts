@@ -6,9 +6,6 @@ interface PublishToSlackResult {
   error?: string;
 }
 
-// The webhook URL itself lives on the server — see src/mastra/api/slack-publish-route.ts.
-// This only reaches the Mastra server, never Slack directly, so nothing secret is bundled
-// into the client.
 export const publishToSlack = async ({
   platform,
   content,
@@ -44,8 +41,6 @@ export const publishToSlack = async ({
         error = body.error;
       }
     } catch {
-      // Response wasn't JSON (route not mounted, proxy error page, etc.) — fall back
-      // to the status-based message above rather than surfacing a raw parse error.
     }
 
     return { ok: false, error };

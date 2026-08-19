@@ -6,10 +6,7 @@ import {
 import { RELEASE_NOTES_TITLE_PREFIX } from '../../constants/release-notes';
 
 export interface InstructionContext {
-  // ISO-8601 UTC timestamp of the request, so the model can resolve "today" in any
-  // timezone the user asks for instead of guessing a date it cannot know.
   nowIso: string;
-  // The date the app will use when the draft carries no explicit releaseDate.
   today: string;
   defaultTimeZone: string;
 }

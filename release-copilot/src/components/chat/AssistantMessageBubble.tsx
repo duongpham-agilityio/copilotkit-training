@@ -5,19 +5,10 @@ import {
 } from '@copilotkit/react-core/v2';
 import { Sparkles } from 'lucide-react';
 
-// CopilotKit's default assistant message renders `CopilotChatToolCallsView`
-// internally (see its `toolCallsView` slot) — that's what actually invokes
-// `useRenderTool` renderers (e.g. useRenderReleaseNotesPreviewTool) for a given
-// message's tool calls. This bubble fully replaces the default component, so it
-// must render that view itself or tool-call renderers never fire, even though
-// the tool call still streams from the agent correctly.
 const AssistantMessageBubble = ({
   message,
   messages,
 }: CopilotChatAssistantMessageProps) => {
-  // A message can carry only tool calls (the agent renders a draft without saying
-  // anything), so the bubble must survive an empty `content` — gating the whole
-  // component on `content` is what silently swallowed the preview.
   if (!message.content && !message.toolCalls?.length) return null;
 
   return (

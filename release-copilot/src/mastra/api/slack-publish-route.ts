@@ -9,10 +9,6 @@ const PLATFORM_LABELS: Record<Platform, string> = {
   [Platform.GooglePlay]: 'Google Play',
 };
 
-// The notes go inside a code block deliberately. Slack renders mrkdwn, not GitHub
-// Markdown, so `## Features` would appear as literal text — and the point of the posted
-// message is that someone copies it verbatim into GitHub or App Store Connect, which a
-// code block keeps exact and one-click copyable.
 const buildSlackText = (platform: Platform, content: string): string =>
   `*Release notes* · ${PLATFORM_LABELS[platform]}\n\`\`\`\n${content}\n\`\`\``;
 
@@ -59,9 +55,6 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
 
       return context.json({ ok: true });
     } catch (error) {
-      // Returned rather than thrown so the caller always receives the same shape. Never
-      // retried here: a blind retry after an ambiguous failure can post the announcement
-      // twice.
       return context.json(
         {
           ok: false,

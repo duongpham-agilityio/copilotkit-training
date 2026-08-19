@@ -2,11 +2,6 @@ import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { ReleaseNotesDraftSchema } from '../../types/release-notes-draft';
 
-// Execution is a no-op — the tool exists so the model's call (and its validated
-// args) streams to the frontend, where `useRenderTool` (see
-// ../../hooks/use-render-release-notes-preview-tool.tsx) reads the args straight
-// off the tool call to update the Live Preview panel. Nothing server-side
-// consumes the output.
 export const renderReleaseNotesPreviewTool = createTool({
   id: 'render-release-notes-preview',
   description:

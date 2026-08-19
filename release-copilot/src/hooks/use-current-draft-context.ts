@@ -6,11 +6,6 @@ interface UseCurrentDraftContextOptions {
   draft: ReleaseNotesDraft | null;
 }
 
-// Edit-in-place ("shorten it", "make it less technical") only works if the agent can
-// still see the draft it is being asked to edit. Chat memory keeps just the last few
-// messages, and a rendered draft is large, so relying on history means an edit a few
-// turns later silently rewrites the notes from scratch. Passing the draft as context
-// keeps the newest one in front of the agent for as long as it exists.
 export const useCurrentDraftContext = ({
   draft,
 }: UseCurrentDraftContextOptions): void => {
