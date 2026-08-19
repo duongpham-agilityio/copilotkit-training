@@ -4,6 +4,7 @@ import { z } from 'zod';
 // render-release-notes-preview tool), and Mastra's bundler doesn't resolve the `@/`
 // alias — see src/mastra/** for the same convention.
 import { joinLines } from '../lib/text';
+import { Platform } from './platform';
 
 export const ReleaseNotesDraftSchema = z.object({
   github: z
@@ -31,3 +32,12 @@ export const ReleaseNotesDraftSchema = z.object({
 });
 
 export type ReleaseNotesDraft = z.infer<typeof ReleaseNotesDraftSchema>;
+
+export const DRAFT_FIELD_BY_PLATFORM: Record<
+  Platform,
+  keyof ReleaseNotesDraft
+> = {
+  [Platform.Github]: 'github',
+  [Platform.AppStore]: 'appStore',
+  [Platform.GooglePlay]: 'googlePlay',
+};
