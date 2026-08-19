@@ -1,10 +1,5 @@
-import type { Platform } from '@/types/platform.ts';
+import type { SlackPublishRequest } from '@/types/slack-publish-request.ts';
 import { SLACK_PUBLISH_ROUTE_PATH } from '@/constants/slack.ts';
-
-interface PublishToSlackArgs {
-  platform: Platform;
-  content: string;
-}
 
 interface PublishToSlackResult {
   ok: boolean;
@@ -17,7 +12,7 @@ interface PublishToSlackResult {
 export const publishToSlack = async ({
   platform,
   content,
-}: PublishToSlackArgs): Promise<PublishToSlackResult> => {
+}: SlackPublishRequest): Promise<PublishToSlackResult> => {
   const baseUrl = import.meta.env.VITE_MASTRA_SERVER_URL;
   if (!baseUrl) {
     return {

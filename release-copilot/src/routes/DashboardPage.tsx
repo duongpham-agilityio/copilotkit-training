@@ -7,12 +7,11 @@ import { useShowEntryListTool } from '@/hooks/use-show-entry-list-tool.ts';
 import { useEntrySelectionContext } from '@/hooks/use-entry-selection-context.ts';
 import { useRenderReleaseNotesPreviewTool } from '@/hooks/use-render-release-notes-preview-tool.tsx';
 import { useConfirmSlackPublishTool } from '@/hooks/use-confirm-slack-publish-tool.tsx';
+import { useCurrentDraftContext } from '@/hooks/use-current-draft-context.ts';
+import { composeDraftContent } from '@/lib/release-notes/release-title.ts';
 import type { Commit } from '@/types/commit.ts';
 import type { ReleaseEntry } from '@/types/release-entry.ts';
-import {
-  DRAFT_FIELD_BY_PLATFORM,
-  type ReleaseNotesDraft,
-} from '@/types/release-notes-draft.ts';
+import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 import { Platform } from '@/types/platform.ts';
 
 // 'breaking' isn't a CommitType member — Commit.type is deliberately a loose
@@ -44,11 +43,12 @@ const DashboardPage = () => {
 
   useRenderReleaseNotesPreviewTool({ onDraftRendered: setDraft });
 
-  useConfirmSlackPublishTool();
+  useConfirmSlackPublishTool({ draft, platform });
 
   const activeEntries = entries.filter((entry) => selectedHashes.has(entry.id));
 
   useEntrySelectionContext({ entries: activeEntries });
+  useCurrentDraftContext({ draft });
 
   const handleToggle = (hash: string) => {
     setSelectedHashes((current) => {
@@ -62,7 +62,10 @@ const DashboardPage = () => {
     });
   };
 
-  const markdown = draft ? draft[DRAFT_FIELD_BY_PLATFORM[platform]] : null;
+  // The agent never writes the title line — composing it here is what guarantees
+  // every platform gets the same, correctly formatted one. The Slack card runs the
+  // same helper on the same draft, so the two can't disagree.
+  const markdown = draft ? composeDraftContent(draft, platform) : null;
 
   const handleCopy = () => {
     if (!markdown) return;

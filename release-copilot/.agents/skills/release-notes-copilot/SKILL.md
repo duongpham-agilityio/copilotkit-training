@@ -26,7 +26,8 @@ timestamp, monospace hash, `FEAT`/`FIX`/`CHORE` badge) with filter tabs (All / F
 and a per-entry checkbox. Selection happens **before** generation: only checked entries
 are sent into release-notes drafting. Unchecking a commit removes it from the pipeline
 entirely — it is not merely hidden from an already-generated output. Changing the
-selection re-triggers drafting on the new subset.
+selection does **not** redraft automatically — an existing draft simply goes stale
+until the user asks for a new one.
 
 ## Commit / PR → classification
 
@@ -54,17 +55,36 @@ titles) fall back to keyword heuristics on the title, then the description if pr
 A single entry can only land in one bucket: Breaking change > Feature > Fix, in that
 priority order.
 
+## Title and release date
+
+Every draft is titled `Release Notes - #yyyymmdd`. The **app** builds that line
+(`src/lib/release-notes/release-title.ts`) and prepends it to all 3 platform outputs —
+the agent never writes a title, only the two fields the title is built from:
+
+- `releaseDate` (`yyyymmdd`) — set when the user names a date; slash dates are
+  day-first (`1/9/2026` → `20260901`). Omitted → the app uses today in
+  `RELEASE_NOTES_DEFAULT_TIME_ZONE` (`America/New_York`).
+- `titleOverride` — set only when the user explicitly asks for a different title.
+
 ## Per-platform output format rules
+
+Sections in a fixed order on every platform — Breaking changes, then Features, then
+Fixes — and a section with no entries is omitted entirely, never printed empty or as
+"None".
 
 | Platform | Format | Constraints |
 | --- | --- | --- |
-| GitHub | Markdown | Headed sections (`## Features`, `## Fixes`, `## Breaking Changes`), bold section headers, one emoji-prefixed bullet per entry (e.g. `✨`/`🐛`/`💥`), commit IDs rendered as inline code (`` `abc1234` ``), no length limit |
-| App Store / TestFlight | Plain text | 4000 character limit total ("What's New" field); no markdown syntax, no emoji bullets; short bullet-style lines using `-` or `•` |
-| Google Play | Plain text | 500 character limit for the short release notes field; no markdown; most impactful changes first since it may get truncated |
+| GitHub | Markdown | Section headings `## 💥 Breaking Changes` / `## ✨ Features` / `## 🐛 Fixes`; emoji live in the heading, not on every bullet; one imperative bullet per entry with the commit ID as trailing inline code (`` `abc1234` ``); no length limit |
+| App Store / TestFlight | Plain text | 4000 characters total ("What's New"); no markdown, no emoji, **no commit hashes or internal file/module names**; each entry rewritten as the user-visible outcome; short lines using `-` or `•` |
+| Google Play | Plain text | 500 characters total; same plain-text and no-jargon rules; most impactful change first since it gets truncated; 3–5 lines at most |
 
-When a platform's character limit would be exceeded, prioritize Breaking changes,
-then Features, then Fixes, and drop lowest-priority items first rather than truncating
-mid-sentence.
+Character limits are enforced as Zod `.max()` on the draft schema
+(`src/types/release-notes-draft.ts`), minus a reserved budget for the app-prepended
+title — an over-long draft fails validation rather than reaching the UI.
+
+To fit a limit: **shorten before dropping.** Tighten each line to its user-facing
+essence and merge near-duplicates first; only then drop whole entries, lowest priority
+first (Fixes → Features → Breaking changes). Never truncate mid-sentence.
 
 ## Export and copy
 
@@ -94,6 +114,9 @@ The AI copilot does two things via chat, not just one:
 - `src/lib/pr/` — pure PR title/description parsing logic (no React, no Mastra imports)
 - both implement the classification rules above as testable functions, sharing a common
   output shape so downstream code (tools, formatters) doesn't care which source it came from
+- `src/lib/release-notes/` — pure draft-presentation logic shared by both bundles (no
+  React, no Mastra imports): release-date formatting and the title/body composition
+  that the Live Preview, the Copy button, and the Slack card all go through
 - `src/lib/export/` — pure MD/TXT/JSON export formatting logic (no React, no Mastra
   imports); converts a generated draft into each downloadable format
 - `src/mastra/tools/` — Mastra tool wrappers that call into `src/lib/git/`, `src/lib/pr/`,

@@ -1,6 +1,6 @@
 import { registerApiRoute } from '@mastra/core/server';
-import { z } from 'zod';
 import { Platform } from '../../types/platform';
+import { SlackPublishRequestSchema } from '../../types/slack-publish-request';
 import { SLACK_PUBLISH_ROUTE_PATH, SLACK_ERROR_MESSAGES } from '../../constants/slack';
 
 const PLATFORM_LABELS: Record<Platform, string> = {
@@ -8,16 +8,6 @@ const PLATFORM_LABELS: Record<Platform, string> = {
   [Platform.AppStore]: 'App Store / TestFlight',
   [Platform.GooglePlay]: 'Google Play',
 };
-
-// Slack's message text limit is 40,000 characters. The cap here leaves room for the
-// heading and the code fence added below, and rejects a runaway payload before it
-// reaches Slack rather than after.
-const MAX_CONTENT_LENGTH = 35_000;
-
-const PublishRequestSchema = z.object({
-  platform: z.enum([Platform.Github, Platform.AppStore, Platform.GooglePlay]),
-  content: z.string().min(1).max(MAX_CONTENT_LENGTH),
-});
 
 // The notes go inside a code block deliberately. Slack renders mrkdwn, not GitHub
 // Markdown, so `## Features` would appear as literal text — and the point of the posted
@@ -40,7 +30,7 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
       );
     }
 
-    const parsed = PublishRequestSchema.safeParse(await context.req.json());
+    const parsed = SlackPublishRequestSchema.safeParse(await context.req.json());
     if (!parsed.success) {
       return context.json(
         { ok: false, error: `${SLACK_ERROR_MESSAGES.INVALID_REQUEST}: ${parsed.error.message}` },
