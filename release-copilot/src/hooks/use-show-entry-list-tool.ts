@@ -1,5 +1,6 @@
 import { useFrontendTool } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
+import { SHOW_ENTRY_LIST_TOOL_NAME } from '@/constants/tools.ts';
 import { joinLines } from '@/lib/text.ts';
 import {
   EntryListToolSchema,
@@ -14,7 +15,7 @@ export const useShowEntryListTool = ({
   onEntryListShown,
 }: UseShowEntryListToolOptions) => {
   useFrontendTool({
-    name: 'showEntryList',
+    name: SHOW_ENTRY_LIST_TOOL_NAME,
     description: joinLines(
       'The only way the classified entry list reaches the UI — call it',
       'once classification is decided (see the system instructions for',

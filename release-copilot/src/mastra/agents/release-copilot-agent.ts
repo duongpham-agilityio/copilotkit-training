@@ -4,7 +4,7 @@ import {
   RELEASE_COPILOT_FALLBACK_MODEL,
   RELEASE_COPILOT_MODEL,
 } from '../../constants/models';
-import { RELEASE_COPILOT_INSTRUCTIONS } from '../instructions';
+import { buildReleaseCopilotInstructions } from '../instructions';
 import { renderReleaseNotesPreviewTool } from '../tools/render-release-notes-preview-tool';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../../constants/tools';
 
@@ -13,7 +13,9 @@ export const releaseCopilotAgent = new Agent({
   name: 'Release Copilot',
   description:
     'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for all 3 platforms, edits a draft in place, and answers questions about using the app.',
-  instructions: RELEASE_COPILOT_INSTRUCTIONS,
+  // A function, not a string: it is evaluated per request, so the date the agent is
+  // told is "today" stays correct in a server process that runs for days.
+  instructions: () => buildReleaseCopilotInstructions(),
   // Model list, not a single model: the primary retries twice before the fallback
   // takes over for one last attempt, so a single provider outage or rate limit
   // doesn't fail the whole chat turn.
