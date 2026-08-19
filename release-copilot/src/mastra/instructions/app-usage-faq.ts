@@ -28,4 +28,14 @@ always operates on the currently generated draft — it doesn't re-run classific
 
 - GitHub: no limit
 - App Store/TestFlight: 4000 characters
-- Google Play: 500 characters`;
+- Google Play: 500 characters
+
+## Publishing to Slack
+
+After a draft renders, the copilot offers to announce it in the team Slack channel. A
+confirmation card appears in the chat with a platform selector, a preview of exactly
+what will be sent, and Send / Cancel. Nothing is posted unless Send is clicked, and
+cancelling leaves the draft untouched. The card posts the variant for the platform
+selected on the card itself, which is independent of the platform tab selected in the
+preview panel. The Slack channel is fixed by configuration and cannot be chosen from
+the chat.`;

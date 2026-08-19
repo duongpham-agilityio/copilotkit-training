@@ -12,6 +12,7 @@ import {
 import { registerCopilotKit } from '@ag-ui/mastra/copilotkit';
 import { releaseCopilotAgent } from './agents/release-copilot-agent';
 import { renderReleaseNotesPreviewTool } from './tools/render-release-notes-preview-tool';
+import { slackPublishRoute } from './api/slack-publish-route';
 import { RELEASE_COPILOT_AGENT_ID } from '../constants/agents';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/tools';
 import {
@@ -41,6 +42,7 @@ export const mastra = new Mastra({
         path: COPILOTKIT_ROUTE_PATH,
         resourceId: COPILOTKIT_RESOURCE_ID,
       }),
+      slackPublishRoute,
     ],
   },
   bundler: {

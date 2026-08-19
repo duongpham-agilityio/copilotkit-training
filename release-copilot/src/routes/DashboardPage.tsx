@@ -6,9 +6,13 @@ import SplitPane from '@/layouts/SplitPane.tsx';
 import { useShowEntryListTool } from '@/hooks/use-show-entry-list-tool.ts';
 import { useEntrySelectionContext } from '@/hooks/use-entry-selection-context.ts';
 import { useRenderReleaseNotesPreviewTool } from '@/hooks/use-render-release-notes-preview-tool.tsx';
+import { useConfirmSlackPublishTool } from '@/hooks/use-confirm-slack-publish-tool.tsx';
 import type { Commit } from '@/types/commit.ts';
 import type { ReleaseEntry } from '@/types/release-entry.ts';
-import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
+import {
+  DRAFT_FIELD_BY_PLATFORM,
+  type ReleaseNotesDraft,
+} from '@/types/release-notes-draft.ts';
 import { Platform } from '@/types/platform.ts';
 
 // 'breaking' isn't a CommitType member — Commit.type is deliberately a loose
@@ -21,12 +25,6 @@ const toCommit = (entry: ReleaseEntry): Commit => ({
   author: entry.author,
   timestamp: entry.timestamp,
 });
-
-const DRAFT_FIELD_BY_PLATFORM: Record<Platform, keyof ReleaseNotesDraft> = {
-  [Platform.Github]: 'github',
-  [Platform.AppStore]: 'appStore',
-  [Platform.GooglePlay]: 'googlePlay',
-};
 
 const DashboardPage = () => {
   const [commits, setCommits] = useState<Commit[]>([]);
@@ -45,6 +43,8 @@ const DashboardPage = () => {
   });
 
   useRenderReleaseNotesPreviewTool({ onDraftRendered: setDraft });
+
+  useConfirmSlackPublishTool();
 
   const activeEntries = entries.filter((entry) => selectedHashes.has(entry.id));
 
