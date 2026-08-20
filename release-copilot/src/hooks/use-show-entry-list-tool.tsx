@@ -1,5 +1,6 @@
+import { Fragment, useCallback, useEffect, useRef } from 'react';
 import { useFrontendTool } from '@copilotkit/react-core/v2';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
 import { SHOW_ENTRY_LIST_TOOL_NAME } from '@/constants/tools.ts';
 import { joinLines } from '@/lib/text.ts';
 import {
@@ -11,9 +12,33 @@ interface UseShowEntryListToolOptions {
   onEntryListShown: (entries: ReleaseEntry[]) => void;
 }
 
+interface EntryListSyncProps {
+  toolCallId: string;
+  entries: ReleaseEntry[];
+  onSync: (toolCallId: string, entries: ReleaseEntry[]) => void;
+}
+
+const EntryListSync = ({ toolCallId, entries, onSync }: EntryListSyncProps) => {
+  useEffect(() => {
+    onSync(toolCallId, entries);
+  }, [toolCallId, entries, onSync]);
+  return null;
+};
+
 export const useShowEntryListTool = ({
   onEntryListShown,
 }: UseShowEntryListToolOptions) => {
+  const appliedToolCallIds = useRef(new Set<string>());
+
+  const syncEntries = useCallback(
+    (toolCallId: string, entries: ReleaseEntry[]) => {
+      if (appliedToolCallIds.current.has(toolCallId)) return;
+      appliedToolCallIds.current.add(toolCallId);
+      onEntryListShown(entries);
+    },
+    [onEntryListShown],
+  );
+
   useFrontendTool({
     name: SHOW_ENTRY_LIST_TOOL_NAME,
     description: joinLines(
@@ -39,8 +64,28 @@ export const useShowEntryListTool = ({
         console.warn('[showEntryList] received invalid args', result.error);
         return 'Invalid entry list — state left unchanged.';
       }
-      onEntryListShown(result.data.entries);
+
       return 'Entry list displayed to the user.';
+    },
+    render: (props) => {
+      if (props.result === undefined) {
+        return <Fragment />;
+      }
+
+      const result = EntryListToolSchema.safeParse(props.args);
+
+      if (!result.success) {
+        console.warn('[showEntryList] received invalid args', result.error);
+        return <Fragment />;
+      }
+
+      return (
+        <EntryListSync
+          toolCallId={props.toolCallId}
+          entries={result.data.entries}
+          onSync={syncEntries}
+        />
+      );
     },
   });
 };

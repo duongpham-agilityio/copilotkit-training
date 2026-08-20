@@ -3,7 +3,7 @@ import CommitListPanel from '@/components/commit-list/CommitListPanel.tsx';
 import LivePreviewPanel from '@/components/release-notes/LivePreviewPanel.tsx';
 import CopilotAssistantPanel from '@/components/chat/CopilotAssistantPanel.tsx';
 import SplitPane from '@/layouts/SplitPane.tsx';
-import { useShowEntryListTool } from '@/hooks/use-show-entry-list-tool.ts';
+import { useShowEntryListTool } from '@/hooks/use-show-entry-list-tool.tsx';
 import { useEntrySelectionContext } from '@/hooks/use-entry-selection-context.ts';
 import { useRenderReleaseNotesPreviewTool } from '@/hooks/use-render-release-notes-preview-tool.tsx';
 import { useConfirmSlackPublishTool } from '@/hooks/use-confirm-slack-publish-tool.tsx';
