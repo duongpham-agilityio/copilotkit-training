@@ -58,6 +58,12 @@ export const useShowEntryListTool = ({
     parameters: EntryListToolSchema,
     agentId: RELEASE_COPILOT_AGENT_ID,
     render: (props) => {
+      // SPIKE-ONLY — remove before task completion.
+      console.log('[spike-q1] render fired', {
+        toolCallId: props.toolCallId,
+        status: props.status,
+      });
+
       if (props.result === undefined) {
         return <Fragment />;
       }

@@ -27,5 +27,5 @@ export const releaseCopilotAgent = new Agent({
   tools: {
     [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
   },
-  memory: new Memory({ options: { lastMessages: 6 } }),
+  memory: new Memory({ options: { lastMessages: 6, generateTitle: true } }),
 });
