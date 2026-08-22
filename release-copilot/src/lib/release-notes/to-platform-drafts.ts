@@ -38,7 +38,11 @@ export const toPlatformDrafts = (draft: ReleaseNotesDraft): PlatformDraft[] => {
     KnownPlatformId.Github,
   ]);
 
-  const extra = draft.platforms.filter((platformDraft) => {
+  // `props.parameters` on the client is the model's raw JSON, parsed via
+  // CopilotKit's partialJSONParse (no Zod re-validation, no `.default([])`
+  // applied) — the model can legally omit `platforms` entirely, so this can be
+  // `undefined` at runtime despite the schema-derived type saying otherwise.
+  const extra = (draft.platforms ?? []).filter((platformDraft) => {
     if (taken.has(platformDraft.platformId)) {
       console.warn(
         `[toPlatformDrafts] dropped dynamic platform "${platformDraft.platformId}" — collides with a named field.`,
