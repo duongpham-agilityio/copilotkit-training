@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import CommitListPanel from '@/components/commit-list/CommitListPanel.tsx';
 import LivePreviewPanel from '@/components/release-notes/LivePreviewPanel.tsx';
 import CopilotAssistantPanel from '@/components/chat/CopilotAssistantPanel.tsx';
@@ -13,8 +13,7 @@ import {
   useDashboardStore,
 } from '@/hooks/use-dashboard-store.ts';
 import { useThreadStore } from '@/hooks/use-thread-store.ts';
-import { composeDraftContent } from '@/lib/release-notes/release-title.ts';
-import { Platform } from '@/types/platform.ts';
+import { composeGithubContent } from '@/lib/release-notes/release-title.ts';
 
 const DashboardPage = () => {
   const threadId = useThreadStore((state) => state.threadId);
@@ -34,7 +33,6 @@ const DashboardPage = () => {
   const showEntryList = useDashboardStore((state) => state.showEntryList);
   const showDraft = useDashboardStore((state) => state.showDraft);
   const toggleHash = useDashboardStore((state) => state.toggleHash);
-  const [platform, setPlatform] = useState<Platform>(Platform.AppStore);
 
   useShowEntryListTool({
     onEntryListShown: (entries) => showEntryList(threadIdRef.current, entries),
@@ -44,7 +42,7 @@ const DashboardPage = () => {
     onDraftRendered: (draft) => showDraft(threadIdRef.current, draft),
   });
 
-  useConfirmSlackPublishTool({ draft: threadState.draft, platform });
+  useConfirmSlackPublishTool({ draft: threadState.draft });
 
   const selectedHashes = new Set(threadState.selectedHashes);
   const activeEntries = threadState.entries.filter((entry) =>
@@ -57,7 +55,7 @@ const DashboardPage = () => {
   const handleToggle = (hash: string) => toggleHash(threadId, hash);
 
   const markdown = threadState.draft
-    ? composeDraftContent(threadState.draft, platform)
+    ? composeGithubContent(threadState.draft)
     : null;
 
   const handleCopy = () => {
@@ -75,12 +73,7 @@ const DashboardPage = () => {
             selectedHashes={selectedHashes}
             onToggle={handleToggle}
           />
-          <LivePreviewPanel
-            markdown={markdown}
-            platform={platform}
-            onPlatformChange={setPlatform}
-            onCopy={handleCopy}
-          />
+          <LivePreviewPanel markdown={markdown} onCopy={handleCopy} />
         </div>
       }
       right={<CopilotAssistantPanel />}

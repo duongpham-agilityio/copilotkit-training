@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ReleaseVersionDetail from '../ReleaseVersionDetail.tsx';
 import { ReleaseStatus, type ReleaseSummary } from '@/types/release.ts';
-import { Platform } from '@/types/platform.ts';
+import { KnownPlatformId } from '@/types/platform.ts';
 
 const meta: Meta<typeof ReleaseVersionDetail> = {
   component: ReleaseVersionDetail,
@@ -21,8 +21,8 @@ const RELEASE: ReleaseSummary = {
   fixCount: 2,
 };
 
-const NOTES_BY_PLATFORM: Record<Platform, string> = {
-  [Platform.Github]: `## Features
+const NOTES_BY_PLATFORM: Record<KnownPlatformId, string> = {
+  [KnownPlatformId.Github]: `## Features
 
 - Add \`PlatformTabs\` component for selecting release destinations
 - Support custom commit-type prefixes like \`hotfix:\`
@@ -31,14 +31,14 @@ const NOTES_BY_PLATFORM: Record<Platform, string> = {
 
 - Fix App Store character-limit truncation on export
 `,
-  [Platform.AppStore]: `New:
+  [KnownPlatformId.AppStore]: `New:
 - Select the destination platform right from the release notes editor
 - Custom commit prefixes like "hotfix:" are now recognized
 
 Fixed:
 - App Store character-limit truncation on export
 `,
-  [Platform.GooglePlay]: `Select release destinations and use custom commit prefixes like "hotfix:". Fixed character-limit truncation on export.`,
+  [KnownPlatformId.GooglePlay]: `Select release destinations and use custom commit prefixes like "hotfix:". Fixed character-limit truncation on export.`,
 };
 
 export const Default: Story = {

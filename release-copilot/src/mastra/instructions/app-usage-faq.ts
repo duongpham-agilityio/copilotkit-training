@@ -27,7 +27,7 @@ entry first rather than generating an empty draft.
 ## Title and release date
 
 Every draft is titled "${RELEASE_NOTES_TITLE_PREFIX}yyyymmdd". The app builds that line
-itself and adds it to all 3 platform outputs, so it is always formatted the same way.
+itself and adds it to every platform output, so it is always formatted the same way.
 With no date mentioned in the request it uses today's date in ${RELEASE_NOTES_DEFAULT_TIME_ZONE};
 mention a date ("release notes for 1/9/2026", slash dates read day-first) to use that
 one instead, or ask for another timezone. Asking for a specific title ("title it v2.1.0
@@ -39,23 +39,23 @@ The rendered draft for each platform can be copied with one click, or exported t
 Markdown (\`.md\`), plain text (\`.txt\`), or JSON (structured, machine-readable). Export
 always operates on the currently generated draft — it doesn't re-run classification.
 
-## Platform character limits
+## Platforms and character limits
 
-- GitHub: no limit
-- App Store/TestFlight: ${APP_STORE_CHARACTER_LIMIT} characters
-- Google Play: ${GOOGLE_PLAY_CHARACTER_LIMIT} characters
+Every draft always covers 3 platforms: GitHub (no limit, shown in the Live Preview
+panel), App Store/TestFlight (${APP_STORE_CHARACTER_LIMIT} characters), and Google Play
+(${GOOGLE_PLAY_CHARACTER_LIMIT} characters). The title line counts toward those limits,
+so the drafted body is held slightly under them.
 
-The title line counts toward those limits, so the drafted body is held slightly under
-them.
+Naming another destination ("also make a Slack version") adds it as an extra platform
+card shown in the chat, alongside the same App Store/Google Play limit rules where one
+applies.
 
 ## Publishing to Slack
 
 After a draft renders, the copilot offers to announce it in the team Slack channel. A
-confirmation card appears in the chat with a platform selector, a preview of exactly
-what will be sent, and Send / Cancel. The card shows the same text as the Live Preview
-panel — both read the one generated draft, so they can never disagree. Nothing is
-posted unless Send is clicked, and cancelling leaves the draft untouched. The card
-opens on whichever platform the preview panel is showing and posts the variant
-selected on the card itself, so a different platform can be announced without
-switching tabs. The Slack channel is fixed by configuration and cannot be chosen from
-the chat.`;
+confirmation card appears in the chat with a platform selector — GitHub plus every
+platform the current draft has — a preview of exactly what will be sent, and Send /
+Cancel. Nothing is posted unless Send is clicked, and cancelling leaves the draft
+untouched. The card opens on GitHub by default, or on whichever platform the user
+named, and posts the variant selected on the card itself. The Slack channel is fixed
+by configuration and cannot be chosen from the chat.`;

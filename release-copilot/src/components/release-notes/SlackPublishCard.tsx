@@ -1,6 +1,7 @@
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
-import { cn } from '@/lib/cn.ts';
-import { Platform } from '@/types/platform.ts';
+import CopyButton from '@/components/common/CopyButton.tsx';
+import type { TabItem } from '@/components/common/Tabs.tsx';
+import PlatformTabs from '@/components/platform-selector/PlatformTabs.tsx';
 
 export const enum SlackPublishStatus {
   Idle = 'idle',
@@ -10,28 +11,32 @@ export const enum SlackPublishStatus {
   Failed = 'failed',
 }
 
-const PLATFORM_OPTIONS: ReadonlyArray<{ value: Platform; label: string }> = [
-  { value: Platform.Github, label: 'GitHub' },
-  { value: Platform.AppStore, label: 'App Store' },
-  { value: Platform.GooglePlay, label: 'Google Play' },
-];
+export interface PublishOption {
+  platformId: string;
+  label: string;
+  content: string;
+}
 
 interface SlackPublishCardProps {
+  options: PublishOption[];
+  selectedPlatformId: string;
   preview: string;
-  platform: Platform;
   status: SlackPublishStatus;
   error?: string | null;
-  onPlatformChange: (platform: Platform) => void;
+  onPlatformChange: (platformId: string) => void;
+  onCopy: () => void;
   onSend: () => void;
   onCancel: () => void;
 }
 
 const SlackPublishCard = ({
+  options,
+  selectedPlatformId,
   preview,
-  platform,
   status,
   error = null,
   onPlatformChange,
+  onCopy,
   onSend,
   onCancel,
 }: SlackPublishCardProps) => {
@@ -52,6 +57,10 @@ const SlackPublishCard = ({
   }
 
   const isSending = status === SlackPublishStatus.Sending;
+  const items: TabItem[] = options.map(({ platformId, label }) => ({
+    value: platformId,
+    label,
+  }));
 
   return (
     <div className="border-outline-variant bg-surface-container-lowest flex flex-col gap-3 rounded-xl border p-4">
@@ -62,24 +71,20 @@ const SlackPublishCard = ({
         Announce this release in Slack?
       </span>
 
-      <div className="flex flex-wrap gap-2">
-        {PLATFORM_OPTIONS.map(({ value, label }) => (
-          <button
-            key={value}
-            type="button"
-            disabled={isSending}
-            onClick={() => onPlatformChange(value)}
-            className={cn(
-              'text-label-sm cursor-pointer rounded-lg border px-3 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-50',
-              value === platform
-                ? 'border-primary bg-primary/10 text-primary'
-                : 'border-outline-variant text-on-surface-variant hover:bg-primary/5',
-            )}
-            aria-pressed={value === platform}
-          >
-            {label}
-          </button>
-        ))}
+      <PlatformTabs
+        items={items}
+        value={selectedPlatformId}
+        onChange={onPlatformChange}
+        disabled={isSending}
+      />
+
+      <div className="flex justify-end">
+        <CopyButton
+          variant={ButtonVariant.Ghost}
+          className="border-primary border"
+          onCopy={onCopy}
+          disabled={isSending}
+        />
       </div>
 
       {/* text-body-sm isn't in the theme's typography scale; text-body-md is the

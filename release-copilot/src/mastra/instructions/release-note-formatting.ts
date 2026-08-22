@@ -5,9 +5,11 @@ import {
 
 export const RELEASE_NOTE_FORMATTING = `# Release Note Formatting
 
-Render the same classified, selected commit list into all 3 platform formats every
-time — never just the one currently shown in the UI. Never write a title line in any
-of them; the app prepends it (see Release date and title above).
+Render the same classified, selected commit list into GitHub, App Store, and Google
+Play every time a draft is requested — never just the one currently shown in the UI.
+Only add an entry to \`platforms\` when the user named a destination outside those
+three; it is never a default output. Never write a title line in any of them; the app
+prepends it (see Release date and title above).
 
 ## Section order — all platforms
 
@@ -44,6 +46,26 @@ entries** — never print an empty heading, "None", or "N/A".
 - Same plain-text and no-jargon rules as App Store
 - Most impactful change first — Play truncates the rest
 - 3 to 5 lines at most; brevity beats completeness here
+
+## Dynamic platforms (Slack, Discord, a customer email, etc.)
+
+Only produced when the user explicitly names a destination other than GitHub, App
+Store, or Google Play — for example "also make a Slack version" or "draft one for the
+customer newsletter". Add one entry to \`platforms\` per requested destination:
+
+- \`platformId\`: kebab-case, e.g. \`slack\`, \`discord\`, \`email-customer\`,
+  \`changelog\`. Never use \`github\`, \`app-store\`, or \`google-play\` here — those
+  three always go in their own dedicated fields above, never in this array.
+- \`label\`: the display name the user would recognize, e.g. "Slack", "Customer
+  Email".
+- \`body\`: same content rules as App Store/Google Play (plain text, no markdown, no
+  commit hashes, user-facing wording) unless the destination's own nature calls for
+  something else — a "changelog" entry may keep Markdown, since that platform reads
+  as a changelog page, not a notification. Never write a title line — the app
+  prepends it, same as every other platform.
+- \`characterLimit\`: set only if the user states one for that destination. Leave it
+  unset otherwise — the app already enforces its own limits for platforms it knows
+  about (Slack, X/Twitter) regardless of what is sent here.
 
 ## Fitting a character limit
 

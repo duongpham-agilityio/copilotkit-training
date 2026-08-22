@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { joinLines } from '../lib/text';
-import { Platform } from './platform';
 import {
   APP_STORE_CHARACTER_LIMIT,
   GOOGLE_PLAY_CHARACTER_LIMIT,
+  PLATFORM_CHARACTER_LIMITS,
   RELEASE_NOTES_TITLE_PREFIX,
   RELEASE_TITLE_CHARACTER_BUDGET,
 } from '../constants/release-notes';
@@ -12,6 +12,38 @@ const APP_STORE_BODY_LIMIT =
   APP_STORE_CHARACTER_LIMIT - RELEASE_TITLE_CHARACTER_BUDGET;
 const GOOGLE_PLAY_BODY_LIMIT =
   GOOGLE_PLAY_CHARACTER_LIMIT - RELEASE_TITLE_CHARACTER_BUDGET;
+
+export const PlatformDraftSchema = z.object({
+  platformId: z
+    .string()
+    .min(1)
+    .describe(
+      joinLines(
+        'Kebab-case identifier: slack, discord, email-customer, changelog,',
+        'x-twitter... NEVER use this for github/app-store/google-play — those',
+        'three have their own dedicated fields above.',
+      ),
+    ),
+  label: z
+    .string()
+    .min(1)
+    .describe('Display name shown to the user: "Slack", "Customer Email".'),
+  body: z
+    .string()
+    .min(1)
+    .describe(
+      'The body for this platform. Never write a title line — the app prepends it.',
+    ),
+  characterLimit: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .optional()
+    .describe("This platform's character limit, if it has one. Omit when unlimited."),
+});
+
+export type PlatformDraft = z.infer<typeof PlatformDraftSchema>;
 
 export const ReleaseNotesDraftSchema = z.object({
   releaseDate: z
@@ -63,7 +95,8 @@ export const ReleaseNotesDraftSchema = z.object({
         'hashes, no internal file or module names. Written for end users, not',
         `developers. At most ${APP_STORE_BODY_LIMIT} characters.`,
       ),
-    ),
+    )
+    .optional(),
   googlePlay: z
     .string()
     .min(1)
@@ -75,16 +108,33 @@ export const ReleaseNotesDraftSchema = z.object({
         'no internal names. Most impactful change first, since Play truncates.',
         `At most ${GOOGLE_PLAY_BODY_LIMIT} characters.`,
       ),
-    ),
+    )
+    .optional(),
+  platforms: z
+    .array(PlatformDraftSchema)
+    .default([])
+    .describe(
+      'Variants for platforms other than the three above. An empty array is normal.',
+    )
+    .superRefine((list, ctx) => {
+      list.forEach((platformDraft, index) => {
+        // The repo's own table beats whatever the model claims — a fabricated
+        // limit cannot pass validation.
+        const limit =
+          PLATFORM_CHARACTER_LIMITS[platformDraft.platformId] ??
+          platformDraft.characterLimit;
+        if (
+          limit &&
+          platformDraft.body.length > limit - RELEASE_TITLE_CHARACTER_BUDGET
+        ) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [index, 'body'],
+            message: `Exceeds the ${limit}-character limit for ${platformDraft.platformId}.`,
+          });
+        }
+      });
+    }),
 });
 
 export type ReleaseNotesDraft = z.infer<typeof ReleaseNotesDraftSchema>;
-
-export const DRAFT_FIELD_BY_PLATFORM: Record<
-  Platform,
-  'github' | 'appStore' | 'googlePlay'
-> = {
-  [Platform.Github]: 'github',
-  [Platform.AppStore]: 'appStore',
-  [Platform.GooglePlay]: 'googlePlay',
-};

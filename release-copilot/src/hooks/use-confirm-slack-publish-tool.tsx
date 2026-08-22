@@ -1,25 +1,29 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useHumanInTheLoop } from '@copilotkit/react-core/v2';
 import SlackPublishCard, {
   SlackPublishStatus,
+  type PublishOption,
 } from '@/components/release-notes/SlackPublishCard.tsx';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
 import { CONFIRM_SLACK_PUBLISH_TOOL_NAME } from '@/constants/tools.ts';
 import { publishToSlack } from '@/services/publish-to-slack.ts';
-import { composeDraftContent } from '@/lib/release-notes/release-title.ts';
+import {
+  composeGithubContent,
+  composePlatformContent,
+} from '@/lib/release-notes/release-title.ts';
+import { toPlatformDrafts } from '@/lib/release-notes/to-platform-drafts.ts';
 import { joinLines } from '@/lib/text.ts';
 import { ConfirmSlackPublishSchema } from '@/types/confirm-slack-publish.ts';
-import { Platform } from '@/types/platform.ts';
+import { KnownPlatformId } from '@/types/platform.ts';
 import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 
 interface UseConfirmSlackPublishToolOptions {
   draft: ReleaseNotesDraft | null;
-  platform: Platform;
 }
 
 interface PublishFlowProps {
   draft: ReleaseNotesDraft;
-  initialPlatform: Platform;
+  initialPlatformId: string | undefined;
   respond: (result: unknown) => Promise<void>;
 }
 
@@ -36,25 +40,55 @@ const RespondOnMount = ({
   return <Fragment />;
 };
 
-const PublishFlow = ({ draft, initialPlatform, respond }: PublishFlowProps) => {
+const buildPublishOptions = (draft: ReleaseNotesDraft): PublishOption[] => [
+  {
+    platformId: KnownPlatformId.Github,
+    label: 'GitHub',
+    content: composeGithubContent(draft),
+  },
+  ...toPlatformDrafts(draft).map((platformDraft) => ({
+    platformId: platformDraft.platformId,
+    label: platformDraft.label,
+    content: composePlatformContent(draft, platformDraft),
+  })),
+];
+
+const PublishFlow = ({
+  draft,
+  initialPlatformId,
+  respond,
+}: PublishFlowProps) => {
   const [confirmedDraft] = useState(draft);
-  const [platform, setPlatform] = useState<Platform>(initialPlatform);
+  const options = useMemo(
+    () => buildPublishOptions(confirmedDraft),
+    [confirmedDraft],
+  );
+  const [platformId, setPlatformId] = useState(
+    options.some((option) => option.platformId === initialPlatformId)
+      ? (initialPlatformId as string)
+      : KnownPlatformId.Github,
+  );
   const [status, setStatus] = useState<SlackPublishStatus>(
     SlackPublishStatus.Idle,
   );
   const [error, setError] = useState<string | null>(null);
 
-  const content = composeDraftContent(confirmedDraft, platform);
+  const selected =
+    options.find((option) => option.platformId === platformId) ?? options[0];
 
   const handleSend = async () => {
     setStatus(SlackPublishStatus.Sending);
     setError(null);
 
-    const result = await publishToSlack({ platform, content });
+    const result = await publishToSlack({
+      platformId: selected.platformId,
+      label: selected.label,
+      content: selected.content,
+    });
 
     if (result.ok) {
       setStatus(SlackPublishStatus.Sent);
-      await respond(`Posted the ${platform} release notes to Slack.`);
+      await respond(`Posted the ${selected.label} release notes to Slack.`);
       return;
     }
 
@@ -67,13 +101,19 @@ const PublishFlow = ({ draft, initialPlatform, respond }: PublishFlowProps) => {
     await respond('User declined — nothing was posted to Slack.');
   };
 
+  const handleCopy = () => {
+    void navigator.clipboard.writeText(selected.content);
+  };
+
   return (
     <SlackPublishCard
-      preview={content}
-      platform={platform}
+      options={options}
+      selectedPlatformId={selected.platformId}
+      preview={selected.content}
       status={status}
       error={error}
-      onPlatformChange={setPlatform}
+      onPlatformChange={setPlatformId}
+      onCopy={handleCopy}
       onSend={() => void handleSend()}
       onCancel={() => void handleCancel()}
     />
@@ -82,7 +122,6 @@ const PublishFlow = ({ draft, initialPlatform, respond }: PublishFlowProps) => {
 
 export const useConfirmSlackPublishTool = ({
   draft,
-  platform,
 }: UseConfirmSlackPublishToolOptions) => {
   useHumanInTheLoop(
     {
@@ -126,12 +165,12 @@ export const useConfirmSlackPublishTool = ({
         return (
           <PublishFlow
             draft={draft}
-            initialPlatform={props.args.platform ?? platform}
+            initialPlatformId={props.args.platformId}
             respond={props.respond}
           />
         );
       },
     },
-    [draft, platform],
+    [draft],
   );
 };

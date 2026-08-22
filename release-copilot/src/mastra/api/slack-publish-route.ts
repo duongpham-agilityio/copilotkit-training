@@ -1,19 +1,12 @@
 import { registerApiRoute } from '@mastra/core/server';
-import { Platform } from '../../types/platform';
 import { SlackPublishRequestSchema } from '../../types/slack-publish-request';
 import {
   SLACK_PUBLISH_ROUTE_PATH,
   SLACK_ERROR_MESSAGES,
 } from '../../constants/slack';
 
-const PLATFORM_LABELS: Record<Platform, string> = {
-  [Platform.Github]: 'GitHub',
-  [Platform.AppStore]: 'App Store / TestFlight',
-  [Platform.GooglePlay]: 'Google Play',
-};
-
-const buildSlackText = (platform: Platform, content: string): string =>
-  `*Release notes* · ${PLATFORM_LABELS[platform]}\n\`\`\`\n${content}\n\`\`\``;
+const buildSlackText = (label: string, content: string): string =>
+  `*Release notes* · ${label}\n\`\`\`\n${content}\n\`\`\``;
 
 export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
   method: 'POST',
@@ -42,13 +35,13 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
       );
     }
 
-    const { platform, content } = parsed.data;
+    const { label, content } = parsed.data;
 
     try {
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: buildSlackText(platform, content) }),
+        body: JSON.stringify({ text: buildSlackText(label, content) }),
       });
 
       if (!response.ok) {

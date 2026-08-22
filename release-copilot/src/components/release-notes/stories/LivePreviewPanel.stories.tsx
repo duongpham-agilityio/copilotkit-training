@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import LivePreviewPanel from '../LivePreviewPanel.tsx';
-import { Platform } from '@/types/platform.ts';
 
 const meta: Meta<typeof LivePreviewPanel> = {
   component: LivePreviewPanel,
@@ -24,18 +22,16 @@ const SAMPLE_MARKDOWN = `# v2.4.0
 - Fix App Store character-limit truncation on export
 `;
 
-const LivePreviewPanelStory = () => {
-  const [platform, setPlatform] = useState<Platform>(Platform.Github);
-  return (
-    <LivePreviewPanel
-      markdown={SAMPLE_MARKDOWN}
-      platform={platform}
-      onPlatformChange={setPlatform}
-      onCopy={() => {}}
-    />
-  );
+export const Default: Story = {
+  args: {
+    markdown: SAMPLE_MARKDOWN,
+    onCopy: () => {},
+  },
 };
 
-export const Default: Story = {
-  render: () => <LivePreviewPanelStory />,
+export const Empty: Story = {
+  args: {
+    markdown: null,
+    onCopy: () => {},
+  },
 };
