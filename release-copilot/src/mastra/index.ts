@@ -67,13 +67,8 @@ export const mastra = new Mastra({
     configs: {
       default: {
         serviceName: MASTRA_OBSERVABILITY_SERVICE_NAME,
-        exporters: [
-          new MastraStorageExporter(),
-          new MastraPlatformExporter(),
-        ],
-        spanOutputProcessors: [
-          new SensitiveDataFilter(),
-        ],
+        exporters: [new MastraStorageExporter(), new MastraPlatformExporter()],
+        spanOutputProcessors: [new SensitiveDataFilter()],
       },
     },
   }),
