@@ -1,7 +1,10 @@
 import { registerApiRoute } from '@mastra/core/server';
 import { Platform } from '../../types/platform';
 import { SlackPublishRequestSchema } from '../../types/slack-publish-request';
-import { SLACK_PUBLISH_ROUTE_PATH, SLACK_ERROR_MESSAGES } from '../../constants/slack';
+import {
+  SLACK_PUBLISH_ROUTE_PATH,
+  SLACK_ERROR_MESSAGES,
+} from '../../constants/slack';
 
 const PLATFORM_LABELS: Record<Platform, string> = {
   [Platform.Github]: 'GitHub',
@@ -26,10 +29,15 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
       );
     }
 
-    const parsed = SlackPublishRequestSchema.safeParse(await context.req.json());
+    const parsed = SlackPublishRequestSchema.safeParse(
+      await context.req.json(),
+    );
     if (!parsed.success) {
       return context.json(
-        { ok: false, error: `${SLACK_ERROR_MESSAGES.INVALID_REQUEST}: ${parsed.error.message}` },
+        {
+          ok: false,
+          error: `${SLACK_ERROR_MESSAGES.INVALID_REQUEST}: ${parsed.error.message}`,
+        },
         400,
       );
     }
