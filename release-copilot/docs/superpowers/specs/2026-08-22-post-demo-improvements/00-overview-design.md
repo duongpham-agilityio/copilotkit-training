@@ -49,7 +49,7 @@ This order is a technical constraint, not a preference.
 | # | Task | Estimate | Branch | Hard dependency |
 | --- | --- | --- | --- | --- |
 | 01 | [Spike: three unknowns](./01-spike-design.md) | 0.75h | `docs/spike-results` | — |
-| 02 | [Platform model](./02-platform-model-design.md) | 1.3h | `refactor/platform-model` | 01 |
+| 02 | [Platform model](./02-platform-model-design.md) — done | 1.3h | `refactor/platform-model` | 01 |
 | 03 | [Multiple threads](./03-multiple-threads-design.md) | 2.5h | `feat/multiple-threads` | 01, 02 |
 | 04 | [Welcome screen + empty state](./04-welcome-screen-design.md) | 0.7h | `feat/welcome-screen` | — |
 | 05 | [Staged suggestions](./05-suggestions-design.md) | 0.5h | `feat/staged-suggestions` | — |

@@ -15,6 +15,8 @@ interface TabsProps {
   value: string;
   onChange: (value: string) => void;
   variant?: TabsVariant;
+  disabled?: boolean;
+  className?: string;
 }
 
 const CONTAINER_CLASSES: Record<TabsVariant, string> = {
@@ -37,19 +39,23 @@ const Tabs = ({
   value,
   onChange,
   variant = TabsVariant.Pill,
+  disabled = false,
+  className,
 }: TabsProps) => (
   <div className={CONTAINER_CLASSES[variant]}>
     {items.map((item) => (
       <button
         key={item.value}
         type="button"
+        disabled={disabled}
         aria-selected={item.value === value}
         onClick={() => onChange(item.value)}
         className={cn(
-          'text-body-md cursor-pointer font-medium transition-all',
+          'text-body-md cursor-pointer font-medium transition-all disabled:pointer-events-none disabled:opacity-50',
           item.value === value
             ? activeTabClasses(variant)
             : inactiveTabClasses(variant),
+          className,
         )}
       >
         {item.label}

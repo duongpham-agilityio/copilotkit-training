@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { Platform } from './platform';
 
 const MAX_CONTENT_LENGTH = 35_000;
 
 export const SlackPublishRequestSchema = z.object({
-  platform: z.enum([Platform.Github, Platform.AppStore, Platform.GooglePlay]),
+  platformId: z.string().min(1),
+  label: z.string().min(1),
   content: z.string().min(1).max(MAX_CONTENT_LENGTH),
 });
 

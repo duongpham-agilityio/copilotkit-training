@@ -7,7 +7,8 @@ interface PublishToSlackResult {
 }
 
 export const publishToSlack = async ({
-  platform,
+  platformId,
+  label,
   content,
 }: SlackPublishRequest): Promise<PublishToSlackResult> => {
   const baseUrl = import.meta.env.VITE_MASTRA_SERVER_URL;
@@ -22,7 +23,7 @@ export const publishToSlack = async ({
     const response = await fetch(`${baseUrl}${SLACK_PUBLISH_ROUTE_PATH}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ platform, content }),
+      body: JSON.stringify({ platformId, label, content }),
     });
 
     if (response.ok) {

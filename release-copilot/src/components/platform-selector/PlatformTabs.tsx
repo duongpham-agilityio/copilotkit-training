@@ -1,23 +1,25 @@
 import Tabs, { TabsVariant, type TabItem } from '@/components/common/Tabs.tsx';
-import { Platform } from '@/types/platform.ts';
 
 interface PlatformTabsProps {
-  value: Platform;
-  onChange: (platform: Platform) => void;
+  items: TabItem[];
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-const PLATFORM_ITEMS: TabItem[] = [
-  { value: Platform.Github, label: 'GitHub' },
-  { value: Platform.AppStore, label: 'App Store' },
-  { value: Platform.GooglePlay, label: 'Google Play' },
-];
-
-const PlatformTabs = ({ value, onChange }: PlatformTabsProps) => (
+const PlatformTabs = ({
+  items,
+  value,
+  onChange,
+  disabled = false,
+}: PlatformTabsProps) => (
   <Tabs
-    items={PLATFORM_ITEMS}
+    items={items}
     value={value}
-    onChange={(v) => onChange(v as Platform)}
+    onChange={onChange}
     variant={TabsVariant.Pill}
+    disabled={disabled}
+    className="text-label-sm"
   />
 );
 

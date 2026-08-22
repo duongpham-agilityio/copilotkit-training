@@ -202,19 +202,24 @@ compress. It has to surface on day 1.
 
 ## Acceptance criteria
 
-- [ ] `.describe()` on `github` / `appStore` / `googlePlay` unchanged **word for word**
-- [ ] `.max(APP_STORE_BODY_LIMIT)` / `.max(GOOGLE_PLAY_BODY_LIMIT)` still present
-- [ ] `superRefine` rejects a body over the limit for a platform in
+- [x] `.describe()` on `github` / `appStore` / `googlePlay` unchanged **word for word**
+- [x] `.max(APP_STORE_BODY_LIMIT)` / `.max(GOOGLE_PLAY_BODY_LIMIT)` still present
+- [x] `superRefine` rejects a body over the limit for a platform in
       `PLATFORM_CHARACTER_LIMITS`, even when the model declares a larger
       `characterLimit`
-- [ ] `toPlatformDrafts` drops dynamic-array entries colliding with
+- [x] `toPlatformDrafts` drops dynamic-array entries colliding with
       `app-store` / `google-play` / `github`, with a dev `console.warn`
-- [ ] An empty `draft.platforms` breaks no consumer
-- [ ] `DRAFT_FIELD_BY_PLATFORM` no longer exists; `Platform` is no longer the type of
-      the main data flow
-- [ ] Slack publishing still works with `platformId` + `label`
-- [ ] All three smoke-test cases pass
-- [ ] Lint + build + storybook clean
+- [x] An empty `draft.platforms` breaks no consumer
+- [x] `DRAFT_FIELD_BY_PLATFORM` no longer exists; `Platform` → `KnownPlatformId` is no
+      longer the type of the main data flow
+- [x] Slack publishing still works with `platformId` + `label`
+- [x] All three smoke-test cases pass — verified live against the running agent via
+      `POST /api/agents/release-copilot-agent/generate` (no browser-automation tool
+      available, same constraint as the spike): plain log → github/appStore/googlePlay
+      filled, `platforms: []`; "also make a Slack version and a customer email
+      version" → `platforms` has 2 entries (`slack`, `email-customer`) with correct
+      labels/bodies and no fabricated `characterLimit`
+- [x] Lint + build + `pnpm build-storybook` all clean
 
 ## Out of scope
 

@@ -2,9 +2,10 @@ import {
   RELEASE_NOTES_DEFAULT_TIME_ZONE,
   RELEASE_NOTES_TITLE_PREFIX,
 } from '../../constants/release-notes';
-import { Platform } from '../../types/platform';
-import { DRAFT_FIELD_BY_PLATFORM } from '../../types/release-notes-draft';
-import type { ReleaseNotesDraft } from '../../types/release-notes-draft';
+import type {
+  PlatformDraft,
+  ReleaseNotesDraft,
+} from '../../types/release-notes-draft';
 
 export const formatReleaseDate = (
   now: Date = new Date(),
@@ -26,15 +27,13 @@ export const buildReleaseTitle = (
   titleOverride ??
   `${RELEASE_NOTES_TITLE_PREFIX}${releaseDate ?? formatReleaseDate(now)}`;
 
-export const composeDraftContent = (
+export const composeGithubContent = (
   draft: ReleaseNotesDraft,
-  platform: Platform,
   now?: Date,
-): string => {
-  const title = buildReleaseTitle(draft, now);
-  const body = draft[DRAFT_FIELD_BY_PLATFORM[platform]];
+): string => `# ${buildReleaseTitle(draft, now)}\n\n${draft.github}`;
 
-  return platform === Platform.Github
-    ? `# ${title}\n\n${body}`
-    : `${title}\n\n${body}`;
-};
+export const composePlatformContent = (
+  draft: ReleaseNotesDraft,
+  platformDraft: PlatformDraft,
+  now?: Date,
+): string => `${buildReleaseTitle(draft, now)}\n\n${platformDraft.body}`;
