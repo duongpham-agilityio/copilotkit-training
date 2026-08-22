@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useFrontendTool } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
 import { SHOW_ENTRY_LIST_TOOL_NAME } from '@/constants/tools.ts';
@@ -13,32 +13,20 @@ interface UseShowEntryListToolOptions {
 }
 
 interface EntryListSyncProps {
-  toolCallId: string;
   entries: ReleaseEntry[];
-  onSync: (toolCallId: string, entries: ReleaseEntry[]) => void;
+  onSync: (entries: ReleaseEntry[]) => void;
 }
 
-const EntryListSync = ({ toolCallId, entries, onSync }: EntryListSyncProps) => {
+const EntryListSync = ({ entries, onSync }: EntryListSyncProps) => {
   useEffect(() => {
-    onSync(toolCallId, entries);
-  }, [toolCallId, entries, onSync]);
+    onSync(entries);
+  }, [entries, onSync]);
   return null;
 };
 
 export const useShowEntryListTool = ({
   onEntryListShown,
 }: UseShowEntryListToolOptions) => {
-  const appliedToolCallIds = useRef(new Set<string>());
-
-  const syncEntries = useCallback(
-    (toolCallId: string, entries: ReleaseEntry[]) => {
-      if (appliedToolCallIds.current.has(toolCallId)) return;
-      appliedToolCallIds.current.add(toolCallId);
-      onEntryListShown(entries);
-    },
-    [onEntryListShown],
-  );
-
   useFrontendTool({
     name: SHOW_ENTRY_LIST_TOOL_NAME,
     description: joinLines(
@@ -58,12 +46,6 @@ export const useShowEntryListTool = ({
     parameters: EntryListToolSchema,
     agentId: RELEASE_COPILOT_AGENT_ID,
     render: (props) => {
-      // SPIKE-ONLY — remove before task completion.
-      console.log('[spike-q1] render fired', {
-        toolCallId: props.toolCallId,
-        status: props.status,
-      });
-
       if (props.result === undefined) {
         return <Fragment />;
       }
@@ -76,11 +58,7 @@ export const useShowEntryListTool = ({
       }
 
       return (
-        <EntryListSync
-          toolCallId={props.toolCallId}
-          entries={result.data.entries}
-          onSync={syncEntries}
-        />
+        <EntryListSync entries={result.data.entries} onSync={onEntryListShown} />
       );
     },
   });

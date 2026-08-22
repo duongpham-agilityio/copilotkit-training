@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useRenderTool } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/tools';
@@ -10,32 +10,20 @@ interface UseRenderReleaseNotesPreviewToolOptions {
 }
 
 interface DraftSyncProps {
-  toolCallId: string;
   draft: ReleaseNotesDraft;
-  onSync: (toolCallId: string, draft: ReleaseNotesDraft) => void;
+  onSync: (draft: ReleaseNotesDraft) => void;
 }
 
-const DraftSync = ({ toolCallId, draft, onSync }: DraftSyncProps) => {
+const DraftSync = ({ draft, onSync }: DraftSyncProps) => {
   useEffect(() => {
-    onSync(toolCallId, draft);
-  }, [toolCallId, draft, onSync]);
+    onSync(draft);
+  }, [draft, onSync]);
   return null;
 };
 
 export const useRenderReleaseNotesPreviewTool = ({
   onDraftRendered,
 }: UseRenderReleaseNotesPreviewToolOptions) => {
-  const appliedToolCallIds = useRef(new Set<string>());
-
-  const syncDraft = useCallback(
-    (toolCallId: string, draft: ReleaseNotesDraft) => {
-      if (appliedToolCallIds.current.has(toolCallId)) return;
-      appliedToolCallIds.current.add(toolCallId);
-      onDraftRendered(draft);
-    },
-    [onDraftRendered],
-  );
-
   useRenderTool({
     name: RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
     parameters: ReleaseNotesDraftSchema,
@@ -45,13 +33,7 @@ export const useRenderReleaseNotesPreviewTool = ({
         return <Fragment />;
       }
 
-      return (
-        <DraftSync
-          toolCallId={props.toolCallId}
-          draft={props.parameters}
-          onSync={syncDraft}
-        />
-      );
+      return <DraftSync draft={props.parameters} onSync={onDraftRendered} />;
     },
   });
 };

@@ -76,17 +76,23 @@ return (
 An empty array renders no cards, behaving exactly as it does today. That is the
 condition for this task not breaking the GitHub-only flow.
 
-### Dependency on spike question 3
+### Dependency on spike question 3 — resolved
 
-If the tool render sits **inside** `AssistantMessageBubble` and the bubble constrains
-width, the card breaks. Two fallbacks, in order of preference:
+Confirmed constrained (§11 of the source design): `AssistantMessageBubble.tsx:15`'s
+root wrapper is `<div className="flex w-full max-w-[420px] flex-col items-start gap-3">`,
+and `CopilotChatToolCallsView` — the tool-render host — is a direct child of that div.
+Every tool render, including `PlatformDraftCard`, is capped to 420px wide by this
+class regardless of content. No height-clipping parent was found.
 
-1. Widen `AssistantMessageBubble` to allow full-width children (cheaper, no
-   architectural change)
-2. Render the card at the `CopilotChat` level instead of inside the bubble
+Use fallback option 1: widen `AssistantMessageBubble`'s wrapper (drop or override
+`max-w-[420px]` for tool-call content, e.g. keep the cap for the text-bubble path but
+let `CopilotChatToolCallsView`'s subtree render at the message column's full width).
+This is cheaper and requires no architectural change — do not move rendering to the
+`CopilotChat` level (fallback option 2), since option 1 is sufficient.
 
-**This is why the task is 2.5h rather than 1.5h** — 1h is the budget for that
-scenario. If the spike comes back clean, that hour returns to the schedule as slack.
+**Still budget the 1h** — the finding rules out fallback option 2, but the
+`AssistantMessageBubble` layout change (verifying the text-bubble path still keeps its
+420px cap while the tool-call path doesn't) is real work, not zero-cost slack.
 
 ## Acceptance criteria
 
