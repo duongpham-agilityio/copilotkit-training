@@ -489,7 +489,7 @@ Record the spike results at the end of this document before starting day 1.
 | 0.75h | Spike, three unknowns |
 | 1h | §3.2–3.4 — hybrid schema + the `toPlatformDrafts` normalizer. First, because 3 other items depend on it |
 | 0.3h | **Model smoke test immediately after the refactor** — 3 real git logs, verifying the agent fills `appStore`/`googlePlay` versus `platforms` correctly. Tuning instructions is the one cost that cannot be compressed, so it has to surface on day 1, not day 2 |
-| 2.5h | Item 5 — thread store + dashboard store + ThreadDrawer |
+| 2.5h → 0.7h remaining | Item 5 — thread store + dashboard store + ThreadDrawer. Built ahead of this schedule with a different design than originally spec'd (server-fetched thread list + Mastra `generateTitle`, not a client-side migrated list); the dashboard-store half (the expensive, "actively harmful if skipped" half) is done as of the spike wrap-up. See `03-multiple-threads-design.md` for the reconciled spec and remaining work (rename/delete) |
 | 0.7h | Item 2 — welcome screen + empty state on both panels |
 | 0.5h | Item 4 — staged suggestions |
 | 1.5h | Item 1 — unsupported, three layers |
@@ -605,11 +605,54 @@ risks disappeared at once.
 
 ## 11. Spike results
 
-Fill this in after running §5, before starting day 1. If any answer comes back bad,
-update §6 before writing code.
+Methodology note: verification was done by tracing the installed
+`@copilotkit/core`/`@copilotkit/react-core` source and this repo's own code, the same
+method the two existing bug-fix reports in `docs/bug-reports/` used
+(`2026-08-19-entry-list-tool-history-replay.md`,
+`2026-08-19-entry-list-render-side-effect.md`) — not a live browser click-through,
+since no browser-automation tool was available in this environment. All three findings
+trace an exact code path rather than assume a behavior.
 
-**1. Tool-call replay on `threadId` change:** _(not run)_
+**1. Tool-call replay on `threadId` change:** Replay confirmed. `CopilotChat`'s
+internal effect (`copilotkit-nRjRp2_5.mjs`, the effect keyed on
+`[resolvedThreadId, agent, resolvedAgentId, hasExplicitThreadId]`) calls
+`copilotkit.connectAgent({ agent })` every time the `threadId` prop changes and an
+explicit thread id is set — the exact same call `docs/bug-reports/2026-08-19-entry-list-tool-history-replay.md`
+already traced for page-reload/history-resume
+(`processAgentResult({ executeFrontendTools: false })`). So switching back to an
+already-visited thread re-fires `render` for that thread's tool calls with the *same*
+`toolCallId` it had before. The pre-existing `appliedToolCallIds = useRef(new Set())`
+dedupe in both `use-show-entry-list-tool.tsx` and
+`use-render-release-notes-preview-tool.tsx` treated "seen once" as "never sync again,"
+so revisiting a thread left the left panel showing the previous thread's data — exactly
+the failure task 03 warned about. Fixed directly rather than deferred: both hooks
+dropped the ref-based dedupe; `src/hooks/use-dashboard-store.ts` (new, per-thread
+state) now does the dedupe by comparing incoming data against that thread's stored
+data, so a replay of already-current data is a no-op and a replay after switching away
+and back correctly resyncs. No schedule change needed — the fix is already merged
+alongside this spike, not deferred into task 03's estimate.
 
-**2. Message retry/regenerate API:** _(not run)_
+**2. Message retry/regenerate API:** `reloadMessages` (Lead A) is not reachable from
+the `/v2` entry point — `grep -n "reloadMessages\|useCopilotChat\b"` against
+`node_modules/@copilotkit/react-core/dist/v2/index.d.mts` returns nothing; it is a
+root-entry (`.`) export only. `onRegenerate`/`regenerateButton` (Lead B) is real
+plumbing in `CopilotChatAssistantMessage` (`copilotkit-nRjRp2_5.mjs:5899-5907`: the
+button only renders when the caller passes `onRegenerate` or `regenerateButton`), but
+this repo's `AssistantMessageBubble.tsx` never renders `CopilotChatAssistantMessage`
+at all — it renders a custom bubble plus `CopilotChatToolCallsView` — so the slot is
+present in the library but entirely unused here today; nothing regenerate-related is
+wired up. Decision for `use-retry-last-message.ts` (item 3A): no native CopilotKit API
+is usable as-is, so it should read the user's last message from the agent's message
+list and call `sendMessage` again manually. Confirmed this does not change the hook's
+call site (`{ canRetry: boolean; retry: () => void }`).
 
-**3. Tool render inside the custom `messageView`:** _(not run)_
+**3. Tool render inside the custom `messageView`:** Constrained. Read directly from
+`AssistantMessageBubble.tsx:15` — the component's root wrapper is
+`<div className="flex w-full max-w-[420px] flex-col items-start gap-3">`, and
+`CopilotChatToolCallsView` (the tool-render host) is a direct child of that div
+(line 33), so every tool render — including the future `PlatformDraftCard` — is capped
+to 420px wide regardless of content. No height-clipping element was found (the message
+list scrolls; nothing wraps the bubble in a fixed-height/`overflow:hidden` container).
+Decision for task 07: use fallback option 1 from that task's spec — widen
+`AssistantMessageBubble`'s wrapper (drop or override `max-w-[420px]` for tool-call
+content) rather than moving rendering to the `CopilotChat` level.
