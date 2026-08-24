@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   CopilotChat,
+  useAgent,
   type CopilotChatAssistantMessage,
   type CopilotChatUserMessage,
 } from '@copilotkit/react-core/v2';
@@ -11,6 +12,7 @@ import { useFlowSuggestions } from '@/hooks/use-flow-suggestions.ts';
 import AssistantMessageBubble from './AssistantMessageBubble.tsx';
 import ThreadListDropdown from './ThreadListDropdown.tsx';
 import UserMessageBubble from './UserMessageBubble.tsx';
+import WelcomeScreen from './WelcomeScreen.tsx';
 
 const CopilotAssistantPanel = () => {
   const {
@@ -36,6 +38,9 @@ const CopilotAssistantPanel = () => {
   );
 
   useFlowSuggestions();
+
+  const { agent } = useAgent({ agentId: RELEASE_COPILOT_AGENT_ID });
+  const hasMessages = agent.messages.length > 0;
 
   return (
     <div className="bg-surface-container-lowest border-outline-variant flex h-full w-full flex-col border-l">
@@ -90,14 +95,22 @@ const CopilotAssistantPanel = () => {
         agentId={RELEASE_COPILOT_AGENT_ID}
         threadId={threadId}
         className="min-h-0 flex-1"
+        // CopilotChat's built-in welcomeScreen slot never renders once a
+        // threadId is passed in (hasExplicitThreadId suppresses it
+        // unconditionally), so the empty state below is rendered via the
+        // messageView.children slot instead.
         welcomeScreen={false}
-        labels={{ chatInputPlaceholder: 'Ask Copilot to refine notes...' }}
-        messageView={{
-          assistantMessage:
-            AssistantMessageBubble as typeof CopilotChatAssistantMessage,
-          userMessage: UserMessageBubble as typeof CopilotChatUserMessage,
-          className: 'flex flex-row gap-4 py-4 h-full',
-        }}
+        labels={{ chatInputPlaceholder: 'Ask Copilot about your release notes...' }}
+        messageView={
+          hasMessages
+            ? {
+                assistantMessage:
+                  AssistantMessageBubble as typeof CopilotChatAssistantMessage,
+                userMessage: UserMessageBubble as typeof CopilotChatUserMessage,
+                className: 'flex flex-row gap-4 py-4 h-full',
+              }
+            : { children: () => <WelcomeScreen /> }
+        }
       />
     </div>
   );
