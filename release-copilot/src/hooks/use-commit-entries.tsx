@@ -92,14 +92,12 @@ export const useCommitEntries = (): UseCommitEntriesResult => {
 
   useAgentContext({
     description: joinLines(
-      'The entries currently checked in the commit list panel — live state the',
-      'user can change between turns, not a snapshot of what they pasted.',
-      'These, and only these, are the entries a draft may include: an unchecked',
-      'entry is out of the pipeline, not merely hidden. An empty array means',
-      'the user has selected nothing yet, which is not the same as having no',
-      'commits — ask them to pick at least one instead of drafting.',
+      'Current state of the parsed commits/PRs.',
+      '`entries`: all entries classified so far.',
+      '`selectedEntries`: the checked subset, used to build the release-notes',
+      'draft.',
     ),
-    value: { entries: view.selectedEntries },
+    value: { entries: view.entries, selectedEntries: view.selectedEntries },
   });
 
   return {
