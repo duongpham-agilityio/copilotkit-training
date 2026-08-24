@@ -6,18 +6,29 @@ import Button, { ButtonVariant } from '@/components/common/Button.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
 import Avatar from '@/components/common/Avatar.tsx';
 import DashboardPage from '@/routes/DashboardPage.tsx';
+import { useReleaseExport } from '@/hooks/use-release-export.ts';
+import { ExportFormat } from '@/types/export-format.ts';
 
-const HeaderActions = () => (
-  <div className="flex items-center gap-3">
-    <Button variant={ButtonVariant.Primary} className="flex items-center gap-2">
-      <Download className="size-4" aria-hidden="true" />
-      Export
-    </Button>
-    <IconButton icon={<Settings className="size-5" />} aria-label="Settings" />
-    <IconButton icon={<HelpCircle className="size-5" />} aria-label="Help" />
-    <Avatar name="You" />
-  </div>
-);
+const HeaderActions = () => {
+  const { canExport, exportDraft } = useReleaseExport();
+
+  return (
+    <div className="flex items-center gap-3">
+      <Button
+        variant={ButtonVariant.Primary}
+        className="flex items-center gap-2"
+        disabled={!canExport}
+        onClick={() => exportDraft({ format: ExportFormat.Markdown })}
+      >
+        <Download className="size-4" aria-hidden="true" />
+        Export
+      </Button>
+      <IconButton icon={<Settings className="size-5" />} aria-label="Settings" />
+      <IconButton icon={<HelpCircle className="size-5" />} aria-label="Help" />
+      <Avatar name="You" />
+    </div>
+  );
+};
 
 const App = () => {
   const [activeNav, setActiveNav] = useState<AppNav>(AppNav.Dashboard);

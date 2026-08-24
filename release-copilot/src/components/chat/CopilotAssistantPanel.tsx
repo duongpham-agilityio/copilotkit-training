@@ -1,27 +1,16 @@
-import { forwardRef, useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { forwardRef, useState } from 'react';
 import {
   CopilotChat,
-  useConfigureSuggestions,
   type CopilotChatAssistantMessage,
   type CopilotChatUserMessage,
 } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
-import { COPILOTKIT_RESOURCE_ID } from '@/constants/copilotkit.ts';
 import { useClickOutside } from '@/hooks/use-click-outside.ts';
-import { THREADS_QUERY_KEY, useThreads } from '@/hooks/use-threads.ts';
-import { useThreadStore } from '@/hooks/use-thread-store.ts';
-import { createUUID } from '@/lib/uuid.ts';
-import type { ThreadSummary } from '@/types/thread.ts';
+import { useThreadSession } from '@/hooks/use-thread-session.ts';
+import { useFlowSuggestions } from '@/hooks/use-flow-suggestions.ts';
 import AssistantMessageBubble from './AssistantMessageBubble.tsx';
 import ThreadListDropdown from './ThreadListDropdown.tsx';
 import UserMessageBubble from './UserMessageBubble.tsx';
-
-const QUICK_ACTION_SUGGESTIONS = [
-  { title: 'Make it shorter', message: 'Make it shorter' },
-  { title: 'Translate to VI', message: 'Translate to VI' },
-  { title: 'Add emojis', message: 'Add emojis' },
-];
 
 // TODO: Will add custom suggestion view later
 const HideSuggestionView = forwardRef(function Component() {
@@ -29,21 +18,20 @@ const HideSuggestionView = forwardRef(function Component() {
 });
 
 const CopilotAssistantPanel = () => {
-  const threadId = useThreadStore((state) => state.threadId);
-  const setThreadId = useThreadStore((state) => state.setThreadId);
-  const [isThreadListOpen, setIsThreadListOpen] = useState(false);
   const {
-    data: threads,
-    isLoading: isThreadsLoading,
-    isError: isThreadsError,
-  } = useThreads();
-  const queryClient = useQueryClient();
+    threadId,
+    threads,
+    isThreadsLoading,
+    isThreadsError,
+    startNewChat,
+    selectThread,
+  } = useThreadSession();
+  const [isThreadListOpen, setIsThreadListOpen] = useState(false);
 
-  const handleNewChat = () => setThreadId(createUUID());
   const handleToggleThreadList = () => setIsThreadListOpen((open) => !open);
   const handleCloseThreadList = () => setIsThreadListOpen(false);
   const handleSelectThread = (selectedThreadId: string) => {
-    setThreadId(selectedThreadId);
+    selectThread(selectedThreadId);
     setIsThreadListOpen(false);
   };
 
@@ -52,33 +40,7 @@ const CopilotAssistantPanel = () => {
     handleCloseThreadList,
   );
 
-  // The active thread may not exist server-side yet (no message sent, title
-  // not generated) — seed a placeholder so the list never shows nothing for it.
-  useEffect(() => {
-    if (!threadId) return;
-
-    queryClient.setQueryData<ThreadSummary[]>(THREADS_QUERY_KEY, (current) => {
-      if (current?.some((thread) => thread.id === threadId)) return current;
-
-      const now = new Date().toISOString();
-      return [
-        {
-          id: threadId,
-          title: threadId,
-          resourceId: COPILOTKIT_RESOURCE_ID,
-          createdAt: now,
-          updatedAt: now,
-        },
-        ...(current ?? []),
-      ];
-    });
-  }, [threadId, queryClient]);
-
-  useConfigureSuggestions({
-    consumerAgentId: RELEASE_COPILOT_AGENT_ID,
-    suggestions: QUICK_ACTION_SUGGESTIONS,
-    available: 'always',
-  });
+  useFlowSuggestions();
 
   return (
     <div className="bg-surface-container-lowest border-outline-variant flex h-full w-full flex-col border-l">
@@ -95,7 +57,7 @@ const CopilotAssistantPanel = () => {
         <span className="flex items-center gap-2">
           <button
             type="button"
-            onClick={handleNewChat}
+            onClick={startNewChat}
             className="text-label-sm rounded border px-2 py-1"
           >
             New Chat
