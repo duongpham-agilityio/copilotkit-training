@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { useState } from 'react';
 import {
   CopilotChat,
   type CopilotChatAssistantMessage,
@@ -11,11 +11,6 @@ import { useFlowSuggestions } from '@/hooks/use-flow-suggestions.ts';
 import AssistantMessageBubble from './AssistantMessageBubble.tsx';
 import ThreadListDropdown from './ThreadListDropdown.tsx';
 import UserMessageBubble from './UserMessageBubble.tsx';
-
-// TODO: Will add custom suggestion view later
-const HideSuggestionView = forwardRef(function Component() {
-  return null;
-});
 
 const CopilotAssistantPanel = () => {
   const {
@@ -103,7 +98,6 @@ const CopilotAssistantPanel = () => {
           userMessage: UserMessageBubble as typeof CopilotChatUserMessage,
           className: 'flex flex-row gap-4 py-4 h-full',
         }}
-        suggestionView={HideSuggestionView}
       />
     </div>
   );
