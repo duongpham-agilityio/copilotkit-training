@@ -7,7 +7,12 @@ import '@/styles/copilotkit-theme.css';
 import { router } from './routes/router.tsx';
 import AppProviders from './providers/AppProviders.tsx';
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')!, {
+  onUncaughtError: (error, info) =>
+    console.error('[uncaught]', error, info.componentStack),
+  onCaughtError: (error, info) =>
+    console.error('[caught by boundary]', error, info.componentStack),
+}).render(
   <StrictMode>
     <AppProviders>
       <RouterProvider router={router} />

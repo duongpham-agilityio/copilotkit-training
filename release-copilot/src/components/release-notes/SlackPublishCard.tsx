@@ -1,5 +1,5 @@
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
-import CopyButton from '@/components/common/CopyButton.tsx';
+import CopyButton, { type CopyHandler } from '@/components/common/CopyButton.tsx';
 import type { TabItem } from '@/components/common/Tabs.tsx';
 import PlatformTabs from '@/components/platform-selector/PlatformTabs.tsx';
 
@@ -24,7 +24,7 @@ interface SlackPublishCardProps {
   status: SlackPublishStatus;
   error?: string | null;
   onPlatformChange: (platformId: string) => void;
-  onCopy: () => void;
+  onCopy: CopyHandler;
   onSend: () => void;
   onCancel: () => void;
 }

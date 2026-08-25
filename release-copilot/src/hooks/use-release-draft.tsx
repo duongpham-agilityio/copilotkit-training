@@ -6,6 +6,7 @@ import {
   type ReleaseDraftView,
 } from '@/hooks/use-release-draft-view.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
+import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/tools.ts';
 import { joinLines } from '@/lib/text.ts';
@@ -50,9 +51,21 @@ export const useReleaseDraft = (): ReleaseDraftView => {
         return <Fragment />;
       }
 
+      const result = ReleaseNotesDraftSchema.safeParse(props.parameters);
+
+      if (!result.success) {
+        console.warn('[useReleaseDraft] received invalid parameters', result.error);
+        return (
+          <ToolErrorCard
+            toolName={RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME}
+            detail={result.error.message}
+          />
+        );
+      }
+
       return (
         <DraftSync
-          draft={props.parameters}
+          draft={result.data}
           onSync={(draft) => setDraft(threadIdRef.current, draft)}
         />
       );

@@ -5,6 +5,7 @@ interface AppShellProps {
   activeNav: AppNav;
   onNavigate: (nav: AppNav) => void;
   headerActions?: ReactNode;
+  banner?: ReactNode;
   children: ReactNode;
 }
 
@@ -12,9 +13,11 @@ const AppShell = ({
   activeNav,
   onNavigate,
   headerActions,
+  banner,
   children,
 }: AppShellProps) => (
   <div className="bg-surface flex h-screen flex-col overflow-hidden">
+    {banner}
     <AppHeader
       activeNav={activeNav}
       onNavigate={onNavigate}

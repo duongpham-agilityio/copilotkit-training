@@ -3,6 +3,7 @@ import { SlackPublishRequestSchema } from '../../types/slack-publish-request';
 import {
   SLACK_PUBLISH_ROUTE_PATH,
   SLACK_ERROR_MESSAGES,
+  SLACK_WEBHOOK_TIMEOUT_MS,
 } from '../../constants/slack';
 
 const buildSlackText = (label: string, content: string): string =>
@@ -22,9 +23,20 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
       );
     }
 
-    const parsed = SlackPublishRequestSchema.safeParse(
-      await context.req.json(),
-    );
+    let body: unknown;
+    try {
+      body = await context.req.json();
+    } catch {
+      return context.json(
+        {
+          ok: false,
+          error: `${SLACK_ERROR_MESSAGES.INVALID_REQUEST}: body is not valid JSON.`,
+        },
+        400,
+      );
+    }
+
+    const parsed = SlackPublishRequestSchema.safeParse(body);
     if (!parsed.success) {
       return context.json(
         {
@@ -42,6 +54,7 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: buildSlackText(label, content) }),
+        signal: AbortSignal.timeout(SLACK_WEBHOOK_TIMEOUT_MS),
       });
 
       if (!response.ok) {
@@ -56,6 +69,13 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
 
       return context.json({ ok: true });
     } catch (error) {
+      if (error instanceof DOMException && error.name === 'TimeoutError') {
+        return context.json(
+          { ok: false, error: SLACK_ERROR_MESSAGES.WEBHOOK_TIMEOUT },
+          504,
+        );
+      }
+
       return context.json(
         {
           ok: false,
