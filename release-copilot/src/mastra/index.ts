@@ -1,8 +1,6 @@
 import { Mastra } from '@mastra/core/mastra';
 import { PinoLogger } from '@mastra/loggers';
 import { LibSQLStore } from '@mastra/libsql';
-import { DuckDBStore } from '@mastra/duckdb';
-import { MastraCompositeStore } from '@mastra/core/storage';
 import {
   Observability,
   MastraStorageExporter,
@@ -22,7 +20,6 @@ import {
 import { MASTRA_CORS_CONFIG, MASTRA_LOGGER_NAME } from '../constants/server';
 import { MASTRA_BUNDLER_EXTERNALS } from '../constants/bundler';
 import {
-  COMPOSITE_STORAGE_ID,
   MASTRA_STORAGE_ID,
   MASTRA_DB_FALLBACK_URL,
 } from '../constants/storage';
@@ -48,16 +45,10 @@ export const mastra = new Mastra({
   bundler: {
     externals: MASTRA_BUNDLER_EXTERNALS,
   },
-  storage: new MastraCompositeStore({
-    id: COMPOSITE_STORAGE_ID,
-    default: new LibSQLStore({
-      id: MASTRA_STORAGE_ID,
-      url: process.env.TURSO_DATABASE_URL ?? MASTRA_DB_FALLBACK_URL,
-      authToken: process.env.TURSO_AUTH_TOKEN,
-    }),
-    domains: {
-      observability: await new DuckDBStore().getStore('observability'),
-    },
+  storage: new LibSQLStore({
+    id: MASTRA_STORAGE_ID,
+    url: process.env.TURSO_DATABASE_URL ?? MASTRA_DB_FALLBACK_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
   }),
   logger: new PinoLogger({
     name: MASTRA_LOGGER_NAME,
