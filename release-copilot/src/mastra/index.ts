@@ -18,7 +18,6 @@ import {
   COPILOTKIT_RESOURCE_ID,
 } from '../constants/copilotkit';
 import { MASTRA_CORS_CONFIG, MASTRA_LOGGER_NAME } from '../constants/server';
-import { MASTRA_BUNDLER_EXTERNALS } from '../constants/bundler';
 import {
   MASTRA_STORAGE_ID,
   MASTRA_DB_FALLBACK_URL,
@@ -43,7 +42,7 @@ export const mastra = new Mastra({
     ],
   },
   bundler: {
-    externals: MASTRA_BUNDLER_EXTERNALS,
+    externals: true,
   },
   storage: new LibSQLStore({
     id: MASTRA_STORAGE_ID,
