@@ -1,12 +1,12 @@
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
 import { ButtonVariant } from '@/components/common/Button.tsx';
-import CopyButton from '@/components/common/CopyButton.tsx';
+import CopyButton, { type CopyHandler } from '@/components/common/CopyButton.tsx';
 import MonoTag from '@/components/common/MonoTag.tsx';
 import MarkdownPreview from './MarkdownPreview.tsx';
 
 interface LivePreviewPanelProps {
   markdown: string | null;
-  onCopy: () => void;
+  onCopy: CopyHandler;
 }
 
 const LivePreviewPanel = ({ markdown, onCopy }: LivePreviewPanelProps) => (

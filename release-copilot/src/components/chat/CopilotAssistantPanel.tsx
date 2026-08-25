@@ -9,7 +9,9 @@ import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
 import { useClickOutside } from '@/hooks/use-click-outside.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import { useFlowSuggestions } from '@/hooks/use-flow-suggestions.ts';
+import { useChatError } from '@/hooks/use-chat-error.ts';
 import AssistantMessageBubble from './AssistantMessageBubble.tsx';
+import ChatErrorBar from './ChatErrorBar.tsx';
 import ThreadListDropdown from './ThreadListDropdown.tsx';
 import UserMessageBubble from './UserMessageBubble.tsx';
 import WelcomeScreen from './WelcomeScreen.tsx';
@@ -41,6 +43,12 @@ const CopilotAssistantPanel = () => {
 
   const { agent } = useAgent({ agentId: RELEASE_COPILOT_AGENT_ID });
   const hasMessages = agent.messages.length > 0;
+  const {
+    message: chatErrorMessage,
+    canRetry,
+    retry,
+    dismiss: dismissChatError,
+  } = useChatError();
 
   return (
     <div className="bg-surface-container-lowest border-outline-variant flex h-full w-full flex-col border-l">
@@ -100,7 +108,9 @@ const CopilotAssistantPanel = () => {
         // unconditionally), so the empty state below is rendered via the
         // messageView.children slot instead.
         welcomeScreen={false}
-        labels={{ chatInputPlaceholder: 'Ask Copilot about your release notes...' }}
+        labels={{
+          chatInputPlaceholder: 'Ask Copilot about your release notes...',
+        }}
         messageView={
           hasMessages
             ? {
@@ -112,6 +122,14 @@ const CopilotAssistantPanel = () => {
             : { children: () => <WelcomeScreen /> }
         }
       />
+      {chatErrorMessage && (
+        <ChatErrorBar
+          message={chatErrorMessage}
+          canRetry={canRetry}
+          onRetry={retry}
+          onDismiss={dismissChatError}
+        />
+      )}
     </div>
   );
 };

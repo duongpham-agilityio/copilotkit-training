@@ -5,6 +5,10 @@ import { AppNav } from '@/layouts/AppHeader.tsx';
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
 import Avatar from '@/components/common/Avatar.tsx';
+import DisconnectBanner from '@/components/common/DisconnectBanner.tsx';
+import ErrorBoundary, {
+  ErrorBoundaryVariant,
+} from '@/components/common/ErrorBoundary.tsx';
 import DashboardPage from '@/routes/DashboardPage.tsx';
 import { useReleaseExport } from '@/hooks/use-release-export.ts';
 import { ExportFormat } from '@/types/export-format.ts';
@@ -37,7 +41,15 @@ const App = () => {
     <AppShell
       activeNav={activeNav}
       onNavigate={setActiveNav}
-      headerActions={<HeaderActions />}
+      banner={<DisconnectBanner />}
+      headerActions={
+        <ErrorBoundary
+          title="Export unavailable"
+          variant={ErrorBoundaryVariant.Inline}
+        >
+          <HeaderActions />
+        </ErrorBoundary>
+      }
     >
       {activeNav === AppNav.Dashboard ? (
         <DashboardPage />

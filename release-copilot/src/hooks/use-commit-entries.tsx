@@ -6,6 +6,7 @@ import {
   type CommitEntriesView,
 } from '@/hooks/use-commit-entries-view.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
+import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
 import { SHOW_ENTRY_LIST_TOOL_NAME } from '@/constants/tools.ts';
 import { joinLines } from '@/lib/text.ts';
@@ -78,7 +79,12 @@ export const useCommitEntries = (): UseCommitEntriesResult => {
 
       if (!result.success) {
         console.warn('[useCommitEntries] received invalid args', result.error);
-        return <Fragment />;
+        return (
+          <ToolErrorCard
+            toolName={SHOW_ENTRY_LIST_TOOL_NAME}
+            detail={result.error.message}
+          />
+        );
       }
 
       return (

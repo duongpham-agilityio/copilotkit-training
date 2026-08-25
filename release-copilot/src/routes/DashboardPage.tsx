@@ -1,10 +1,12 @@
 import CommitListPanel from '@/components/commit-list/CommitListPanel.tsx';
 import LivePreviewPanel from '@/components/release-notes/LivePreviewPanel.tsx';
 import CopilotAssistantPanel from '@/components/chat/CopilotAssistantPanel.tsx';
+import ErrorBoundary from '@/components/common/ErrorBoundary.tsx';
 import SplitPane from '@/layouts/SplitPane.tsx';
 import { useCommitEntries } from '@/hooks/use-commit-entries.tsx';
 import { useReleaseDraft } from '@/hooks/use-release-draft.tsx';
 import { useSlackPublish } from '@/hooks/use-slack-publish.tsx';
+import { copyText } from '@/lib/clipboard.ts';
 
 const DashboardPage = () => {
   const { commits, selectedIds, toggleSelection } = useCommitEntries();
@@ -13,9 +15,9 @@ const DashboardPage = () => {
 
   const selectedHashes = new Set(selectedIds);
 
-  const handleCopy = () => {
-    if (!activeContent) return;
-    void navigator.clipboard.writeText(activeContent);
+  const handleCopy = async (): Promise<boolean> => {
+    if (!activeContent) return false;
+    return copyText(activeContent);
   };
 
   return (
@@ -23,15 +25,23 @@ const DashboardPage = () => {
       leftWidthPercent={65}
       left={
         <div className="flex flex-col gap-6">
-          <CommitListPanel
-            commits={commits}
-            selectedHashes={selectedHashes}
-            onToggle={toggleSelection}
-          />
-          <LivePreviewPanel markdown={activeContent} onCopy={handleCopy} />
+          <ErrorBoundary title="Commit list unavailable">
+            <CommitListPanel
+              commits={commits}
+              selectedHashes={selectedHashes}
+              onToggle={toggleSelection}
+            />
+          </ErrorBoundary>
+          <ErrorBoundary title="Preview unavailable">
+            <LivePreviewPanel markdown={activeContent} onCopy={handleCopy} />
+          </ErrorBoundary>
         </div>
       }
-      right={<CopilotAssistantPanel />}
+      right={
+        <ErrorBoundary title="Copilot panel unavailable">
+          <CopilotAssistantPanel />
+        </ErrorBoundary>
+      }
     />
   );
 };

@@ -8,6 +8,7 @@ import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
 import { CONFIRM_SLACK_PUBLISH_TOOL_NAME } from '@/constants/tools.ts';
 import { publishToSlack } from '@/services/publish-to-slack.ts';
 import { joinLines } from '@/lib/text.ts';
+import { copyText } from '@/lib/clipboard.ts';
 import { KnownPlatformId } from '@/types/platform.ts';
 import type { PlatformOption } from '@/types/platform-option.ts';
 import { ConfirmSlackPublishSchema } from '@/types/confirm-slack-publish.ts';
@@ -18,6 +19,9 @@ interface PublishFlowProps {
   respond: (result: unknown) => Promise<void>;
 }
 
+const reportRespondFailure = (error: unknown): void =>
+  console.error('[useSlackPublish] respond() failed', error);
+
 const RespondOnMount = ({
   message,
   respond,
@@ -26,7 +30,7 @@ const RespondOnMount = ({
   respond: (result: unknown) => Promise<void>;
 }) => {
   useEffect(() => {
-    void respond(message);
+    void respond(message).catch(reportRespondFailure);
   }, [message, respond]);
   return <Fragment />;
 };
@@ -61,7 +65,9 @@ const PublishFlow = ({ options, initialPlatformId, respond }: PublishFlowProps) 
 
     if (result.ok) {
       setStatus(SlackPublishStatus.Sent);
-      await respond(`Posted the ${selected.label} release notes to Slack.`);
+      await respond(`Posted the ${selected.label} release notes to Slack.`).catch(
+        reportRespondFailure,
+      );
       return;
     }
 
@@ -71,12 +77,12 @@ const PublishFlow = ({ options, initialPlatformId, respond }: PublishFlowProps) 
 
   const handleCancel = async () => {
     setStatus(SlackPublishStatus.Cancelled);
-    await respond('User declined — nothing was posted to Slack.');
+    await respond('User declined — nothing was posted to Slack.').catch(
+      reportRespondFailure,
+    );
   };
 
-  const handleCopy = () => {
-    void navigator.clipboard.writeText(selected.content);
-  };
+  const handleCopy = () => copyText(selected.content);
 
   return (
     <SlackPublishCard
