@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CopilotChat,
   useAgent,
@@ -42,6 +42,13 @@ const CopilotAssistantPanel = () => {
   useFlowSuggestions();
 
   const { agent } = useAgent({ agentId: RELEASE_COPILOT_AGENT_ID });
+
+  useEffect(() => {
+    return () => {
+      agent.setMessages([]);
+    };
+  }, [agent]);
+
   const hasMessages = agent.messages.length > 0;
   const {
     message: chatErrorMessage,
