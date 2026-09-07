@@ -1,30 +1,29 @@
 import { useState, type ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import Tabs, { TabsVariant, type TabItem } from '@/components/common/Tabs.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
-
-export const enum AppNav {
-  Dashboard = 'dashboard',
-  History = 'history',
-}
+import { ROUTE_DASHBOARD, ROUTE_HISTORY } from '@/constants/routes.ts';
 
 interface AppHeaderProps {
-  activeNav: AppNav;
-  onNavigate: (nav: AppNav) => void;
   actions?: ReactNode;
 }
 
 const NAV_ITEMS: TabItem[] = [
-  { value: AppNav.Dashboard, label: 'Dashboard' },
-  { value: AppNav.History, label: 'History' },
+  { value: ROUTE_DASHBOARD, label: 'Dashboard' },
+  { value: ROUTE_HISTORY, label: 'History' },
 ];
 
-const AppHeader = ({ activeNav, onNavigate, actions }: AppHeaderProps) => {
+const AppHeader = ({ actions }: AppHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleNavigate = (nav: AppNav) => {
-    onNavigate(nav);
+  const activeNav = location.pathname === ROUTE_HISTORY ? ROUTE_HISTORY : ROUTE_DASHBOARD;
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
     setMenuOpen(false);
   };
 
@@ -38,7 +37,7 @@ const AppHeader = ({ activeNav, onNavigate, actions }: AppHeaderProps) => {
           <Tabs
             items={NAV_ITEMS}
             value={activeNav}
-            onChange={(value) => handleNavigate(value as AppNav)}
+            onChange={handleNavigate}
             variant={TabsVariant.Underline}
           />
         </div>
@@ -59,7 +58,7 @@ const AppHeader = ({ activeNav, onNavigate, actions }: AppHeaderProps) => {
             <button
               key={item.value}
               type="button"
-              onClick={() => handleNavigate(item.value as AppNav)}
+              onClick={() => handleNavigate(item.value)}
               className={cn(
                 'text-body-md block w-full cursor-pointer px-6 py-2 text-left font-medium',
                 item.value === activeNav

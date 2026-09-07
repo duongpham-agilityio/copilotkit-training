@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { Outlet } from 'react-router';
 import { Download, HelpCircle, Settings } from 'lucide-react';
 import AppShell from '@/layouts/AppShell.tsx';
-import { AppNav } from '@/layouts/AppHeader.tsx';
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
 import Avatar from '@/components/common/Avatar.tsx';
@@ -9,7 +8,6 @@ import DisconnectBanner from '@/components/common/DisconnectBanner.tsx';
 import ErrorBoundary, {
   ErrorBoundaryVariant,
 } from '@/components/common/ErrorBoundary.tsx';
-import DashboardPage from '@/routes/DashboardPage.tsx';
 import { useReleaseExport } from '@/hooks/use-release-export.ts';
 import { ExportFormat } from '@/types/export-format.ts';
 
@@ -34,32 +32,17 @@ const HeaderActions = () => {
   );
 };
 
-const App = () => {
-  const [activeNav, setActiveNav] = useState<AppNav>(AppNav.Dashboard);
-
-  return (
-    <AppShell
-      activeNav={activeNav}
-      onNavigate={setActiveNav}
-      banner={<DisconnectBanner />}
-      headerActions={
-        <ErrorBoundary
-          title="Export unavailable"
-          variant={ErrorBoundaryVariant.Inline}
-        >
-          <HeaderActions />
-        </ErrorBoundary>
-      }
-    >
-      {activeNav === AppNav.Dashboard ? (
-        <DashboardPage />
-      ) : (
-        <div className="text-body-md text-on-surface-variant">
-          History is coming soon.
-        </div>
-      )}
-    </AppShell>
-  );
-};
+const App = () => (
+  <AppShell
+    banner={<DisconnectBanner />}
+    headerActions={
+      <ErrorBoundary title="Export unavailable" variant={ErrorBoundaryVariant.Inline}>
+        <HeaderActions />
+      </ErrorBoundary>
+    }
+  >
+    <Outlet />
+  </AppShell>
+);
 
 export default App;
