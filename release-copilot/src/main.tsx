@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import '@copilotkit/react-core/v2/styles.css';
 import '@/styles/copilotkit-theme.css';
-import { router } from './routes/router.tsx';
+import { router } from './routes/router.ts';
 import AppProviders from './providers/AppProviders.tsx';
 
 createRoot(document.getElementById('root')!, {
