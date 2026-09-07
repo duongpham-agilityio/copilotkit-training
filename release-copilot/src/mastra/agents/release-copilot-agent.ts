@@ -4,16 +4,21 @@ import {
   RELEASE_COPILOT_FALLBACK_MODEL,
   RELEASE_COPILOT_MODEL,
 } from '../../constants/models';
-import { buildReleaseCopilotInstructions } from '../instructions';
+import { buildReleaseCopilotInstructionsV2 } from '../instructions/v2';
 import { renderReleaseNotesPreviewTool } from '../tools/render-release-notes-preview-tool';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../../constants/tools';
+import {
+  classificationRulesSkill,
+  commitPrParsingSkill,
+  platformFormattingSkill,
+} from '../skills';
 
 export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
   name: 'Release Copilot',
   description:
     'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for all 3 platforms, edits a draft in place, and answers questions about using the app.',
-  instructions: () => buildReleaseCopilotInstructions(),
+  instructions: () => buildReleaseCopilotInstructionsV2(),
   model: [
     {
       model: RELEASE_COPILOT_MODEL,
@@ -27,5 +32,10 @@ export const releaseCopilotAgent = new Agent({
   tools: {
     [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
   },
+  skills: [
+    classificationRulesSkill,
+    commitPrParsingSkill,
+    platformFormattingSkill,
+  ],
   memory: new Memory({ options: { lastMessages: 6, generateTitle: true } }),
 });
