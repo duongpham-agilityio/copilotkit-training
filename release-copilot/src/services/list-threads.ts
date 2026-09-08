@@ -1,27 +1,24 @@
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
-import { COPILOTKIT_RESOURCE_ID } from '@/constants/copilotkit.ts';
 import { FETCH_TIMEOUT_MS } from '@/constants/network.ts';
 import { toNetworkErrorMessage } from '@/lib/network-error-message.ts';
+import { getRequiredEnv } from '@/lib/env.ts';
+import { getAuthHeader } from '@/services/get-auth-header.ts';
 import { ListThreadsResponseSchema, type ThreadSummary } from '@/types/thread.ts';
 
 const TARGET = 'the threads list';
 
 export const listThreads = async (): Promise<ThreadSummary[]> => {
-  const baseUrl = import.meta.env.VITE_MASTRA_SERVER_URL;
-  if (!baseUrl) {
-    throw new Error(
-      'VITE_MASTRA_SERVER_URL is not set — cannot reach the threads route.',
-    );
-  }
+  const baseUrl = getRequiredEnv(
+    import.meta.env.VITE_MASTRA_SERVER_URL,
+    'VITE_MASTRA_SERVER_URL',
+  );
 
-  const params = new URLSearchParams({
-    resourceId: COPILOTKIT_RESOURCE_ID,
-    agentId: RELEASE_COPILOT_AGENT_ID,
-  });
+  const params = new URLSearchParams({ agentId: RELEASE_COPILOT_AGENT_ID });
 
   let response: Response;
   try {
     response = await fetch(`${baseUrl}/api/memory/threads?${params.toString()}`, {
+      headers: getAuthHeader(),
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
   } catch (error) {

@@ -8,6 +8,7 @@ import {
   SensitiveDataFilter,
 } from '@mastra/observability';
 import { registerCopilotKit } from '@ag-ui/mastra/copilotkit';
+import { MastraAuthSupabase } from '@mastra/auth-supabase';
 import { releaseCopilotAgent } from './agents/release-copilot-agent';
 import { renderReleaseNotesPreviewTool } from './tools/render-release-notes-preview-tool';
 import { slackPublishRoute } from './api/slack-publish-route';
@@ -23,6 +24,15 @@ import {
   MASTRA_DB_FALLBACK_URL,
 } from '../constants/storage';
 import { MASTRA_OBSERVABILITY_SERVICE_NAME } from '../constants/observability';
+import { getRequiredEnv } from '../lib/env';
+
+const supabaseAuth = new MastraAuthSupabase({
+  url: getRequiredEnv(process.env.SUPABASE_URL, 'SUPABASE_URL'),
+  anonKey: getRequiredEnv(
+    process.env.SUPABASE_PUBLISHABLE_KEY,
+    'SUPABASE_PUBLISHABLE_KEY',
+  ),
+});
 
 export const mastra = new Mastra({
   agents: {
@@ -33,6 +43,7 @@ export const mastra = new Mastra({
   },
   server: {
     cors: MASTRA_CORS_CONFIG,
+    auth: supabaseAuth,
     apiRoutes: [
       registerCopilotKit({
         path: COPILOTKIT_ROUTE_PATH,

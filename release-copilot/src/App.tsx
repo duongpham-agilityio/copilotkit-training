@@ -10,6 +10,7 @@ import ErrorBoundary, {
 } from '@/components/common/ErrorBoundary.tsx';
 import { useReleaseExport } from '@/hooks/use-release-export.ts';
 import { ExportFormat } from '@/types/export-format.ts';
+import AppProviders from './providers/AppProviders';
 
 const HeaderActions = () => {
   const { canExport, exportDraft } = useReleaseExport();
@@ -25,7 +26,10 @@ const HeaderActions = () => {
         <Download className="size-4" aria-hidden="true" />
         Export
       </Button>
-      <IconButton icon={<Settings className="size-5" />} aria-label="Settings" />
+      <IconButton
+        icon={<Settings className="size-5" />}
+        aria-label="Settings"
+      />
       <IconButton icon={<HelpCircle className="size-5" />} aria-label="Help" />
       <Avatar name="You" />
     </div>
@@ -33,16 +37,21 @@ const HeaderActions = () => {
 };
 
 const App = () => (
-  <AppShell
-    banner={<DisconnectBanner />}
-    headerActions={
-      <ErrorBoundary title="Export unavailable" variant={ErrorBoundaryVariant.Inline}>
-        <HeaderActions />
-      </ErrorBoundary>
-    }
-  >
-    <Outlet />
-  </AppShell>
+  <AppProviders>
+    <AppShell
+      banner={<DisconnectBanner />}
+      headerActions={
+        <ErrorBoundary
+          title="Export unavailable"
+          variant={ErrorBoundaryVariant.Inline}
+        >
+          <HeaderActions />
+        </ErrorBoundary>
+      }
+    >
+      <Outlet />
+    </AppShell>
+  </AppProviders>
 );
 
 export default App;
