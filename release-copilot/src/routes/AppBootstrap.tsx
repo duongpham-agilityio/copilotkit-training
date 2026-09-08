@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useAuth } from '@/hooks/use-auth.ts';
 import { AuthStatus } from '@/store/auth-store.ts';
@@ -7,12 +8,18 @@ const AppBootstrap = () => {
   const location = useLocation();
   const { status } = useAuth();
 
+  useEffect(() => {
+    if (status !== AuthStatus.Loading) {
+      const splashScreen = document.getElementById('splash-screen');
+
+      if (splashScreen) {
+        splashScreen.style.display = 'none';
+      }
+    }
+  }, [status]);
+
   if (status === AuthStatus.Loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="text-body-md text-on-surface-variant">Loading…</span>
-      </div>
-    );
+    return <div className="min-h-screen bg-transparent" />;
   }
 
   const isSignInRoute = location.pathname === ROUTE_SIGN_IN;
