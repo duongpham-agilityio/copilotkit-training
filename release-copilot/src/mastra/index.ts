@@ -7,17 +7,12 @@ import {
   MastraPlatformExporter,
   SensitiveDataFilter,
 } from '@mastra/observability';
-import { registerCopilotKit } from '@ag-ui/mastra/copilotkit';
 import { MastraAuthSupabase } from '@mastra/auth-supabase';
 import { releaseCopilotAgent } from './agents/release-copilot-agent';
 import { renderReleaseNotesPreviewTool } from './tools/render-release-notes-preview-tool';
 import { slackPublishRoute } from './api/slack-publish-route';
 import { RELEASE_COPILOT_AGENT_ID } from '../constants/agents';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/tools';
-import {
-  COPILOTKIT_ROUTE_PATH,
-  COPILOTKIT_RESOURCE_ID,
-} from '../constants/copilotkit';
 import { MASTRA_CORS_CONFIG, MASTRA_LOGGER_NAME } from '../constants/server';
 import {
   MASTRA_STORAGE_ID,
@@ -25,6 +20,7 @@ import {
 } from '../constants/storage';
 import { MASTRA_OBSERVABILITY_SERVICE_NAME } from '../constants/observability';
 import { getRequiredEnv } from '../lib/env';
+import { copilotKitRoute } from './api/copilotkit-route';
 
 const supabaseAuth = new MastraAuthSupabase({
   url: getRequiredEnv(process.env.SUPABASE_URL, 'SUPABASE_URL'),
@@ -32,6 +28,8 @@ const supabaseAuth = new MastraAuthSupabase({
     process.env.SUPABASE_PUBLISHABLE_KEY,
     'SUPABASE_PUBLISHABLE_KEY',
   ),
+  authorizeUser: () => true,
+  mapUserToResourceId: (user) => user.id,
 });
 
 export const mastra = new Mastra({
@@ -44,13 +42,7 @@ export const mastra = new Mastra({
   server: {
     cors: MASTRA_CORS_CONFIG,
     auth: supabaseAuth,
-    apiRoutes: [
-      registerCopilotKit({
-        path: COPILOTKIT_ROUTE_PATH,
-        resourceId: COPILOTKIT_RESOURCE_ID,
-      }),
-      slackPublishRoute,
-    ],
+    apiRoutes: [copilotKitRoute, slackPublishRoute],
   },
   bundler: {
     externals: true,
