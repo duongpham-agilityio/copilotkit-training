@@ -3,7 +3,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { supabaseAuthService } from '@/lib/auth/supabase-auth-service.ts';
 import type { OAuthProvider } from '@/lib/auth/auth-service.ts';
 import { useAuthStore } from '@/store/auth-store.ts';
-import { ROUTE_DASHBOARD } from '@/constants/routes.ts';
+import { ROUTE_DASHBOARD } from '@/constants/routings.ts';
 
 export const useAuth = () => {
   const { session, status, setSession } = useAuthStore(

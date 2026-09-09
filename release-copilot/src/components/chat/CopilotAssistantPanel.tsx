@@ -5,7 +5,7 @@ import {
   type CopilotChatAssistantMessage,
   type CopilotChatUserMessage,
 } from '@copilotkit/react-core/v2';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id';
 import { useClickOutside } from '@/hooks/use-click-outside.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import { useFlowSuggestions } from '@/hooks/use-flow-suggestions.ts';

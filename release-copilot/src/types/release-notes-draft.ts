@@ -6,7 +6,7 @@ import {
   PLATFORM_CHARACTER_LIMITS,
   RELEASE_NOTES_TITLE_PREFIX,
   RELEASE_TITLE_CHARACTER_BUDGET,
-} from '../constants/release-notes';
+} from '../constants/config/lib-config';
 
 const APP_STORE_BODY_LIMIT =
   APP_STORE_CHARACTER_LIMIT - RELEASE_TITLE_CHARACTER_BUDGET;

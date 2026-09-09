@@ -1,6 +1,6 @@
 import type { SlackPublishRequest } from '@/types/slack-publish-request.ts';
-import { SLACK_PUBLISH_ROUTE_PATH } from '@/constants/slack.ts';
-import { FETCH_TIMEOUT_MS } from '@/constants/network.ts';
+import { SLACK_PUBLISH_ROUTE_PATH } from '@/constants/endpoints.ts';
+import { FETCH_TIMEOUT_MS } from '@/constants/time.ts';
 import { toNetworkErrorMessage } from '@/lib/network-error-message.ts';
 import { getRequiredEnv } from '@/lib/env.ts';
 import { getAuthHeader } from '@/services/get-auth-header.ts';

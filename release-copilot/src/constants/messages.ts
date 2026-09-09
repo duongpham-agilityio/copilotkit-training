@@ -1,8 +1,3 @@
-export const SLACK_PUBLISH_ROUTE_PATH = '/slack/publish';
-export const COPILOTKIT_ROUTE_PATH = '/copilotkit';
-
-export const SLACK_WEBHOOK_TIMEOUT_MS = 10_000;
-
 export const SLACK_ERROR_MESSAGES = {
   MISSING_WEBHOOK_URL:
     'Missing required env var: SLACK_WEBHOOK_URL. Set it in .env, then restart the Mastra server.',

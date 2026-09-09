@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:mastra": "mastra dev",
+    "dev:all": "concurrently -n vite,mastra -c blue,magenta \"pnpm dev\" \"pnpm dev:mastra\"",
     "build": "tsc -b && vite build",
     "build:mastra": "mastra build",
     "lint": "eslint .",
@@ -57,6 +58,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
+    "concurrently": "^10.0.5",
     "eslint": "^10.8.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",

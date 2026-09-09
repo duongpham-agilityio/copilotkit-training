@@ -1,7 +1,7 @@
 import {
   APP_STORE_CHARACTER_LIMIT,
   GOOGLE_PLAY_CHARACTER_LIMIT,
-} from '../../constants/release-notes';
+} from '../../constants/config/lib-config';
 
 export const RELEASE_NOTE_FORMATTING = `# Release Note Formatting
 

@@ -1,4 +1,5 @@
-import { FETCH_TIMEOUT_MS } from '@/constants/network.ts';
+import { FETCH_TIMEOUT_MS } from '@/constants/time.ts';
+import { MEMORY_THREADS_ROUTE_PATH } from '@/constants/endpoints.ts';
 import { toNetworkErrorMessage } from '@/lib/network-error-message.ts';
 import { getRequiredEnv } from '@/lib/env.ts';
 import { getAuthHeader } from '@/services/get-auth-header.ts';
@@ -22,7 +23,7 @@ export const listThreads = async (
   let response: Response;
   try {
     response = await fetch(
-      `${baseUrl}/api/memory/threads?${params.toString()}`,
+      `${baseUrl}${MEMORY_THREADS_ROUTE_PATH}?${params.toString()}`,
       {
         headers: getAuthHeader(),
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),

@@ -1,7 +1,7 @@
 import { BASE_INSTRUCTIONS } from '../base';
 import { buildIntro } from './intro';
 import { LOOP } from './loop';
-import { RELEASE_NOTES_DEFAULT_TIME_ZONE } from '../../../../constants/release-notes';
+import { RELEASE_NOTES_DEFAULT_TIME_ZONE } from '../../../../constants/config/time-zone';
 import { formatReleaseDate } from '../../../../lib/release-notes/release-title';
 
 const toHourIso = (now: Date): string =>

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useAuth } from '@/hooks/use-auth.ts';
 import { AuthStatus } from '@/store/auth-store.ts';
-import { ROUTE_DASHBOARD, ROUTE_SIGN_IN } from '@/constants/routes.ts';
+import { ROUTE_DASHBOARD, ROUTE_SIGN_IN } from '@/constants/routings.ts';
 
 const AppBootstrap = () => {
   const location = useLocation();

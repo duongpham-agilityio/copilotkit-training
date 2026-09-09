@@ -1,5 +1,5 @@
 import { registerApiRoute } from '@mastra/core/server';
-import { COPILOTKIT_ROUTE_PATH } from '../../constants/slack';
+import { COPILOTKIT_ROUTE_PATH } from '../../constants/endpoints';
 import {
   CopilotRuntime,
   createCopilotRuntimeHandler,

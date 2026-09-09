@@ -3,7 +3,7 @@ import {
   APP_STORE_CHARACTER_LIMIT,
   GOOGLE_PLAY_CHARACTER_LIMIT,
   RELEASE_NOTES_TITLE_PREFIX,
-} from '../../constants/release-notes';
+} from '../../constants/config/lib-config';
 
 export const platformFormattingSkill = createSkill({
   name: 'platform-formatting',

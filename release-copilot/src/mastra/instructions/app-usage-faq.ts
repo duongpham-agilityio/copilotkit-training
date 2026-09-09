@@ -1,9 +1,9 @@
 import {
   APP_STORE_CHARACTER_LIMIT,
   GOOGLE_PLAY_CHARACTER_LIMIT,
-  RELEASE_NOTES_DEFAULT_TIME_ZONE,
   RELEASE_NOTES_TITLE_PREFIX,
-} from '../../constants/release-notes';
+} from '../../constants/config/lib-config';
+import { RELEASE_NOTES_DEFAULT_TIME_ZONE } from '../../constants/config/time-zone';
 
 export const APP_USAGE_FAQ = `# App Usage FAQ
 
