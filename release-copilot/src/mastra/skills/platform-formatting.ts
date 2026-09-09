@@ -16,8 +16,10 @@ if the user asks you to.
 
 ## All platforms
 
-- Section order: Breaking changes, then Features, then Fixes. Omit any section with no
-  entries — never print an empty heading, "None", or "N/A"
+- Section order: Breaking changes, then Features, then Fixes, then Other Changes.
+  Other Changes holds only entries kept via working memory's \`keepExcludedTypes\` (see
+  Rules) and is the rarest section — omit it, like any other, when it has no entries.
+  Omit any section with no entries — never print an empty heading, "None", or "N/A"
 - Never write a title or date line yourself. The title is always
   "${RELEASE_NOTES_TITLE_PREFIX}yyyymmdd" and is prepended separately — a draft body
   starts at its first section
@@ -26,7 +28,8 @@ if the user asks you to.
 
 ## GitHub (Markdown, no length limit)
 
-- Section headings exactly: \`## 💥 Breaking Changes\`, \`## ✨ Features\`, \`## 🐛 Fixes\`
+- Section headings exactly: \`## 💥 Breaking Changes\`, \`## ✨ Features\`,
+  \`## 🐛 Fixes\`, \`## 🔧 Other Changes\`
 - One bullet per entry, starting with an imperative verb, commit ID as inline code in
   parentheses at the end: \`- Add JSON export for release notes (\\\`abc1234\\\`)\`
 - Emoji belong in section headings only, never on individual bullets
@@ -53,7 +56,7 @@ if the user asks you to.
 Shorten before dropping:
 
 1. Tighten each line to its user-facing essence; merge near-duplicate entries
-2. Only if it still doesn't fit, drop whole entries, lowest priority first (Fixes,
-   then Features, then Breaking changes)
+2. Only if it still doesn't fit, drop whole entries, lowest priority first (Other
+   Changes, then Fixes, then Features, then Breaking changes)
 3. Never truncate mid-sentence, and never produce a body that exceeds the limit`,
 });

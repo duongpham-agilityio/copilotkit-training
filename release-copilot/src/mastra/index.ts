@@ -22,16 +22,33 @@ import { MASTRA_STORAGE_ID } from '../constants/storages/storage-name';
 import { MASTRA_DB_FALLBACK_URL } from '../constants/storages/storage-path';
 import { getRequiredEnv } from '../lib/env';
 import { copilotKitRoute } from './api/copilotkit-route';
+import { SimpleAuth } from '@mastra/core/server';
 
-const supabaseAuth = new MastraAuthSupabase({
-  url: getRequiredEnv(process.env.SUPABASE_URL, 'SUPABASE_URL'),
-  anonKey: getRequiredEnv(
-    process.env.SUPABASE_PUBLISHABLE_KEY,
-    'SUPABASE_PUBLISHABLE_KEY',
-  ),
-  authorizeUser: () => true,
-  mapUserToResourceId: (user) => user.id,
-});
+// `dev:mastra` sets MASTRA_AUTH_MODE=simple for Studio testing without Supabase
+// credentials; every other entrypoint (`dev:all`, production build) leaves it unset
+// and gets real Supabase auth. Auth is picked before construction, not built as two
+// instances, so the simple-auth path never requires SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY.
+const auth =
+  process.env.MASTRA_AUTH_MODE === 'simple'
+    ? new SimpleAuth({
+        tokens: {
+          'local-testing-token': {
+            id: 'user-1',
+            name: 'Duong Pham',
+            role: 'admin',
+          },
+        },
+        mapUserToResourceId: (user) => user.id,
+      })
+    : new MastraAuthSupabase({
+        url: getRequiredEnv(process.env.SUPABASE_URL, 'SUPABASE_URL'),
+        anonKey: getRequiredEnv(
+          process.env.SUPABASE_PUBLISHABLE_KEY,
+          'SUPABASE_PUBLISHABLE_KEY',
+        ),
+        authorizeUser: () => true,
+        mapUserToResourceId: (user) => user.id,
+      });
 
 export const mastra = new Mastra({
   agents: {
@@ -42,7 +59,7 @@ export const mastra = new Mastra({
   },
   server: {
     cors: MASTRA_CORS_CONFIG,
-    auth: supabaseAuth,
+    auth,
     apiRoutes: [copilotKitRoute, slackPublishRoute],
   },
   bundler: {

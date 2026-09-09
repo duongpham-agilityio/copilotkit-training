@@ -80,8 +80,10 @@ export const ReleaseNotesDraftSchema = z.object({
         'GitHub release notes body as Markdown, starting at the first `##`',
         'section — never write a title/H1 line, the app prepends it. Sections in',
         'this order, omitting any that have no entries: ## 💥 Breaking Changes,',
-        '## ✨ Features, ## 🐛 Fixes. One bullet per entry, commit IDs as inline',
-        'code. No length limit.',
+        '## ✨ Features, ## 🐛 Fixes, ## 🔧 Other Changes (entries whose type was',
+        "kept via the user's working memory keepExcludedTypes; rare, usually",
+        'absent). One bullet per entry, commit IDs as inline code. No length',
+        'limit.',
       ),
     ),
   appStore: z
