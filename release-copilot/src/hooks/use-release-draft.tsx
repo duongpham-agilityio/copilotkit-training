@@ -7,8 +7,8 @@ import {
 } from '@/hooks/use-release-draft-view.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
-import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/tools.ts';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
+import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
 import { joinLines } from '@/lib/text.ts';
 import {
   ReleaseNotesDraftSchema,

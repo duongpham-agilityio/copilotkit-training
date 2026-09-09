@@ -1,7 +1,5 @@
-import {
-  RELEASE_NOTES_DEFAULT_TIME_ZONE,
-  RELEASE_NOTES_TITLE_PREFIX,
-} from '../../constants/release-notes';
+import { RELEASE_NOTES_DEFAULT_TIME_ZONE } from '../../constants/config/time-zone';
+import { RELEASE_NOTES_TITLE_PREFIX } from '../../constants/config/lib-config';
 import type {
   PlatformDraft,
   ReleaseNotesDraft,

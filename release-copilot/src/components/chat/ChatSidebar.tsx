@@ -4,7 +4,7 @@ import {
   type CopilotChatAssistantMessage,
   type CopilotChatUserMessage,
 } from '@copilotkit/react-core/v2';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id';
 import AssistantMessageBubble from './AssistantMessageBubble.tsx';
 import UserMessageBubble from './UserMessageBubble.tsx';
 

@@ -1,7 +1,7 @@
 import { MemoryRouter } from 'react-router';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import AppShell from '../AppShell.tsx';
-import { ROUTE_DASHBOARD } from '@/constants/routes.ts';
+import { ROUTE_DASHBOARD } from '@/constants/routings.ts';
 
 const meta: Meta<typeof AppShell> = {
   component: AppShell,

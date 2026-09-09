@@ -2,7 +2,7 @@ import { buildIntro } from './intro';
 import { COMMIT_CLASSIFICATION } from './commit-classification';
 import { RELEASE_NOTE_FORMATTING } from './release-note-formatting';
 import { APP_USAGE_FAQ } from './app-usage-faq';
-import { RELEASE_NOTES_DEFAULT_TIME_ZONE } from '../../constants/release-notes';
+import { RELEASE_NOTES_DEFAULT_TIME_ZONE } from '../../constants/config/time-zone';
 import { formatReleaseDate } from '../../lib/release-notes/release-title';
 
 const toHourIso = (now: Date): string =>

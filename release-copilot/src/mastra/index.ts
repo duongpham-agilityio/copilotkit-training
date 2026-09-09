@@ -11,14 +11,15 @@ import { MastraAuthSupabase } from '@mastra/auth-supabase';
 import { releaseCopilotAgent } from './agents/release-copilot-agent';
 import { renderReleaseNotesPreviewTool } from './tools/render-release-notes-preview-tool';
 import { slackPublishRoute } from './api/slack-publish-route';
-import { RELEASE_COPILOT_AGENT_ID } from '../constants/agents';
-import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/tools';
-import { MASTRA_CORS_CONFIG, MASTRA_LOGGER_NAME } from '../constants/server';
+import { RELEASE_COPILOT_AGENT_ID } from '../constants/agent-tools/agent-id';
+import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/agent-tools/tools-name';
 import {
-  MASTRA_STORAGE_ID,
-  MASTRA_DB_FALLBACK_URL,
-} from '../constants/storage';
-import { MASTRA_OBSERVABILITY_SERVICE_NAME } from '../constants/observability';
+  MASTRA_CORS_CONFIG,
+  MASTRA_LOGGER_NAME,
+  MASTRA_OBSERVABILITY_SERVICE_NAME,
+} from '../constants/config/lib-config';
+import { MASTRA_STORAGE_ID } from '../constants/storages/storage-name';
+import { MASTRA_DB_FALLBACK_URL } from '../constants/storages/storage-path';
 import { getRequiredEnv } from '../lib/env';
 import { copilotKitRoute } from './api/copilotkit-route';
 

@@ -4,7 +4,7 @@ import { useThreadSessionStore } from '@/store/thread-session-store.ts';
 import { listThreads } from '@/services/list-threads.ts';
 import { createUUID } from '@/lib/uuid.ts';
 import type { ThreadSummary } from '@/types/thread.ts';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id';
 import { useAuth } from './use-auth';
 
 const THREADS_QUERY_KEY = ['threads'];

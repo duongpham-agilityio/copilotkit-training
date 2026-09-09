@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import App from '../App.tsx';
-import { ROUTE_DASHBOARD, ROUTE_HISTORY, ROUTE_SIGN_IN } from '@/constants/routes.ts';
+import { ROUTE_DASHBOARD, ROUTE_HISTORY, ROUTE_SIGN_IN } from '@/constants/routings.ts';
 import AppBootstrap from './AppBootstrap.tsx';
 import DashboardPage from './DashboardPage.tsx';
 import HistoryPage from './HistoryPage.tsx';

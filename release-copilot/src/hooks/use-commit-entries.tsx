@@ -7,8 +7,8 @@ import {
 } from '@/hooks/use-commit-entries-view.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
-import { SHOW_ENTRY_LIST_TOOL_NAME } from '@/constants/tools.ts';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
+import { SHOW_ENTRY_LIST_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
 import { joinLines } from '@/lib/text.ts';
 import { EntryListToolSchema, type ReleaseEntry } from '@/types/release-entry.ts';
 

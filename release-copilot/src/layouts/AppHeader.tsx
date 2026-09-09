@@ -4,7 +4,7 @@ import { Menu } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import Tabs, { TabsVariant, type TabItem } from '@/components/common/Tabs.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
-import { ROUTE_DASHBOARD, ROUTE_HISTORY } from '@/constants/routes.ts';
+import { ROUTE_DASHBOARD, ROUTE_HISTORY } from '@/constants/routings.ts';
 
 interface AppHeaderProps {
   actions?: ReactNode;

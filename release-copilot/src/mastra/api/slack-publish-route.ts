@@ -1,10 +1,8 @@
 import { registerApiRoute } from '@mastra/core/server';
 import { SlackPublishRequestSchema } from '../../types/slack-publish-request';
-import {
-  SLACK_PUBLISH_ROUTE_PATH,
-  SLACK_ERROR_MESSAGES,
-  SLACK_WEBHOOK_TIMEOUT_MS,
-} from '../../constants/slack';
+import { SLACK_PUBLISH_ROUTE_PATH } from '../../constants/endpoints';
+import { SLACK_ERROR_MESSAGES } from '../../constants/messages';
+import { SLACK_WEBHOOK_TIMEOUT_MS } from '../../constants/time';
 
 const buildSlackText = (label: string, content: string): string =>
   `*Release notes* · ${label}\n\`\`\`\n${content}\n\`\`\``;

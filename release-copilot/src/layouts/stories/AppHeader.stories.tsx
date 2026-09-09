@@ -1,7 +1,7 @@
 import { MemoryRouter } from 'react-router';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import AppHeader from '../AppHeader.tsx';
-import { ROUTE_DASHBOARD } from '@/constants/routes.ts';
+import { ROUTE_DASHBOARD } from '@/constants/routings.ts';
 
 const meta: Meta<typeof AppHeader> = {
   component: AppHeader,

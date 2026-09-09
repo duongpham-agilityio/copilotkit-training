@@ -2,8 +2,8 @@ import {
   CONFIRM_SLACK_PUBLISH_TOOL_NAME,
   RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
   SHOW_ENTRY_LIST_TOOL_NAME,
-} from '../../constants/tools';
-import { RELEASE_NOTES_TITLE_PREFIX } from '../../constants/release-notes';
+} from '../../constants/agent-tools/tools-name';
+import { RELEASE_NOTES_TITLE_PREFIX } from '../../constants/config/lib-config';
 
 export interface InstructionContext {
   nowIso: string;
