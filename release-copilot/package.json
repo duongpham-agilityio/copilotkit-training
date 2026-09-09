@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:mastra": "mastra dev",
-    "dev:all": "concurrently -n vite,mastra -c blue,magenta \"pnpm dev\" \"pnpm dev:mastra\"",
+    "dev:mastra": "MASTRA_AUTH_MODE=simple mastra dev",
+    "dev:all": "concurrently -n vite,mastra -c blue,magenta \"pnpm dev\" \"mastra dev\"",
     "build": "tsc -b && vite build",
     "build:mastra": "mastra build",
     "lint": "eslint .",

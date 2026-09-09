@@ -12,6 +12,7 @@ import {
   commitPrParsingSkill,
   platformFormattingSkill,
 } from '../skills';
+import { WorkingMemorySchema } from '../../types/working-memory';
 
 export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
@@ -37,5 +38,14 @@ export const releaseCopilotAgent = new Agent({
     commitPrParsingSkill,
     platformFormattingSkill,
   ],
-  memory: new Memory({ options: { lastMessages: 6, generateTitle: true } }),
+  memory: new Memory({
+    options: {
+      lastMessages: 6,
+      generateTitle: true,
+      workingMemory: {
+        enabled: true,
+        schema: WorkingMemorySchema,
+      },
+    },
+  }),
 });
