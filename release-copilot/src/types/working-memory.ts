@@ -26,6 +26,24 @@ export const WorkingMemorySchema = z.object({
         'so drafts default to it without asking again.',
       ),
     ),
+  currentRelease: z
+    .object({
+      version: z.string().min(1),
+      title: z.string().min(1),
+    })
+    .nullish()
+    .describe(
+      joinLines(
+        'The release currently being iterated on in this conversation — the',
+        'last version/title you produced. Read it before drafting to decide',
+        'whether this build continues that release (bump the version) or starts',
+        'a different one (reset to "1.0.0", new title). Update it after every',
+        'draft/edit call that includes version/title. Set it explicitly to null',
+        '(not omitted) when the user starts a build for a clearly different set',
+        'of commits/PRs, to signal "no release in progress" rather than leaving',
+        'the previous one in place.',
+      ),
+    ),
   language: z
     .string()
     .optional()

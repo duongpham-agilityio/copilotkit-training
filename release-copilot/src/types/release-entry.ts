@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { joinLines } from '@/lib/text.ts';
+import { joinLines } from '../lib/text';
 
 export const ReleaseEntrySchema = z.object({
   source: z

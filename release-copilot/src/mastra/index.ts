@@ -1,6 +1,5 @@
 import { Mastra } from '@mastra/core/mastra';
 import { PinoLogger } from '@mastra/loggers';
-import { LibSQLStore } from '@mastra/libsql';
 import {
   Observability,
   MastraStorageExporter,
@@ -18,10 +17,14 @@ import {
   MASTRA_LOGGER_NAME,
   MASTRA_OBSERVABILITY_SERVICE_NAME,
 } from '../constants/config/lib-config';
-import { MASTRA_STORAGE_ID } from '../constants/storages/storage-name';
-import { MASTRA_DB_FALLBACK_URL } from '../constants/storages/storage-path';
 import { getRequiredEnv } from '../lib/env';
+import { releaseCopilotFactoryStorage } from './storage/factory-storage';
 import { copilotKitRoute } from './api/copilotkit-route';
+import { saveReleaseHistoryRoute } from './api/save-release-history-route';
+import {
+  listReleaseHistoryRoute,
+  getReleaseHistoryRoute,
+} from './api/release-history-route';
 import { SimpleAuth } from '@mastra/core/server';
 
 // `dev:mastra` sets MASTRA_AUTH_MODE=simple for Studio testing without Supabase
@@ -60,16 +63,18 @@ export const mastra = new Mastra({
   server: {
     cors: MASTRA_CORS_CONFIG,
     auth,
-    apiRoutes: [copilotKitRoute, slackPublishRoute],
+    apiRoutes: [
+      copilotKitRoute,
+      slackPublishRoute,
+      saveReleaseHistoryRoute,
+      listReleaseHistoryRoute,
+      getReleaseHistoryRoute,
+    ],
   },
   bundler: {
     externals: true,
   },
-  storage: new LibSQLStore({
-    id: MASTRA_STORAGE_ID,
-    url: process.env.TURSO_DATABASE_URL ?? MASTRA_DB_FALLBACK_URL,
-    authToken: process.env.TURSO_AUTH_TOKEN,
-  }),
+  storage: releaseCopilotFactoryStorage.getMastraStorage(),
   logger: new PinoLogger({
     name: MASTRA_LOGGER_NAME,
     level: 'info',
