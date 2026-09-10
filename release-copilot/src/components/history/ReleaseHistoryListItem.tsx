@@ -7,7 +7,7 @@ interface ReleaseHistoryListItemProps {
   release: ReleaseSummary;
   isLatest: boolean;
   isSelected: boolean;
-  onSelect: (version: string) => void;
+  onSelect: (id: string) => void;
 }
 
 const ReleaseHistoryListItem = ({
@@ -18,7 +18,7 @@ const ReleaseHistoryListItem = ({
 }: ReleaseHistoryListItemProps) => (
   <Card
     emphasis={CardEmphasis.Outlined}
-    onClick={() => onSelect(release.version)}
+    onClick={() => onSelect(release.id)}
     className={cn(
       'flex flex-col gap-1 rounded-lg p-4.25',
       isSelected && 'border-primary bg-primary/5',

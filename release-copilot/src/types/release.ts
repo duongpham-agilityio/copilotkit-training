@@ -5,6 +5,7 @@ export const enum ReleaseStatus {
 }
 
 export interface ReleaseSummary {
+  id: string;
   version: string;
   status: ReleaseStatus;
   title: string;
