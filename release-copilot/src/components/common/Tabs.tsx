@@ -17,6 +17,7 @@ interface TabsProps {
   variant?: TabsVariant;
   disabled?: boolean;
   className?: string;
+  containerClassName?: string;
 }
 
 const CONTAINER_CLASSES: Record<TabsVariant, string> = {
@@ -41,8 +42,9 @@ const Tabs = ({
   variant = TabsVariant.Pill,
   disabled = false,
   className,
+  containerClassName,
 }: TabsProps) => (
-  <div className={CONTAINER_CLASSES[variant]}>
+  <div className={cn(CONTAINER_CLASSES[variant], containerClassName)}>
     {items.map((item) => (
       <button
         key={item.value}
