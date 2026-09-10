@@ -6,12 +6,14 @@ import type { ReleaseSummary } from '@/types/release.ts';
 interface ReleaseHistoryListItemProps {
   release: ReleaseSummary;
   isLatest: boolean;
+  isSelected: boolean;
   onSelect: (version: string) => void;
 }
 
 const ReleaseHistoryListItem = ({
   release,
   isLatest,
+  isSelected,
   onSelect,
 }: ReleaseHistoryListItemProps) => (
   <Card
@@ -19,14 +21,14 @@ const ReleaseHistoryListItem = ({
     onClick={() => onSelect(release.version)}
     className={cn(
       'flex flex-col gap-1 rounded-lg p-4.25',
-      isLatest && 'border-primary bg-primary/5',
+      isSelected && 'border-primary bg-primary/5',
     )}
   >
     <div className="flex items-center justify-between">
       <span
         className={cn(
           'text-headline-md',
-          isLatest
+          isSelected
             ? 'text-primary font-bold'
             : 'text-on-surface font-semibold',
         )}

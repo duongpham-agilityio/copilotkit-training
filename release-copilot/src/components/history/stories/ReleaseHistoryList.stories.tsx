@@ -41,6 +41,7 @@ const RELEASES: ReleaseSummary[] = [
 export const Default: Story = {
   args: {
     releases: RELEASES,
+    selectedVersion: RELEASES[0].version,
     onSelectVersion: () => {},
   },
 };
