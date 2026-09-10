@@ -38,14 +38,34 @@ const RELEASES: Record<ReleaseStatus, ReleaseSummary> = {
   },
 };
 
+export const Latest: Story = {
+  args: {
+    release: RELEASES[ReleaseStatus.Published],
+    isLatest: true,
+    onSelect: () => {},
+  },
+};
+
 export const Published: Story = {
-  args: { release: RELEASES[ReleaseStatus.Published], onSelect: () => {} },
+  args: {
+    release: RELEASES[ReleaseStatus.Published],
+    isLatest: false,
+    onSelect: () => {},
+  },
 };
 
 export const Draft: Story = {
-  args: { release: RELEASES[ReleaseStatus.Draft], onSelect: () => {} },
+  args: {
+    release: RELEASES[ReleaseStatus.Draft],
+    isLatest: false,
+    onSelect: () => {},
+  },
 };
 
 export const Archived: Story = {
-  args: { release: RELEASES[ReleaseStatus.Archived], onSelect: () => {} },
+  args: {
+    release: RELEASES[ReleaseStatus.Archived],
+    isLatest: false,
+    onSelect: () => {},
+  },
 };

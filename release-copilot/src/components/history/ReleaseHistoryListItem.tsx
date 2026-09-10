@@ -1,41 +1,50 @@
+import { Calendar } from 'lucide-react';
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
-import Badge, { BadgeVariant } from '@/components/common/Badge.tsx';
-import { type ReleaseSummary, ReleaseStatus } from '@/types/release.ts';
+import { cn } from '@/lib/cn.ts';
+import type { ReleaseSummary } from '@/types/release.ts';
 
 interface ReleaseHistoryListItemProps {
   release: ReleaseSummary;
+  isLatest: boolean;
   onSelect: (version: string) => void;
 }
 
-const RELEASE_STATUS_BADGE_VARIANT: Record<ReleaseStatus, BadgeVariant> = {
-  [ReleaseStatus.Published]: BadgeVariant.Success,
-  [ReleaseStatus.Draft]: BadgeVariant.Warning,
-  [ReleaseStatus.Archived]: BadgeVariant.Neutral,
-};
-
 const ReleaseHistoryListItem = ({
   release,
+  isLatest,
   onSelect,
 }: ReleaseHistoryListItemProps) => (
   <Card
     emphasis={CardEmphasis.Outlined}
     onClick={() => onSelect(release.version)}
+    className={cn(
+      'flex flex-col gap-1 rounded-lg p-4.25',
+      isLatest && 'border-primary bg-primary/5',
+    )}
   >
     <div className="flex items-center justify-between">
-      <div>
-        <span className="text-body-lg text-on-surface font-medium">
-          {release.title}
+      <span
+        className={cn(
+          'text-headline-md',
+          isLatest
+            ? 'text-primary font-bold'
+            : 'text-on-surface font-semibold',
+        )}
+      >
+        {release.version}
+      </span>
+      {isLatest && (
+        <span className="bg-primary text-on-primary text-label-mono-xs rounded-full px-2 py-0.5 font-mono font-bold tracking-wide uppercase">
+          Latest
         </span>
-        <span className="text-label-sm text-on-surface-variant ml-2">
-          {release.version}
-        </span>
-      </div>
-      <Badge variant={RELEASE_STATUS_BADGE_VARIANT[release.status]}>
-        {release.status}
-      </Badge>
+      )}
     </div>
-    <div className="text-label-sm text-on-surface-variant mt-2">
-      {release.date} · {release.featCount} feat · {release.fixCount} fix
+    <div className="text-body-md text-on-surface-variant">
+      {release.title}
+    </div>
+    <div className="text-label-sm text-outline flex items-center gap-1">
+      <Calendar className="size-3.5" />
+      {release.date}
     </div>
   </Card>
 );
