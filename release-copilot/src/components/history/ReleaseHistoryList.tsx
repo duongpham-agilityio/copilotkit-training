@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Search } from 'lucide-react';
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
 import Input from '@/components/common/Input.tsx';
 import ReleaseHistoryListItem from './ReleaseHistoryListItem.tsx';
@@ -14,8 +15,10 @@ const ReleaseHistoryList = ({
   onSelectVersion,
 }: ReleaseHistoryListProps) => {
   const [search, setSearch] = useState('');
-  const filteredReleases = releases.filter((release) =>
-    release.title.toLowerCase().includes(search.toLowerCase()),
+  const filteredReleases = releases.filter(
+    (release) =>
+      release.title.toLowerCase().includes(search.toLowerCase()) ||
+      release.version.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -23,13 +26,15 @@ const ReleaseHistoryList = ({
       <Input
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search releases..."
+        placeholder="Search versions..."
+        icon={<Search className="size-4" />}
       />
       <div className="mt-4 flex flex-col gap-3">
         {filteredReleases.map((release) => (
           <ReleaseHistoryListItem
             key={release.version}
             release={release}
+            isLatest={release.version === releases[0]?.version}
             onSelect={onSelectVersion}
           />
         ))}
