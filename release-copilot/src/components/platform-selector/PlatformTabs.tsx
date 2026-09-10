@@ -1,10 +1,13 @@
 import Tabs, { TabsVariant, type TabItem } from '@/components/common/Tabs.tsx';
+import { cn } from '@/lib/cn.ts';
 
 interface PlatformTabsProps {
   items: TabItem[];
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  className?: string;
+  containerClassName?: string;
 }
 
 const PlatformTabs = ({
@@ -12,6 +15,8 @@ const PlatformTabs = ({
   value,
   onChange,
   disabled = false,
+  className,
+  containerClassName,
 }: PlatformTabsProps) => (
   <Tabs
     items={items}
@@ -19,7 +24,8 @@ const PlatformTabs = ({
     onChange={onChange}
     variant={TabsVariant.Pill}
     disabled={disabled}
-    className="text-label-sm"
+    className={cn('text-label-sm', className)}
+    containerClassName={containerClassName}
   />
 );
 
