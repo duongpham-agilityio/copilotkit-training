@@ -7,11 +7,13 @@ import type { ReleaseSummary } from '@/types/release.ts';
 
 interface ReleaseHistoryListProps {
   releases: ReleaseSummary[];
+  selectedVersion: string;
   onSelectVersion: (version: string) => void;
 }
 
 const ReleaseHistoryList = ({
   releases,
+  selectedVersion,
   onSelectVersion,
 }: ReleaseHistoryListProps) => {
   const [search, setSearch] = useState('');
@@ -35,6 +37,7 @@ const ReleaseHistoryList = ({
             key={release.version}
             release={release}
             isLatest={release.version === releases[0]?.version}
+            isSelected={release.version === selectedVersion}
             onSelect={onSelectVersion}
           />
         ))}

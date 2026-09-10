@@ -27,5 +27,6 @@ export const Default: Story = {
     activePlatform: KnownPlatformId.AppStore,
     onPlatformChange: () => {},
     onCopy: () => {},
+    onSendToSlack: () => true,
   },
 };

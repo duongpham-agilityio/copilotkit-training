@@ -42,6 +42,16 @@ export const Latest: Story = {
   args: {
     release: RELEASES[ReleaseStatus.Published],
     isLatest: true,
+    isSelected: true,
+    onSelect: () => {},
+  },
+};
+
+export const Selected: Story = {
+  args: {
+    release: RELEASES[ReleaseStatus.Draft],
+    isLatest: false,
+    isSelected: true,
     onSelect: () => {},
   },
 };
@@ -50,6 +60,7 @@ export const Published: Story = {
   args: {
     release: RELEASES[ReleaseStatus.Published],
     isLatest: false,
+    isSelected: false,
     onSelect: () => {},
   },
 };
@@ -58,6 +69,7 @@ export const Draft: Story = {
   args: {
     release: RELEASES[ReleaseStatus.Draft],
     isLatest: false,
+    isSelected: false,
     onSelect: () => {},
   },
 };
@@ -66,6 +78,7 @@ export const Archived: Story = {
   args: {
     release: RELEASES[ReleaseStatus.Archived],
     isLatest: false,
+    isSelected: false,
     onSelect: () => {},
   },
 };

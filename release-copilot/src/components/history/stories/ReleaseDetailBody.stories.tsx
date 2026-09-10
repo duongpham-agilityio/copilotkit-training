@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ReleaseDetailBody from '../ReleaseDetailBody.tsx';
 import { ReleaseStatus, type ReleaseSummary } from '@/types/release.ts';
-import { KnownPlatformId } from '@/types/platform.ts';
 
 const meta: Meta<typeof ReleaseDetailBody> = {
   component: ReleaseDetailBody,
@@ -45,7 +44,6 @@ export const Default: Story = {
   args: {
     release: RELEASE,
     markdown: MARKDOWN,
-    activePlatform: KnownPlatformId.AppStore,
   },
 };
 
@@ -53,6 +51,5 @@ export const NoContent: Story = {
   args: {
     release: RELEASE,
     markdown: null,
-    activePlatform: KnownPlatformId.AppStore,
   },
 };
