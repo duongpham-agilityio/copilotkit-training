@@ -12,6 +12,7 @@ export default meta;
 type Story = StoryObj<typeof ReleaseDetailBody>;
 
 const RELEASE: ReleaseSummary = {
+  id: 'release-1',
   version: 'v2.4.0',
   status: ReleaseStatus.Published,
   title: 'Custom commit types',

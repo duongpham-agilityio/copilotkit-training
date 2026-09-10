@@ -6,17 +6,20 @@ import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 export interface DraftThreadState {
   draft: ReleaseNotesDraft | null;
   activePlatformId: string;
+  savedVersion: string | null;
 }
 
 export const EMPTY_DRAFT_THREAD_STATE: DraftThreadState = {
   draft: null,
   activePlatformId: KnownPlatformId.Github,
+  savedVersion: null,
 };
 
 export interface DraftSlice {
   draftByThread: Record<string, DraftThreadState>;
   setDraft: (threadId: string, draft: ReleaseNotesDraft) => void;
   setActivePlatform: (threadId: string, platformId: string) => void;
+  setSavedVersion: (threadId: string, version: string) => void;
 }
 
 export const createDraftSlice: StateCreator<
@@ -49,6 +52,19 @@ export const createDraftSlice: StateCreator<
         draftByThread: {
           ...state.draftByThread,
           [threadId]: { ...current, activePlatformId: platformId },
+        },
+      };
+    }),
+  setSavedVersion: (threadId, version) =>
+    set((state) => {
+      const current = state.draftByThread[threadId] ?? EMPTY_DRAFT_THREAD_STATE;
+      if (current.savedVersion === version) {
+        return state;
+      }
+      return {
+        draftByThread: {
+          ...state.draftByThread,
+          [threadId]: { ...current, savedVersion: version },
         },
       };
     }),
