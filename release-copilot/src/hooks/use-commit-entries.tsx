@@ -6,21 +6,33 @@ import {
   type CommitEntriesView,
 } from '@/hooks/use-commit-entries-view.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
+import { useIsLatestToolCall } from '@/hooks/use-is-latest-tool-call.ts';
 import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
 import { SHOW_ENTRY_LIST_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
 import { joinLines } from '@/lib/text.ts';
-import { EntryListToolSchema, type ReleaseEntry } from '@/types/release-entry.ts';
+import {
+  EntryListToolSchema,
+  type ReleaseEntry,
+} from '@/types/release-entry.ts';
 
 interface EntryListSyncProps {
+  toolCallId: string;
   entries: ReleaseEntry[];
   onSync: (entries: ReleaseEntry[]) => void;
 }
 
-const EntryListSync = ({ entries, onSync }: EntryListSyncProps) => {
+// Only the thread's newest showEntryList call may write to the store — an
+// older call re-mounted by scrolling up must not overwrite the latest entries
+// (or reset the user's selection). See useIsLatestToolCall.
+const EntryListSync = ({ toolCallId, entries, onSync }: EntryListSyncProps) => {
+  const isLatest = useIsLatestToolCall(SHOW_ENTRY_LIST_TOOL_NAME, toolCallId);
+
   useEffect(() => {
-    onSync(entries);
-  }, [entries, onSync]);
+    if (isLatest) {
+      onSync(entries);
+    }
+  }, [isLatest, entries, onSync]);
   return null;
 };
 
@@ -89,6 +101,7 @@ export const useCommitEntries = (): UseCommitEntriesResult => {
 
       return (
         <EntryListSync
+          toolCallId={props.toolCallId}
           entries={result.data.entries}
           onSync={(entries) => setEntries(threadIdRef.current, entries)}
         />
@@ -108,6 +121,7 @@ export const useCommitEntries = (): UseCommitEntriesResult => {
 
   return {
     ...view,
-    toggleSelection: (entryId: string) => toggleEntrySelection(threadId, entryId),
+    toggleSelection: (entryId: string) =>
+      toggleEntrySelection(threadId, entryId),
   };
 };
