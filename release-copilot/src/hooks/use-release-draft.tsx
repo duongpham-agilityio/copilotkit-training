@@ -6,6 +6,7 @@ import {
   type ReleaseDraftView,
 } from '@/hooks/use-release-draft-view.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
+import { useIsLatestToolCall } from '@/hooks/use-is-latest-tool-call.ts';
 import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
@@ -16,14 +17,25 @@ import {
 } from '@/types/release-notes-draft.ts';
 
 interface DraftSyncProps {
+  toolCallId: string;
   draft: ReleaseNotesDraft;
   onSync: (draft: ReleaseNotesDraft) => void;
 }
 
-const DraftSync = ({ draft, onSync }: DraftSyncProps) => {
+// Only the thread's newest renderReleaseNotesPreview call may write to the
+// store — an older draft re-mounted by scrolling up must not overwrite the
+// latest one in the Live Preview. See useIsLatestToolCall.
+const DraftSync = ({ toolCallId, draft, onSync }: DraftSyncProps) => {
+  const isLatest = useIsLatestToolCall(
+    RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
+    toolCallId,
+  );
+
   useEffect(() => {
-    onSync(draft);
-  }, [draft, onSync]);
+    if (isLatest) {
+      onSync(draft);
+    }
+  }, [isLatest, draft, onSync]);
   return null;
 };
 
@@ -54,7 +66,10 @@ export const useReleaseDraft = (): ReleaseDraftView => {
       const result = ReleaseNotesDraftSchema.safeParse(props.parameters);
 
       if (!result.success) {
-        console.warn('[useReleaseDraft] received invalid parameters', result.error);
+        console.warn(
+          '[useReleaseDraft] received invalid parameters',
+          result.error,
+        );
         return (
           <ToolErrorCard
             toolName={RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME}
@@ -65,6 +80,7 @@ export const useReleaseDraft = (): ReleaseDraftView => {
 
       return (
         <DraftSync
+          toolCallId={props.toolCallId}
           draft={result.data}
           onSync={(draft) => setDraft(threadIdRef.current, draft)}
         />
