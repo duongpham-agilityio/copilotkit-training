@@ -1,5 +1,4 @@
 import { registerApiRoute } from '@mastra/core/server';
-import { MASTRA_RESOURCE_ID_KEY } from '@mastra/core/request-context';
 import { listReleases, getRelease } from '../storage/releases-repository';
 import type { ReleaseRecord } from '../storage/releases-repository';
 import {
@@ -7,6 +6,7 @@ import {
   RELEASE_HISTORY_DETAIL_ROUTE_PATH,
 } from '../../constants/endpoints';
 import type { ReleaseHistoryRecord } from '../../types/release-history-record';
+import { requireOwnerId } from './require-owner-id';
 
 // ReleaseRecord (repository) and ReleaseHistoryRecord (wire type) are
 // structurally identical by design — this is the one place that fact is
@@ -18,11 +18,9 @@ export const listReleaseHistoryRoute = registerApiRoute(
   {
     method: 'GET',
     handler: async (context) => {
-      const ownerId = context.get('requestContext').get(MASTRA_RESOURCE_ID_KEY) as
-        | string
-        | undefined;
-      if (!ownerId) {
-        return context.json({ error: 'Unauthorized.' }, 401);
+      const ownerId = requireOwnerId(context);
+      if (typeof ownerId !== 'string') {
+        return ownerId;
       }
 
       const limitParam = context.req.query('limit');
@@ -47,11 +45,9 @@ export const getReleaseHistoryRoute = registerApiRoute(
   {
     method: 'GET',
     handler: async (context) => {
-      const ownerId = context.get('requestContext').get(MASTRA_RESOURCE_ID_KEY) as
-        | string
-        | undefined;
-      if (!ownerId) {
-        return context.json({ error: 'Unauthorized.' }, 401);
+      const ownerId = requireOwnerId(context);
+      if (typeof ownerId !== 'string') {
+        return ownerId;
       }
 
       const id = context.req.param('id');
