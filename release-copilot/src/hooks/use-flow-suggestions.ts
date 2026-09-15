@@ -1,7 +1,7 @@
 import { useConfigureSuggestions } from '@copilotkit/react-core/v2';
 import { useCommitEntriesView } from '@/hooks/use-commit-entries-view.ts';
 import { useReleaseDraftView } from '@/hooks/use-release-draft-view.ts';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
 
 const SELECT_STAGE_SUGGESTIONS = [
   { title: 'Draft for GitHub', message: 'Draft release notes for GitHub' },

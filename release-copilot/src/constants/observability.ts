@@ -1,1 +1,0 @@
-export const MASTRA_OBSERVABILITY_SERVICE_NAME = 'mastra';

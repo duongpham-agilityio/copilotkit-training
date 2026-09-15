@@ -1,7 +1,7 @@
 import {
   APP_STORE_CHARACTER_LIMIT,
   GOOGLE_PLAY_CHARACTER_LIMIT,
-} from '@/constants/release-notes.ts';
+} from '@/constants/config/lib-config.ts';
 import { KnownPlatformId } from '@/types/platform.ts';
 import type {
   PlatformDraft,

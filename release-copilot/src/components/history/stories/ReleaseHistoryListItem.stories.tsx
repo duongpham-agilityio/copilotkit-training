@@ -13,6 +13,7 @@ type Story = StoryObj<typeof ReleaseHistoryListItem>;
 
 const RELEASES: Record<ReleaseStatus, ReleaseSummary> = {
   [ReleaseStatus.Published]: {
+    id: 'release-published',
     version: 'v2.4.0',
     status: ReleaseStatus.Published,
     title: 'Custom commit types',
@@ -21,6 +22,7 @@ const RELEASES: Record<ReleaseStatus, ReleaseSummary> = {
     fixCount: 2,
   },
   [ReleaseStatus.Draft]: {
+    id: 'release-draft',
     version: 'v2.5.0',
     status: ReleaseStatus.Draft,
     title: 'History components',
@@ -29,6 +31,7 @@ const RELEASES: Record<ReleaseStatus, ReleaseSummary> = {
     fixCount: 0,
   },
   [ReleaseStatus.Archived]: {
+    id: 'release-archived',
     version: 'v2.3.0',
     status: ReleaseStatus.Archived,
     title: 'Base UI primitives',
@@ -38,14 +41,47 @@ const RELEASES: Record<ReleaseStatus, ReleaseSummary> = {
   },
 };
 
+export const Latest: Story = {
+  args: {
+    release: RELEASES[ReleaseStatus.Published],
+    isLatest: true,
+    isSelected: true,
+    onSelect: () => {},
+  },
+};
+
+export const Selected: Story = {
+  args: {
+    release: RELEASES[ReleaseStatus.Draft],
+    isLatest: false,
+    isSelected: true,
+    onSelect: () => {},
+  },
+};
+
 export const Published: Story = {
-  args: { release: RELEASES[ReleaseStatus.Published], onSelect: () => {} },
+  args: {
+    release: RELEASES[ReleaseStatus.Published],
+    isLatest: false,
+    isSelected: false,
+    onSelect: () => {},
+  },
 };
 
 export const Draft: Story = {
-  args: { release: RELEASES[ReleaseStatus.Draft], onSelect: () => {} },
+  args: {
+    release: RELEASES[ReleaseStatus.Draft],
+    isLatest: false,
+    isSelected: false,
+    onSelect: () => {},
+  },
 };
 
 export const Archived: Story = {
-  args: { release: RELEASES[ReleaseStatus.Archived], onSelect: () => {} },
+  args: {
+    release: RELEASES[ReleaseStatus.Archived],
+    isLatest: false,
+    isSelected: false,
+    onSelect: () => {},
+  },
 };

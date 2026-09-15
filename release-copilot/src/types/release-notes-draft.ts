@@ -6,7 +6,7 @@ import {
   PLATFORM_CHARACTER_LIMITS,
   RELEASE_NOTES_TITLE_PREFIX,
   RELEASE_TITLE_CHARACTER_BUDGET,
-} from '../constants/release-notes';
+} from '../constants/config/lib-config';
 
 const APP_STORE_BODY_LIMIT =
   APP_STORE_CHARACTER_LIMIT - RELEASE_TITLE_CHARACTER_BUDGET;
@@ -49,7 +49,7 @@ export const ReleaseNotesDraftSchema = z.object({
   releaseDate: z
     .string()
     .regex(/^\d{8}$/)
-    .optional()
+    .nullish()
     .describe(
       joinLines(
         'The release date as yyyymmdd (e.g. 20260901), normalized from whatever',
@@ -63,13 +63,38 @@ export const ReleaseNotesDraftSchema = z.object({
     .string()
     .min(1)
     .max(RELEASE_TITLE_CHARACTER_BUDGET)
-    .optional()
+    .nullish()
     .describe(
       joinLines(
         'A replacement for the whole title line, used verbatim. Set it ONLY when',
         'the user explicitly asked for a different title (e.g. "title it v2.1.0',
         'Release"). Omit it otherwise — the app then builds',
         `"${RELEASE_NOTES_TITLE_PREFIX}yyyymmdd" itself.`,
+      ),
+    ),
+  version: z
+    .string()
+    .min(1)
+    .nullish()
+    .describe(
+      joinLines(
+        'MAJOR.MINOR.PATCH for this release, decided by you from conversation',
+        'context: bump the version last saved for the release currently in',
+        'progress, or start over at "1.0.0" when this build is for a clearly',
+        'different set of commits/PRs than the one you were just iterating on.',
+        'Omit only when you have no basis yet to decide — omitting suppresses',
+        'saving this build to History.',
+      ),
+    ),
+  title: z
+    .string()
+    .min(1)
+    .nullish()
+    .describe(
+      joinLines(
+        'A short label distinguishing this release from others built the same',
+        'day (e.g. "Payment Gateway Update"). Required alongside `version` for',
+        'this build to be saved to History — omit both together, never just one.',
       ),
     ),
   github: z
@@ -80,8 +105,10 @@ export const ReleaseNotesDraftSchema = z.object({
         'GitHub release notes body as Markdown, starting at the first `##`',
         'section — never write a title/H1 line, the app prepends it. Sections in',
         'this order, omitting any that have no entries: ## 💥 Breaking Changes,',
-        '## ✨ Features, ## 🐛 Fixes. One bullet per entry, commit IDs as inline',
-        'code. No length limit.',
+        '## ✨ Features, ## 🐛 Fixes, ## 🔧 Other Changes (entries whose type was',
+        "kept via the user's working memory keepExcludedTypes; rare, usually",
+        'absent). One bullet per entry, commit IDs as inline code. No length',
+        'limit.',
       ),
     ),
   appStore: z
@@ -96,7 +123,7 @@ export const ReleaseNotesDraftSchema = z.object({
         `developers. At most ${APP_STORE_BODY_LIMIT} characters.`,
       ),
     )
-    .optional(),
+    .nullish(),
   googlePlay: z
     .string()
     .min(1)
@@ -109,7 +136,7 @@ export const ReleaseNotesDraftSchema = z.object({
         `At most ${GOOGLE_PLAY_BODY_LIMIT} characters.`,
       ),
     )
-    .optional(),
+    .nullish(),
   platforms: z
     .array(PlatformDraftSchema)
     .default([])

@@ -13,6 +13,7 @@ type Story = StoryObj<typeof ReleaseHistoryList>;
 
 const RELEASES: ReleaseSummary[] = [
   {
+    id: 'release-1',
     version: 'v2.4.0',
     status: ReleaseStatus.Published,
     title: 'Custom commit types',
@@ -21,6 +22,7 @@ const RELEASES: ReleaseSummary[] = [
     fixCount: 2,
   },
   {
+    id: 'release-2',
     version: 'v2.5.0',
     status: ReleaseStatus.Draft,
     title: 'History components',
@@ -29,6 +31,7 @@ const RELEASES: ReleaseSummary[] = [
     fixCount: 0,
   },
   {
+    id: 'release-3',
     version: 'v2.3.0',
     status: ReleaseStatus.Archived,
     title: 'Base UI primitives',
@@ -41,6 +44,7 @@ const RELEASES: ReleaseSummary[] = [
 export const Default: Story = {
   args: {
     releases: RELEASES,
-    onSelectVersion: () => {},
+    selectedReleaseId: RELEASES[0].id,
+    onSelectRelease: () => {},
   },
 };

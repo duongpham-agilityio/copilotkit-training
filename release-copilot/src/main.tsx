@@ -4,8 +4,7 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import '@copilotkit/react-core/v2/styles.css';
 import '@/styles/copilotkit-theme.css';
-import { router } from './routes/router.tsx';
-import AppProviders from './providers/AppProviders.tsx';
+import { router } from './routes/router.ts';
 
 createRoot(document.getElementById('root')!, {
   onUncaughtError: (error, info) =>
@@ -14,8 +13,6 @@ createRoot(document.getElementById('root')!, {
     console.error('[caught by boundary]', error, info.componentStack),
 }).render(
   <StrictMode>
-    <AppProviders>
-      <RouterProvider router={router} />
-    </AppProviders>
+    <RouterProvider router={router} />
   </StrictMode>,
 );

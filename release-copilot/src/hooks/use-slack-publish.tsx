@@ -4,9 +4,10 @@ import SlackPublishCard, {
   SlackPublishStatus,
 } from '@/components/release-notes/SlackPublishCard.tsx';
 import { useReleaseDraftView } from '@/hooks/use-release-draft-view.ts';
-import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agents.ts';
-import { CONFIRM_SLACK_PUBLISH_TOOL_NAME } from '@/constants/tools.ts';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
+import { CONFIRM_SLACK_PUBLISH_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
 import { publishToSlack } from '@/services/publish-to-slack.ts';
+import { saveReleaseToHistory } from '@/lib/release-notes/save-release-to-history.ts';
 import { joinLines } from '@/lib/text.ts';
 import { copyText } from '@/lib/clipboard.ts';
 import { KnownPlatformId } from '@/types/platform.ts';
@@ -65,6 +66,9 @@ const PublishFlow = ({ options, initialPlatformId, respond }: PublishFlowProps) 
 
     if (result.ok) {
       setStatus(SlackPublishStatus.Sent);
+      void saveReleaseToHistory().catch((error: unknown) =>
+        console.error('[useSlackPublish] saveReleaseToHistory failed', error),
+      );
       await respond(`Posted the ${selected.label} release notes to Slack.`).catch(
         reportRespondFailure,
       );

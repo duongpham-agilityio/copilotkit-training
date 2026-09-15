@@ -1,28 +1,57 @@
 import { Mastra } from '@mastra/core/mastra';
 import { PinoLogger } from '@mastra/loggers';
-import { LibSQLStore } from '@mastra/libsql';
 import {
   Observability,
   MastraStorageExporter,
   MastraPlatformExporter,
   SensitiveDataFilter,
 } from '@mastra/observability';
-import { registerCopilotKit } from '@ag-ui/mastra/copilotkit';
+import { MastraAuthSupabase } from '@mastra/auth-supabase';
 import { releaseCopilotAgent } from './agents/release-copilot-agent';
 import { renderReleaseNotesPreviewTool } from './tools/render-release-notes-preview-tool';
 import { slackPublishRoute } from './api/slack-publish-route';
-import { RELEASE_COPILOT_AGENT_ID } from '../constants/agents';
-import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/tools';
+import { RELEASE_COPILOT_AGENT_ID } from '../constants/agent-tools/agent-id';
+import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/agent-tools/tools-name';
 import {
-  COPILOTKIT_ROUTE_PATH,
-  COPILOTKIT_RESOURCE_ID,
-} from '../constants/copilotkit';
-import { MASTRA_CORS_CONFIG, MASTRA_LOGGER_NAME } from '../constants/server';
+  MASTRA_CORS_CONFIG,
+  MASTRA_LOGGER_NAME,
+  MASTRA_OBSERVABILITY_SERVICE_NAME,
+} from '../constants/config/lib-config';
+import { getRequiredEnv } from '../lib/env';
+import { releaseCopilotFactoryStorage } from './storage/factory-storage';
+import { copilotKitRoute } from './api/copilotkit-route';
+import { saveReleaseHistoryRoute } from './api/save-release-history-route';
 import {
-  MASTRA_STORAGE_ID,
-  MASTRA_DB_FALLBACK_URL,
-} from '../constants/storage';
-import { MASTRA_OBSERVABILITY_SERVICE_NAME } from '../constants/observability';
+  listReleaseHistoryRoute,
+  getReleaseHistoryRoute,
+} from './api/release-history-route';
+import { SimpleAuth } from '@mastra/core/server';
+
+// `dev:mastra` sets MASTRA_AUTH_MODE=simple for Studio testing without Supabase
+// credentials; every other entrypoint (`dev:all`, production build) leaves it unset
+// and gets real Supabase auth. Auth is picked before construction, not built as two
+// instances, so the simple-auth path never requires SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY.
+const auth =
+  process.env.MASTRA_AUTH_MODE === 'simple'
+    ? new SimpleAuth({
+        tokens: {
+          'local-testing-token': {
+            id: 'user-1',
+            name: 'Duong Pham',
+            role: 'admin',
+          },
+        },
+        mapUserToResourceId: (user) => user.id,
+      })
+    : new MastraAuthSupabase({
+        url: getRequiredEnv(process.env.SUPABASE_URL, 'SUPABASE_URL'),
+        anonKey: getRequiredEnv(
+          process.env.SUPABASE_PUBLISHABLE_KEY,
+          'SUPABASE_PUBLISHABLE_KEY',
+        ),
+        authorizeUser: () => true,
+        mapUserToResourceId: (user) => user.id,
+      });
 
 export const mastra = new Mastra({
   agents: {
@@ -33,22 +62,19 @@ export const mastra = new Mastra({
   },
   server: {
     cors: MASTRA_CORS_CONFIG,
+    auth,
     apiRoutes: [
-      registerCopilotKit({
-        path: COPILOTKIT_ROUTE_PATH,
-        resourceId: COPILOTKIT_RESOURCE_ID,
-      }),
+      copilotKitRoute,
       slackPublishRoute,
+      saveReleaseHistoryRoute,
+      listReleaseHistoryRoute,
+      getReleaseHistoryRoute,
     ],
   },
   bundler: {
     externals: true,
   },
-  storage: new LibSQLStore({
-    id: MASTRA_STORAGE_ID,
-    url: process.env.TURSO_DATABASE_URL ?? MASTRA_DB_FALLBACK_URL,
-    authToken: process.env.TURSO_AUTH_TOKEN,
-  }),
+  storage: releaseCopilotFactoryStorage.getMastraStorage(),
   logger: new PinoLogger({
     name: MASTRA_LOGGER_NAME,
     level: 'info',

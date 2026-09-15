@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { Outlet } from 'react-router';
 import { Download, HelpCircle, Settings } from 'lucide-react';
 import AppShell from '@/layouts/AppShell.tsx';
-import { AppNav } from '@/layouts/AppHeader.tsx';
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
 import Avatar from '@/components/common/Avatar.tsx';
@@ -9,9 +8,9 @@ import DisconnectBanner from '@/components/common/DisconnectBanner.tsx';
 import ErrorBoundary, {
   ErrorBoundaryVariant,
 } from '@/components/common/ErrorBoundary.tsx';
-import DashboardPage from '@/routes/DashboardPage.tsx';
 import { useReleaseExport } from '@/hooks/use-release-export.ts';
 import { ExportFormat } from '@/types/export-format.ts';
+import AppProviders from './providers/AppProviders';
 
 const HeaderActions = () => {
   const { canExport, exportDraft } = useReleaseExport();
@@ -27,20 +26,19 @@ const HeaderActions = () => {
         <Download className="size-4" aria-hidden="true" />
         Export
       </Button>
-      <IconButton icon={<Settings className="size-5" />} aria-label="Settings" />
+      <IconButton
+        icon={<Settings className="size-5" />}
+        aria-label="Settings"
+      />
       <IconButton icon={<HelpCircle className="size-5" />} aria-label="Help" />
       <Avatar name="You" />
     </div>
   );
 };
 
-const App = () => {
-  const [activeNav, setActiveNav] = useState<AppNav>(AppNav.Dashboard);
-
-  return (
+const App = () => (
+  <AppProviders>
     <AppShell
-      activeNav={activeNav}
-      onNavigate={setActiveNav}
       banner={<DisconnectBanner />}
       headerActions={
         <ErrorBoundary
@@ -51,15 +49,9 @@ const App = () => {
         </ErrorBoundary>
       }
     >
-      {activeNav === AppNav.Dashboard ? (
-        <DashboardPage />
-      ) : (
-        <div className="text-body-md text-on-surface-variant">
-          History is coming soon.
-        </div>
-      )}
+      <Outlet />
     </AppShell>
-  );
-};
+  </AppProviders>
+);
 
 export default App;

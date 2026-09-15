@@ -2,9 +2,10 @@ import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useThreadSessionStore } from '@/store/thread-session-store.ts';
 import { listThreads } from '@/services/list-threads.ts';
-import { COPILOTKIT_RESOURCE_ID } from '@/constants/copilotkit.ts';
 import { createUUID } from '@/lib/uuid.ts';
 import type { ThreadSummary } from '@/types/thread.ts';
+import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id';
+import { useAuth } from './use-auth';
 
 const THREADS_QUERY_KEY = ['threads'];
 // Threads rarely change; avoid refetching every time the dropdown reopens.
@@ -24,6 +25,8 @@ interface UseThreadSessionResult {
 // to resolve the current thread instead of receiving threadId as a prop.
 export const useThreadSession = (): UseThreadSessionResult => {
   const threadId = useThreadSessionStore((state) => state.threadId);
+  const { session } = useAuth();
+  const resourceId = session!.user.id;
   const setThreadId = useThreadSessionStore((state) => state.setThreadId);
   const queryClient = useQueryClient();
 
@@ -33,7 +36,11 @@ export const useThreadSession = (): UseThreadSessionResult => {
     isError: isThreadsError,
   } = useQuery({
     queryKey: THREADS_QUERY_KEY,
-    queryFn: listThreads,
+    queryFn: () =>
+      listThreads({
+        agentId: RELEASE_COPILOT_AGENT_ID,
+        resourceId,
+      }),
     staleTime: THREADS_STALE_TIME_MS,
   });
 
@@ -50,14 +57,14 @@ export const useThreadSession = (): UseThreadSessionResult => {
         {
           id: threadId,
           title: threadId,
-          resourceId: COPILOTKIT_RESOURCE_ID,
+          resourceId,
           createdAt: now,
           updatedAt: now,
         },
         ...(current ?? []),
       ];
     });
-  }, [threadId, queryClient]);
+  }, [threadId, queryClient, resourceId]);
 
   return {
     threadId,

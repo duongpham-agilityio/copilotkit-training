@@ -7,6 +7,7 @@ import { useCommitEntries } from '@/hooks/use-commit-entries.tsx';
 import { useReleaseDraft } from '@/hooks/use-release-draft.tsx';
 import { useSlackPublish } from '@/hooks/use-slack-publish.tsx';
 import { copyText } from '@/lib/clipboard.ts';
+import { saveReleaseToHistory } from '@/lib/release-notes/save-release-to-history.ts';
 
 const DashboardPage = () => {
   const { commits, selectedIds, toggleSelection } = useCommitEntries();
@@ -33,7 +34,11 @@ const DashboardPage = () => {
             />
           </ErrorBoundary>
           <ErrorBoundary title="Preview unavailable">
-            <LivePreviewPanel markdown={activeContent} onCopy={handleCopy} />
+            <LivePreviewPanel
+              markdown={activeContent}
+              onCopy={handleCopy}
+              onArchive={() => saveReleaseToHistory().then((result) => result.ok)}
+            />
           </ErrorBoundary>
         </div>
       }

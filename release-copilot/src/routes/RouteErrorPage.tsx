@@ -1,5 +1,6 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 import Button from '@/components/common/Button.tsx';
+import { ROUTE_DASHBOARD } from '@/constants/routings.ts';
 
 const toMessage = (error: unknown): string => {
   if (isRouteErrorResponse(error)) return `${error.status} ${error.statusText}`;
@@ -21,7 +22,7 @@ const RouteErrorPage = () => {
       <p className="text-body-md text-on-surface-variant max-w-prose break-words">
         {toMessage(error)}
       </p>
-      <Button onClick={() => window.location.assign('/')}>Back to dashboard</Button>
+      <Button onClick={() => window.location.assign(ROUTE_DASHBOARD)}>Back to dashboard</Button>
     </div>
   );
 };

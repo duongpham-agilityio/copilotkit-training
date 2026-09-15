@@ -1,0 +1,26 @@
+diff --git a/dist/agent-DCD4MApC.cjs b/dist/agent-DCD4MApC.cjs
+index 8e3c43307d851d7cc12d00f5cca5a9ef35c278ec..d89242602958686e2db098b345a4203bbadc0a63 100644
+--- a/dist/agent-DCD4MApC.cjs
++++ b/dist/agent-DCD4MApC.cjs
+@@ -11407,7 +11407,7 @@ var PromptInjectionDetector = class PromptInjectionDetector {
+ 		const alertMessage = `Prompt injection detected. Types: ${(result.categories || []).filter((cat) => cat.score >= this.threshold).map((cat) => cat.type).join(", ")}${result.reason ? `. Reason: ${result.reason}` : ""}${this.includeScores ? `. Scores: ${result.categories?.map((cat) => `${cat.type}: ${cat.score}`).join(", ")}` : ""}`;
+ 		switch (strategy) {
+ 			case "block":
+-				abort(alertMessage);
++				abort(result.reason || alertMessage, { metadata: { alertMessage, categories: result.categories } });
+ 				return null;
+ 			case "warn":
+ 				console.warn(`[PromptInjectionDetector] ${alertMessage}`);
+diff --git a/dist/agent-Dj30gJa3.js b/dist/agent-Dj30gJa3.js
+index e3e9ba9ddf42d9db55287a38679a27cd44580fc8..936ee24390daa6f0e47b09ac35972755e7ec6e42 100644
+--- a/dist/agent-Dj30gJa3.js
++++ b/dist/agent-Dj30gJa3.js
+@@ -11404,7 +11404,7 @@ var PromptInjectionDetector = class PromptInjectionDetector {
+ 		const alertMessage = `Prompt injection detected. Types: ${(result.categories || []).filter((cat) => cat.score >= this.threshold).map((cat) => cat.type).join(", ")}${result.reason ? `. Reason: ${result.reason}` : ""}${this.includeScores ? `. Scores: ${result.categories?.map((cat) => `${cat.type}: ${cat.score}`).join(", ")}` : ""}`;
+ 		switch (strategy) {
+ 			case "block":
+-				abort(alertMessage);
++				abort(result.reason || alertMessage, { metadata: { alertMessage, categories: result.categories } });
+ 				return null;
+ 			case "warn":
+ 				console.warn(`[PromptInjectionDetector] ${alertMessage}`);

@@ -50,16 +50,12 @@ remaining view hooks (`useCommitEntriesView`/`useReleaseDraftView`/`useReleaseEx
 `useThreadSession`) register nothing, so they're safe to call from as many places as
 needed.
 
-### 1.2 Old hooks — orphaned, not yet deleted
+### 1.2 Old hooks — deleted
 
-The 8 files below are **no longer imported anywhere** after the rewrite (confirmed via
-a repo-wide grep on `src/`), but they're intentionally **kept in place** for
-comparison — deleting them is a separate cleanup task, not folded into this rewrite:
-
-`use-dashboard-store.ts`, `use-show-entry-list-tool.tsx`,
-`use-render-release-notes-preview-tool.tsx`, `use-confirm-slack-publish-tool.tsx`,
-`use-entry-selection-context.ts`, `use-current-draft-context.ts`,
-`use-thread-store.ts`, `use-threads.ts`.
+**Update (2026-09-15):** the 8 files this section originally listed as orphaned-but-kept
+have since been deleted; confirmed gone from `src/hooks/` as of this update. Left here
+as a historical note rather than rewritten, since this document is a point-in-time
+snapshot (see header) — check `src/hooks/` directly for the current hook set (§1.1).
 
 ### 1.3 Hooks used directly from a library
 
@@ -76,8 +72,9 @@ comparison — deleting them is a separate cleanup task, not folded into this re
 All 3 register for `agentId = RELEASE_COPILOT_AGENT_ID` (`'releaseCopilotAgent'`) and
 are all mounted via `DashboardPage` — but indirectly now, through the corresponding
 domain hook (§1.1), not directly inside `DashboardPage` anymore. Tool names live in
-[src/constants/tools.ts](../../src/constants/tools.ts) — this is an implicit contract
-between the client and the agent's prompt that no compiler checks.
+[src/constants/agent-tools/tools-name.ts](../../src/constants/agent-tools/tools-name.ts)
+(moved from the `src/constants/tools.ts` path this section originally cited) — this is
+an implicit contract between the client and the agent's prompt that no compiler checks.
 
 | Tool | Mechanism | Registered by hook | Schema | Executes where |
 | --- | --- | --- | --- | --- |
