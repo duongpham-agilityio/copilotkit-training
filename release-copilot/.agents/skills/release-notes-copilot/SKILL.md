@@ -16,8 +16,10 @@ Users paste one of two things into the chat:
 - **Git log** — raw `git log` output, one commit per line/block
 - **PR** — a PR title alone, or a PR title + description (markdown body)
 
-Both feed the same classification pipeline below; only the parsing step differs
-(`src/lib/git/` vs `src/lib/pr/`).
+Both feed the same classification pipeline below. Parsing is LLM-driven, not code:
+the agent's `commit-pr-parsing` skill (`src/mastra/skills/commit-pr-parsing.ts`) tells
+it what to expect from each input shape before classifying — there is no separate
+deterministic parser per source.
 
 ## Commit selection (pre-filter)
 
@@ -110,18 +112,20 @@ The AI copilot does two things via chat, not just one:
 
 ## Where new code goes
 
-- `src/lib/git/` — pure git-log parsing logic (no React, no Mastra imports)
-- `src/lib/pr/` — pure PR title/description parsing logic (no React, no Mastra imports)
-- both implement the classification rules above as testable functions, sharing a common
-  output shape so downstream code (tools, formatters) doesn't care which source it came from
+- Parsing/classification (the rules above) has no `src/lib/` home — it's implemented
+  entirely as agent skill instructions in `src/mastra/skills/` (`classification-rules.ts`,
+  `commit-pr-parsing.ts`), not as testable TS functions. Don't add `src/lib/git/` or
+  `src/lib/pr/` for this — that was the pre-LLM-skills design and was removed as dead
+  stub folders.
 - `src/lib/release-notes/` — pure draft-presentation logic shared by both bundles (no
   React, no Mastra imports): release-date formatting and the title/body composition
   that the Live Preview, the Copy button, and the Slack card all go through
 - `src/lib/export/` — pure MD/TXT/JSON export formatting logic (no React, no Mastra
   imports); converts a generated draft into each downloadable format
-- `src/mastra/tools/` — Mastra tool wrappers that call into `src/lib/git/`, `src/lib/pr/`,
-  and the per-platform formatters; one tool per platform formatter plus one parser tool
-  per input source
+- `src/mastra/tools/` — currently just the one render tool
+  (`render-release-notes-preview-tool.ts`) that pushes an already-drafted
+  `ReleaseNotesDraft` to the UI; parsing, classification, and per-platform formatting
+  are all LLM-driven via `src/mastra/skills/`, not tool calls
 - `src/mastra/agents/` — the release-notes agent that orchestrates the tools (draft +
   edit-in-place, per the chat-driven drafting rules above)
 - `src/mastra/workflows/` — the end-to-end workflow (parse → classify → select → format)

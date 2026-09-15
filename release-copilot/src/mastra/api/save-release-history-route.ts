@@ -1,20 +1,18 @@
 import { registerApiRoute } from '@mastra/core/server';
-import { MASTRA_RESOURCE_ID_KEY } from '@mastra/core/request-context';
 import { SaveReleaseHistoryRequestSchema } from '../../types/save-release-history-request';
 import { insertRelease } from '../storage/releases-repository';
 import { RELEASE_HISTORY_ROUTE_PATH } from '../../constants/endpoints';
 import { formatReleaseDate } from '../../lib/release-notes/release-title';
+import { requireOwnerId } from './require-owner-id';
 
 export const saveReleaseHistoryRoute = registerApiRoute(
   RELEASE_HISTORY_ROUTE_PATH,
   {
     method: 'POST',
     handler: async (context) => {
-      const ownerId = context.get('requestContext').get(MASTRA_RESOURCE_ID_KEY) as
-        | string
-        | undefined;
-      if (!ownerId) {
-        return context.json({ error: 'Unauthorized.' }, 401);
+      const ownerId = requireOwnerId(context);
+      if (typeof ownerId !== 'string') {
+        return ownerId;
       }
 
       let body: unknown;
