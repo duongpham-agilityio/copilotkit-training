@@ -13,6 +13,10 @@ import {
   platformFormattingSkill,
 } from '../skills';
 import { WorkingMemorySchema } from '../../types/working-memory';
+import {
+  piiDetector,
+  promptInjectionDetector,
+} from '../processors/guardrail-processors';
 
 export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
@@ -38,6 +42,7 @@ export const releaseCopilotAgent = new Agent({
     commitPrParsingSkill,
     platformFormattingSkill,
   ],
+  inputProcessors: [promptInjectionDetector, piiDetector],
   memory: new Memory({
     options: {
       lastMessages: 6,
