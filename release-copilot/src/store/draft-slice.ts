@@ -1,5 +1,4 @@
 import type { StateCreator } from 'zustand';
-import type { EntriesSlice } from '@/store/entries-slice.ts';
 import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 
 export interface DraftThreadState {
@@ -19,7 +18,7 @@ export interface DraftSlice {
 }
 
 export const createDraftSlice: StateCreator<
-  EntriesSlice & DraftSlice,
+  DraftSlice,
   [],
   [],
   DraftSlice

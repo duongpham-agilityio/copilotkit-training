@@ -27,6 +27,7 @@ export const Default: Story = {
     markdown: SAMPLE_MARKDOWN,
     onCopy: () => {},
     onArchive: () => true,
+    onClose: () => {},
   },
 };
 
@@ -35,5 +36,6 @@ export const Empty: Story = {
     markdown: null,
     onCopy: () => {},
     onArchive: () => true,
+    onClose: () => {},
   },
 };

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Archive } from 'lucide-react';
+import { Archive, X } from 'lucide-react';
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
+import IconButton from '@/components/common/IconButton.tsx';
 import CopyButton, { type CopyHandler } from '@/components/common/CopyButton.tsx';
 import MonoTag from '@/components/common/MonoTag.tsx';
 import MarkdownPreview from './MarkdownPreview.tsx';
@@ -19,12 +20,14 @@ interface LivePreviewPanelProps {
   markdown: string | null;
   onCopy: CopyHandler;
   onArchive: CopyHandler;
+  onClose: () => void;
 }
 
 const LivePreviewPanel = ({
   markdown,
   onCopy,
   onArchive,
+  onClose,
 }: LivePreviewPanelProps) => {
   const [archiveState, setArchiveState] = useState<ArchiveState>(
     ArchiveState.Idle,
@@ -82,6 +85,11 @@ const LivePreviewPanel = ({
               className="border-primary border"
               onCopy={onCopy}
               disabled={!markdown}
+            />
+            <IconButton
+              icon={<X className="size-4" />}
+              aria-label="Close live preview"
+              onClick={onClose}
             />
           </div>
         </div>

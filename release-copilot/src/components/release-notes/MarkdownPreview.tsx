@@ -10,8 +10,8 @@ const MarkdownPreview = ({ markdown, className }: MarkdownPreviewProps) => {
   if (!markdown) {
     return (
       <p className="text-body-md text-on-surface-variant">
-        No content yet — ask Copilot to draft release notes from the selected
-        commits.
+        No content yet — paste a git log or PR text in the chat and ask Copilot
+        to draft release notes.
       </p>
     );
   }
