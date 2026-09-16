@@ -1,5 +1,4 @@
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
-import CopyButton, { type CopyHandler } from '@/components/common/CopyButton.tsx';
 
 export const enum SlackPublishStatus {
   Idle = 'idle',
@@ -10,22 +9,16 @@ export const enum SlackPublishStatus {
 }
 
 interface SlackPublishCardProps {
-  label: string;
-  content: string;
   status: SlackPublishStatus;
   error?: string | null;
-  onCopy: CopyHandler;
-  onSend: () => void;
+  onSubmit: () => void;
   onCancel: () => void;
 }
 
 const SlackPublishCard = ({
-  label,
-  content,
   status,
   error = null,
-  onCopy,
-  onSend,
+  onSubmit,
   onCancel,
 }: SlackPublishCardProps) => {
   if (status === SlackPublishStatus.Sent) {
@@ -52,24 +45,8 @@ const SlackPublishCard = ({
           closest defined size and matches how other cards style a prominent line
           (e.g. ReleaseHistoryListItem's title). */}
       <span className="text-body-lg text-on-surface">
-        Announce this {label} release in Slack?
+        Do you want to publish to Slack?
       </span>
-
-      <div className="flex justify-end">
-        <CopyButton
-          variant={ButtonVariant.Ghost}
-          className="border-primary border"
-          onCopy={onCopy}
-          disabled={isSending}
-        />
-      </div>
-
-      {/* text-body-sm isn't in the theme's typography scale; text-body-md is the
-          smallest defined body size and is already the default body text elsewhere
-          in this codebase. */}
-      <pre className="bg-surface-container text-body-md text-on-surface max-h-48 overflow-auto rounded-lg p-3 whitespace-pre-wrap">
-        {content}
-      </pre>
 
       {error && (
         <span className="text-body-md text-error" role="alert">
@@ -78,8 +55,8 @@ const SlackPublishCard = ({
       )}
 
       <div className="flex gap-2">
-        <Button onClick={onSend} disabled={isSending}>
-          {isSending ? 'Sending…' : 'Send to Slack'}
+        <Button onClick={onSubmit} disabled={isSending}>
+          {isSending ? 'Sending…' : 'Submit'}
         </Button>
         <Button
           variant={ButtonVariant.Ghost}
