@@ -11,16 +11,6 @@ export default meta;
 
 type Story = StoryObj<typeof SlackPublishCard>;
 
-const SAMPLE_LABEL = 'GitHub';
-const SAMPLE_CONTENT = `## Features
-
-- ✨ Add JSON export for release drafts \`a1b2c3d\`
-
-## Fixes
-
-- 🐛 Correct App Store character count \`e4f5g6h\`
-`;
-
 const InteractiveCard = () => {
   const [status, setStatus] = useState<SlackPublishStatus>(
     SlackPublishStatus.Idle,
@@ -28,11 +18,8 @@ const InteractiveCard = () => {
 
   return (
     <SlackPublishCard
-      label={SAMPLE_LABEL}
-      content={SAMPLE_CONTENT}
       status={status}
-      onCopy={() => {}}
-      onSend={() => setStatus(SlackPublishStatus.Sent)}
+      onSubmit={() => setStatus(SlackPublishStatus.Sent)}
       onCancel={() => setStatus(SlackPublishStatus.Cancelled)}
     />
   );
@@ -44,34 +31,25 @@ export const Default: Story = {
 
 export const Sending: Story = {
   args: {
-    label: SAMPLE_LABEL,
-    content: SAMPLE_CONTENT,
     status: SlackPublishStatus.Sending,
-    onCopy: () => {},
-    onSend: () => {},
+    onSubmit: () => {},
     onCancel: () => {},
   },
 };
 
 export const Failed: Story = {
   args: {
-    label: SAMPLE_LABEL,
-    content: SAMPLE_CONTENT,
     status: SlackPublishStatus.Failed,
     error: 'Slack rejected the message (404): no_service',
-    onCopy: () => {},
-    onSend: () => {},
+    onSubmit: () => {},
     onCancel: () => {},
   },
 };
 
 export const Posted: Story = {
   args: {
-    label: SAMPLE_LABEL,
-    content: SAMPLE_CONTENT,
     status: SlackPublishStatus.Sent,
-    onCopy: () => {},
-    onSend: () => {},
+    onSubmit: () => {},
     onCancel: () => {},
   },
 };

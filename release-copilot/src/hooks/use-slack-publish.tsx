@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { useHumanInTheLoop } from '@copilotkit/react-core/v2';
 import SlackPublishCard, {
   SlackPublishStatus,
@@ -9,7 +10,6 @@ import { CONFIRM_SLACK_PUBLISH_TOOL_NAME } from '@/constants/agent-tools/tools-n
 import { publishToSlack } from '@/services/publish-to-slack.ts';
 import { saveReleaseToHistory } from '@/lib/release-notes/save-release-to-history.ts';
 import { joinLines } from '@/lib/text.ts';
-import { copyText } from '@/lib/clipboard.ts';
 import { ConfirmSlackPublishSchema } from '@/types/confirm-slack-publish.ts';
 import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 
@@ -24,7 +24,15 @@ const RespondOnMount = ({
   respond: (result: unknown) => Promise<void>;
 }) => {
   useEffect(() => {
-    void respond(message).catch(reportRespondFailure);
+    const send = async (): Promise<void> => {
+      try {
+        await respond(message);
+      } catch (error: unknown) {
+        reportRespondFailure(error);
+      }
+    };
+
+    void send();
   }, [message, respond]);
   return <Fragment />;
 };
@@ -36,60 +44,72 @@ interface PublishFlowProps {
 }
 
 const PublishFlow = ({ draft, content, respond }: PublishFlowProps) => {
-  // Freeze what the user reviewed at mount: they must send exactly what the
-  // card showed, even if the draft changes again before they click.
-  const [frozen] = useState({
-    label: draft.label,
-    platform: draft.platform,
-    content,
+  const { label, platform } = draft;
+  // Cancelling isn't a mutation outcome — it's a terminal state the mutation
+  // never enters — so it stays local state alongside the mutation's own.
+  const [isCancelled, setIsCancelled] = useState(false);
+
+  const publish = useMutation({
+    // publishToSlack resolves with { ok: false } instead of rejecting, so
+    // rethrow here: otherwise every attempt lands in onSuccess and the card
+    // would report a rejected post as sent.
+    mutationFn: async (): Promise<void> => {
+      const result = await publishToSlack({
+        platformId: platform,
+        label,
+        content,
+      });
+
+      if (!result.ok) {
+        throw new Error(result.error ?? 'Publishing failed.');
+      }
+    },
+    onSuccess: async (): Promise<void> => {
+      try {
+        await saveReleaseToHistory();
+      } catch (error: unknown) {
+        console.error('[useSlackPublish] saveReleaseToHistory failed', error);
+      }
+
+      try {
+        await respond(`Posted the ${label} release notes to Slack.`);
+      } catch (error: unknown) {
+        reportRespondFailure(error);
+      }
+    },
   });
-  const [status, setStatus] = useState<SlackPublishStatus>(
-    SlackPublishStatus.Idle,
-  );
-  const [error, setError] = useState<string | null>(null);
 
-  const handleSend = async () => {
-    setStatus(SlackPublishStatus.Sending);
-    setError(null);
+  const handleCancel = async (): Promise<void> => {
+    setIsCancelled(true);
 
-    const result = await publishToSlack({
-      platformId: frozen.platform,
-      label: frozen.label,
-      content: frozen.content,
-    });
-
-    if (result.ok) {
-      setStatus(SlackPublishStatus.Sent);
-      void saveReleaseToHistory().catch((error: unknown) =>
-        console.error('[useSlackPublish] saveReleaseToHistory failed', error),
-      );
-      await respond(`Posted the ${frozen.label} release notes to Slack.`).catch(
-        reportRespondFailure,
-      );
-      return;
+    try {
+      await respond('User declined — nothing was posted to Slack.');
+    } catch (error: unknown) {
+      reportRespondFailure(error);
     }
-
-    setStatus(SlackPublishStatus.Failed);
-    setError(result.error ?? 'Publishing failed.');
   };
 
-  const handleCancel = async () => {
-    setStatus(SlackPublishStatus.Cancelled);
-    await respond('User declined — nothing was posted to Slack.').catch(
-      reportRespondFailure,
-    );
+  const resolveStatus = (): SlackPublishStatus => {
+    if (isCancelled) {
+      return SlackPublishStatus.Cancelled;
+    }
+    if (publish.isPending) {
+      return SlackPublishStatus.Sending;
+    }
+    if (publish.isSuccess) {
+      return SlackPublishStatus.Sent;
+    }
+    if (publish.isError) {
+      return SlackPublishStatus.Failed;
+    }
+    return SlackPublishStatus.Idle;
   };
-
-  const handleCopy = () => copyText(frozen.content);
 
   return (
     <SlackPublishCard
-      label={frozen.label}
-      content={frozen.content}
-      status={status}
-      error={error}
-      onCopy={handleCopy}
-      onSend={() => void handleSend()}
+      status={resolveStatus()}
+      error={publish.error?.message ?? null}
+      onSubmit={() => publish.mutate()}
       onCancel={() => void handleCancel()}
     />
   );
@@ -143,7 +163,11 @@ export const useSlackPublish = (): void => {
         }
 
         return (
-          <PublishFlow draft={draft} content={content} respond={props.respond} />
+          <PublishFlow
+            draft={draft}
+            content={content}
+            respond={props.respond}
+          />
         );
       },
     },
