@@ -1,55 +1,21 @@
-import { useReleaseWorkspaceStore } from '@/store/release-workspace-store.ts';
-import { useThreadSessionStore } from '@/store/thread-session-store.ts';
-import { EMPTY_DRAFT_THREAD_STATE } from '@/store/draft-slice.ts';
-import { EMPTY_ENTRIES_THREAD_STATE } from '@/store/entries-slice.ts';
-import { saveReleaseHistory } from '@/services/save-release-history.ts';
-
 interface SaveReleaseToHistoryResult {
   ok: boolean;
   error?: string;
   skipped?: boolean;
 }
 
-// Reads the current thread's draft/entries directly from the Zustand stores
-// rather than taking them as parameters — callable from anywhere (event
-// handler, chat-flow callback) without threading props through, and without
-// widening any hook's public signature to expose store internals.
+// Saving to History used to spread the live draft directly into the save
+// request, which relied on the draft always carrying github/appStore/
+// googlePlay/platforms. Now that a draft is a single flexible
+// {platform, label, content} slot, there is no correct way to map it onto
+// that historical three-named-platform shape — doing so would either fabricate
+// data (e.g. putting a Slack draft's content in the required `github` field)
+// or require redesigning History's own schema now, which is explicitly
+// deferred to its own future plan. Disabled until that redesign lands.
 export const saveReleaseToHistory =
-  async (): Promise<SaveReleaseToHistoryResult> => {
-    const { threadId } = useThreadSessionStore.getState();
-    const { draftByThread, entriesByThread, setSavedVersion } =
-      useReleaseWorkspaceStore.getState();
-    const { draft, savedVersion } =
-      draftByThread[threadId] ?? EMPTY_DRAFT_THREAD_STATE;
-    const { entries, selectedIds } =
-      entriesByThread[threadId] ?? EMPTY_ENTRIES_THREAD_STATE;
-
-    if (!draft?.version || !draft.title) {
-      return { ok: false, error: 'Draft has no version/title yet.' };
-    }
-
-    const selectedIdSet = new Set(selectedIds);
-    const selectedEntries = entries.filter((entry) =>
-      selectedIdSet.has(entry.id),
-    );
-    if (selectedEntries.length === 0) {
-      return { ok: false, error: 'No entries selected.' };
-    }
-
-    if (savedVersion === draft.version) {
-      return { ok: true, skipped: true };
-    }
-
-    const result = await saveReleaseHistory({
-      ...draft,
-      version: draft.version,
-      title: draft.title,
-      entries: selectedEntries,
-    });
-
-    if (result.ok) {
-      setSavedVersion(threadId, draft.version);
-    }
-
-    return result;
-  };
+  async (): Promise<SaveReleaseToHistoryResult> => ({
+    ok: false,
+    error:
+      'Saving to History is temporarily unavailable while it is redesigned ' +
+      'for the new flexible-platform draft model.',
+  });

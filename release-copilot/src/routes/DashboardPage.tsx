@@ -11,14 +11,14 @@ import { saveReleaseToHistory } from '@/lib/release-notes/save-release-to-histor
 
 const DashboardPage = () => {
   const { commits, selectedIds, toggleSelection } = useCommitEntries();
-  const { activeContent } = useReleaseDraft();
+  const { content } = useReleaseDraft();
   useSlackPublish();
 
   const selectedHashes = new Set(selectedIds);
 
   const handleCopy = async (): Promise<boolean> => {
-    if (!activeContent) return false;
-    return copyText(activeContent);
+    if (!content) return false;
+    return copyText(content);
   };
 
   return (
@@ -35,7 +35,7 @@ const DashboardPage = () => {
           </ErrorBoundary>
           <ErrorBoundary title="Preview unavailable">
             <LivePreviewPanel
-              markdown={activeContent}
+              markdown={content}
               onCopy={handleCopy}
               onArchive={() => saveReleaseToHistory().then((result) => result.ok)}
             />

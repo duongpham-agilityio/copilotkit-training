@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import SlackPublishCard, {
-  SlackPublishStatus,
-  type PublishOption,
-} from '../SlackPublishCard.tsx';
-import { KnownPlatformId } from '@/types/platform.ts';
+import SlackPublishCard, { SlackPublishStatus } from '../SlackPublishCard.tsx';
 
 const meta: Meta<typeof SlackPublishCard> = {
   component: SlackPublishCard,
@@ -15,52 +11,26 @@ export default meta;
 
 type Story = StoryObj<typeof SlackPublishCard>;
 
-const SAMPLE_OPTIONS: PublishOption[] = [
-  {
-    platformId: KnownPlatformId.Github,
-    label: 'GitHub',
-    content: `## Features
+const SAMPLE_LABEL = 'GitHub';
+const SAMPLE_CONTENT = `## Features
 
 - ✨ Add JSON export for release drafts \`a1b2c3d\`
 
 ## Fixes
 
 - 🐛 Correct App Store character count \`e4f5g6h\`
-`,
-  },
-  {
-    platformId: KnownPlatformId.AppStore,
-    label: 'App Store',
-    content: `New:
-- JSON export for release drafts
-
-Fixed:
-- App Store character count
-`,
-  },
-  {
-    platformId: 'slack',
-    label: 'Slack',
-    content: `:sparkles: Add JSON export for release drafts\n:bug: Correct App Store character count`,
-  },
-];
+`;
 
 const InteractiveCard = () => {
-  const [platformId, setPlatformId] = useState(KnownPlatformId.Github);
   const [status, setStatus] = useState<SlackPublishStatus>(
     SlackPublishStatus.Idle,
   );
-  const selected =
-    SAMPLE_OPTIONS.find((option) => option.platformId === platformId) ??
-    SAMPLE_OPTIONS[0];
 
   return (
     <SlackPublishCard
-      options={SAMPLE_OPTIONS}
-      selectedPlatformId={selected.platformId}
-      preview={selected.content}
+      label={SAMPLE_LABEL}
+      content={SAMPLE_CONTENT}
       status={status}
-      onPlatformChange={(value) => setPlatformId(value as KnownPlatformId)}
       onCopy={() => {}}
       onSend={() => setStatus(SlackPublishStatus.Sent)}
       onCancel={() => setStatus(SlackPublishStatus.Cancelled)}
@@ -74,11 +44,9 @@ export const Default: Story = {
 
 export const Sending: Story = {
   args: {
-    options: SAMPLE_OPTIONS,
-    selectedPlatformId: KnownPlatformId.Github,
-    preview: SAMPLE_OPTIONS[0].content,
+    label: SAMPLE_LABEL,
+    content: SAMPLE_CONTENT,
     status: SlackPublishStatus.Sending,
-    onPlatformChange: () => {},
     onCopy: () => {},
     onSend: () => {},
     onCancel: () => {},
@@ -87,12 +55,10 @@ export const Sending: Story = {
 
 export const Failed: Story = {
   args: {
-    options: SAMPLE_OPTIONS,
-    selectedPlatformId: KnownPlatformId.AppStore,
-    preview: SAMPLE_OPTIONS[1].content,
+    label: SAMPLE_LABEL,
+    content: SAMPLE_CONTENT,
     status: SlackPublishStatus.Failed,
     error: 'Slack rejected the message (404): no_service',
-    onPlatformChange: () => {},
     onCopy: () => {},
     onSend: () => {},
     onCancel: () => {},
@@ -101,11 +67,9 @@ export const Failed: Story = {
 
 export const Posted: Story = {
   args: {
-    options: SAMPLE_OPTIONS,
-    selectedPlatformId: KnownPlatformId.Github,
-    preview: SAMPLE_OPTIONS[0].content,
+    label: SAMPLE_LABEL,
+    content: SAMPLE_CONTENT,
     status: SlackPublishStatus.Sent,
-    onPlatformChange: () => {},
     onCopy: () => {},
     onSend: () => {},
     onCancel: () => {},

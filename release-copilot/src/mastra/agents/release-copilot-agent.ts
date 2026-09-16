@@ -22,7 +22,7 @@ export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
   name: 'Release Copilot',
   description:
-    'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for all 3 platforms, edits a draft in place, and answers questions about using the app.',
+    'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for whichever destination the user names, edits a draft in place, and answers questions about using the app.',
   instructions: () => buildReleaseCopilotInstructionsV2(),
   model: [
     {
@@ -49,6 +49,7 @@ export const releaseCopilotAgent = new Agent({
       generateTitle: true,
       workingMemory: {
         enabled: true,
+        scope: 'thread',
         schema: WorkingMemorySchema,
       },
     },
