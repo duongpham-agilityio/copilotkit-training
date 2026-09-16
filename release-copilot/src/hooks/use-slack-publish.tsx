@@ -10,15 +10,8 @@ import { publishToSlack } from '@/services/publish-to-slack.ts';
 import { saveReleaseToHistory } from '@/lib/release-notes/save-release-to-history.ts';
 import { joinLines } from '@/lib/text.ts';
 import { copyText } from '@/lib/clipboard.ts';
-import { KnownPlatformId } from '@/types/platform.ts';
-import type { PlatformOption } from '@/types/platform-option.ts';
 import { ConfirmSlackPublishSchema } from '@/types/confirm-slack-publish.ts';
-
-interface PublishFlowProps {
-  options: PlatformOption[];
-  initialPlatformId: string | undefined;
-  respond: (result: unknown) => Promise<void>;
-}
+import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
 
 const reportRespondFailure = (error: unknown): void =>
   console.error('[useSlackPublish] respond() failed', error);
@@ -36,32 +29,33 @@ const RespondOnMount = ({
   return <Fragment />;
 };
 
-const PublishFlow = ({ options, initialPlatformId, respond }: PublishFlowProps) => {
-  // Freeze the option list at mount: the user must send exactly what they
-  // reviewed in the card, even if the draft changes again before they click.
-  const [confirmedOptions] = useState(options);
-  const [platformId, setPlatformId] = useState(
-    confirmedOptions.some((option) => option.platformId === initialPlatformId)
-      ? (initialPlatformId as string)
-      : KnownPlatformId.Github,
-  );
+interface PublishFlowProps {
+  draft: ReleaseNotesDraft;
+  content: string;
+  respond: (result: unknown) => Promise<void>;
+}
+
+const PublishFlow = ({ draft, content, respond }: PublishFlowProps) => {
+  // Freeze what the user reviewed at mount: they must send exactly what the
+  // card showed, even if the draft changes again before they click.
+  const [frozen] = useState({
+    label: draft.label,
+    platform: draft.platform,
+    content,
+  });
   const [status, setStatus] = useState<SlackPublishStatus>(
     SlackPublishStatus.Idle,
   );
   const [error, setError] = useState<string | null>(null);
-
-  const selected =
-    confirmedOptions.find((option) => option.platformId === platformId) ??
-    confirmedOptions[0];
 
   const handleSend = async () => {
     setStatus(SlackPublishStatus.Sending);
     setError(null);
 
     const result = await publishToSlack({
-      platformId: selected.platformId,
-      label: selected.label,
-      content: selected.content,
+      platformId: frozen.platform,
+      label: frozen.label,
+      content: frozen.content,
     });
 
     if (result.ok) {
@@ -69,7 +63,7 @@ const PublishFlow = ({ options, initialPlatformId, respond }: PublishFlowProps) 
       void saveReleaseToHistory().catch((error: unknown) =>
         console.error('[useSlackPublish] saveReleaseToHistory failed', error),
       );
-      await respond(`Posted the ${selected.label} release notes to Slack.`).catch(
+      await respond(`Posted the ${frozen.label} release notes to Slack.`).catch(
         reportRespondFailure,
       );
       return;
@@ -86,16 +80,14 @@ const PublishFlow = ({ options, initialPlatformId, respond }: PublishFlowProps) 
     );
   };
 
-  const handleCopy = () => copyText(selected.content);
+  const handleCopy = () => copyText(frozen.content);
 
   return (
     <SlackPublishCard
-      options={confirmedOptions}
-      selectedPlatformId={selected.platformId}
-      preview={selected.content}
+      label={frozen.label}
+      content={frozen.content}
       status={status}
       error={error}
-      onPlatformChange={setPlatformId}
       onCopy={handleCopy}
       onSend={() => void handleSend()}
       onCancel={() => void handleCancel()}
@@ -109,7 +101,7 @@ const PublishFlow = ({ options, initialPlatformId, respond }: PublishFlowProps) 
 // second time — and registers the confirmSlackPublish human-in-the-loop tool.
 // SINGLE CALL SITE, see Task 9.
 export const useSlackPublish = (): void => {
-  const { draft, options } = useReleaseDraftView();
+  const { draft, content } = useReleaseDraftView();
 
   useHumanInTheLoop(
     {
@@ -141,7 +133,7 @@ export const useSlackPublish = (): void => {
           );
         }
 
-        if (!draft) {
+        if (!draft || !content) {
           return (
             <RespondOnMount
               message="No draft exists yet — nothing was shown and nothing was posted."
@@ -151,14 +143,10 @@ export const useSlackPublish = (): void => {
         }
 
         return (
-          <PublishFlow
-            options={options}
-            initialPlatformId={props.args.platformId}
-            respond={props.respond}
-          />
+          <PublishFlow draft={draft} content={content} respond={props.respond} />
         );
       },
     },
-    [draft, options],
+    [draft, content],
   );
 };

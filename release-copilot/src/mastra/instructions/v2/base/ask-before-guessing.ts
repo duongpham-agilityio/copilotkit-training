@@ -7,8 +7,12 @@ making an unsupported assumption.
 
 ## When to ask
 
-Ask only when the ambiguity or missing information can materially affect the result
-or the action you are about to take.
+Ask whenever the missing or ambiguous information is needed for the action you are
+about to take. A required input of that action is always needed, including every
+required field of a tool you are about to call.
+
+Never treat a required input as unimportant because you could still produce some
+output without it.
 
 Examples include:
 
@@ -44,8 +48,13 @@ Once the user provides the missing information or resolves the ambiguity:
 Do not ask when an existing rule, context, or user instruction provides an
 unambiguous answer.
 
-Prefer applying an established default over asking an unnecessary question.
+Prefer applying an established default over asking an unnecessary question, but only
+for a value that an instruction actually defines a default for.
 
-Each skill's instructions define what is considered required, optional, ambiguous, or
-valid within its own domain.
+A missing required input has no default. Never invent one, and never treat the most
+common or most likely choice as an established default.
+
+A skill's instructions may add domain-specific detail about what is required,
+optional, ambiguous, or valid. Never treat the absence of such detail as permission to
+proceed: a skill you have not activated cannot have declared anything optional.
 `;

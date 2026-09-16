@@ -1,7 +1,5 @@
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
 import CopyButton, { type CopyHandler } from '@/components/common/CopyButton.tsx';
-import type { TabItem } from '@/components/common/Tabs.tsx';
-import PlatformTabs from '@/components/platform-selector/PlatformTabs.tsx';
 
 export const enum SlackPublishStatus {
   Idle = 'idle',
@@ -11,31 +9,21 @@ export const enum SlackPublishStatus {
   Failed = 'failed',
 }
 
-export interface PublishOption {
-  platformId: string;
+interface SlackPublishCardProps {
   label: string;
   content: string;
-}
-
-interface SlackPublishCardProps {
-  options: PublishOption[];
-  selectedPlatformId: string;
-  preview: string;
   status: SlackPublishStatus;
   error?: string | null;
-  onPlatformChange: (platformId: string) => void;
   onCopy: CopyHandler;
   onSend: () => void;
   onCancel: () => void;
 }
 
 const SlackPublishCard = ({
-  options,
-  selectedPlatformId,
-  preview,
+  label,
+  content,
   status,
   error = null,
-  onPlatformChange,
   onCopy,
   onSend,
   onCancel,
@@ -57,10 +45,6 @@ const SlackPublishCard = ({
   }
 
   const isSending = status === SlackPublishStatus.Sending;
-  const items: TabItem[] = options.map(({ platformId, label }) => ({
-    value: platformId,
-    label,
-  }));
 
   return (
     <div className="border-outline-variant bg-surface-container-lowest flex flex-col gap-3 rounded-xl border p-4">
@@ -68,15 +52,8 @@ const SlackPublishCard = ({
           closest defined size and matches how other cards style a prominent line
           (e.g. ReleaseHistoryListItem's title). */}
       <span className="text-body-lg text-on-surface">
-        Announce this release in Slack?
+        Announce this {label} release in Slack?
       </span>
-
-      <PlatformTabs
-        items={items}
-        value={selectedPlatformId}
-        onChange={onPlatformChange}
-        disabled={isSending}
-      />
 
       <div className="flex justify-end">
         <CopyButton
@@ -91,7 +68,7 @@ const SlackPublishCard = ({
           smallest defined body size and is already the default body text elsewhere
           in this codebase. */}
       <pre className="bg-surface-container text-body-md text-on-surface max-h-48 overflow-auto rounded-lg p-3 whitespace-pre-wrap">
-        {preview}
+        {content}
       </pre>
 
       {error && (

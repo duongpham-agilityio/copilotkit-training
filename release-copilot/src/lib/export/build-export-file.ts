@@ -1,6 +1,6 @@
 import { stripMarkdown } from '@/lib/export/strip-markdown.ts';
 import { ExportFormat } from '@/types/export-format.ts';
-import type { PlatformOption } from '@/types/platform-option.ts';
+import type { PlatformDraft } from '@/types/release-notes-draft.ts';
 import type { ReleaseEntry } from '@/types/release-entry.ts';
 
 export interface ExportFile {
@@ -45,21 +45,21 @@ const buildSections = (entries: ReleaseEntry[]): ExportSection[] => {
 };
 
 const buildJsonContent = (
-  platform: PlatformOption,
+  platform: PlatformDraft,
   entries: ReleaseEntry[],
 ): string =>
   JSON.stringify(
-    { platform: platform.platformId, sections: buildSections(entries) },
+    { platform: platform.platform, sections: buildSections(entries) },
     null,
     2,
   );
 
 export const buildExportFile = (
-  platform: PlatformOption,
+  platform: PlatformDraft,
   entries: ReleaseEntry[],
   format: ExportFormat,
 ): ExportFile => {
-  const filename = `release-notes-${platform.platformId}.${EXTENSION_BY_FORMAT[format]}`;
+  const filename = `release-notes-${platform.platform}.${EXTENSION_BY_FORMAT[format]}`;
   const mimeType = MIME_BY_FORMAT[format];
 
   if (format === ExportFormat.Json) {

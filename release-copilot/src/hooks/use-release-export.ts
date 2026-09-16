@@ -12,23 +12,23 @@ interface UseReleaseExportResult {
   exportDraft: (options: ExportOptions) => void;
 }
 
-// Owns the "Download" domain: reads the active platform content and selected
-// entries via the two read-only view hooks, converts to the requested format,
-// and triggers a real browser download. Registers no CopilotKit primitives —
+// Owns the "Download" domain: reads the current draft and its title-included
+// content via the read-only view hook, converts to the requested format, and
+// triggers a real browser download. Registers no CopilotKit primitives —
 // unlike useCommitEntries/useReleaseDraft/useSlackPublish/useFlowSuggestions,
 // this hook is safe to call from more than one component.
 export const useReleaseExport = (): UseReleaseExportResult => {
   const { selectedEntries } = useCommitEntriesView();
-  const { options, activePlatformId } = useReleaseDraftView();
-
-  const activeOption = options.find(
-    (option) => option.platformId === activePlatformId,
-  );
+  const { draft, content } = useReleaseDraftView();
 
   const exportDraft = ({ format }: ExportOptions): void => {
-    if (!activeOption) return;
+    if (!draft || !content) return;
 
-    const file = buildExportFile(activeOption, selectedEntries, format);
+    const file = buildExportFile(
+      { platform: draft.platform, label: draft.label, content },
+      selectedEntries,
+      format,
+    );
     const blob = new Blob([file.content], { type: file.mimeType });
     const url = URL.createObjectURL(blob);
 
@@ -41,5 +41,5 @@ export const useReleaseExport = (): UseReleaseExportResult => {
     URL.revokeObjectURL(url);
   };
 
-  return { canExport: Boolean(activeOption), exportDraft };
+  return { canExport: Boolean(draft && content), exportDraft };
 };
