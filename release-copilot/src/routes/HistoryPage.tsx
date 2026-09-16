@@ -43,7 +43,7 @@ const HistoryPage = () => {
   };
 
   return (
-    <div className="flex h-full gap-6">
+    <div className="flex h-full gap-6 px-6 py-6">
       <div className="w-100 min-w-[320px] shrink-0 overflow-hidden">
         <ErrorBoundary title="Release history unavailable">
           {isReleasesLoading && (

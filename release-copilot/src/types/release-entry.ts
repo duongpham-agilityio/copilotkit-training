@@ -74,16 +74,3 @@ export const ReleaseEntrySchema = z.object({
 });
 
 export type ReleaseEntry = z.infer<typeof ReleaseEntrySchema>;
-
-export const EntryListToolSchema = z.object({
-  entries: z
-    .array(ReleaseEntrySchema)
-    .min(1)
-    .describe(
-      joinLines(
-        'The full list of entries classified from the git log or PR text the',
-        'user pasted, in the order they should be displayed. Every entry must',
-        'be complete — do not include an entry with missing required fields.',
-      ),
-    ),
-});

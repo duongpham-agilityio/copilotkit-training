@@ -11,6 +11,7 @@ import {
   classificationRulesSkill,
   commitPrParsingSkill,
   platformFormattingSkill,
+  releaseReportingSkill,
 } from '../skills';
 import { WorkingMemorySchema } from '../../types/working-memory';
 import {
@@ -41,11 +42,12 @@ export const releaseCopilotAgent = new Agent({
     classificationRulesSkill,
     commitPrParsingSkill,
     platformFormattingSkill,
+    releaseReportingSkill,
   ],
   inputProcessors: [promptInjectionDetector, piiDetector],
   memory: new Memory({
     options: {
-      lastMessages: 6,
+      lastMessages: 10,
       generateTitle: true,
       workingMemory: {
         enabled: true,

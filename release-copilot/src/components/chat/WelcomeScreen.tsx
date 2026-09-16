@@ -9,8 +9,8 @@ const WelcomeScreen = () => (
       How can I help with your release notes?
     </p>
     <p className="text-body-md text-on-surface-variant max-w-[320px] leading-relaxed">
-      Paste a git log or PR description in the app, then ask me to draft or
-      refine release notes from the selected commits.
+      Paste a git log or PR description here, then tell me which platform to
+      draft release notes for.
     </p>
   </div>
 );
