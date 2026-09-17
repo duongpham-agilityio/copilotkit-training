@@ -33,11 +33,12 @@ export interface InsertReleaseInput {
   title: string;
   releaseDate: string;
   titleOverride?: string;
-  github: string;
+  // Legacy named-platform bodies; new archives only send `platforms`.
+  github?: string;
   appStore?: string;
   googlePlay?: string;
   platforms: PlatformDraft[];
-  entries: ReleaseEntry[];
+  entries?: ReleaseEntry[];
 }
 
 export interface ReleaseRecord {
@@ -77,6 +78,7 @@ const toReleaseRecord = (row: ReleaseRow): ReleaseRecord => ({
 export const insertRelease = async (
   input: InsertReleaseInput,
 ): Promise<ReleaseRecord> => {
+  const entries = input.entries ?? [];
   const row = await releaseCopilotFactoryStorage.ops.insertOne<ReleaseRow>(
     RELEASES_COLLECTION_NAME,
     {
@@ -86,15 +88,13 @@ export const insertRelease = async (
       release_date: input.releaseDate,
       title_override: input.titleOverride ?? null,
       status: ReleaseStatus.Draft,
-      github_body: input.github,
+      github_body: input.github ?? '',
       app_store_body: input.appStore ?? null,
       google_play_body: input.googlePlay ?? null,
       platforms_json: input.platforms,
-      entries_json: input.entries,
-      feat_count: input.entries.filter((entry) => entry.type === CommitType.Feat)
-        .length,
-      fix_count: input.entries.filter((entry) => entry.type === CommitType.Fix)
-        .length,
+      entries_json: entries,
+      feat_count: entries.filter((entry) => entry.type === CommitType.Feat).length,
+      fix_count: entries.filter((entry) => entry.type === CommitType.Fix).length,
       created_at: new Date(),
     },
   );

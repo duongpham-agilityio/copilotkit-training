@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useRenderTool, useAgentContext } from '@copilotkit/react-core/v2';
 import { useReleaseWorkspaceStore } from '@/store/release-workspace-store.ts';
+import type { SelectedDraft } from '@/store/draft-slice.ts';
 import {
   useReleaseDraftView,
   type ReleaseDraftView,
@@ -22,13 +23,14 @@ interface DraftToolCallProps {
   draft: ReleaseNotesDraft;
   isPreviewOpen: boolean;
   onSync: (draft: ReleaseNotesDraft) => void;
-  onOpen: () => void;
+  onOpen: (selected: SelectedDraft | null) => void;
 }
 
 // Only the thread's newest renderReleaseNotesPreview call may write to the
 // store — an older draft re-mounted by scrolling up must not overwrite the
-// latest one in the Live Preview (see useIsLatestToolCall). That same call is
-// the one the panel is showing, so only its card reads as "Viewing".
+// latest one in the Live Preview (see useIsLatestToolCall). Any card can still
+// be OPENED: an older one becomes the store's `selected` draft, the newest one
+// clears it. The card reads "Viewing" when it is the draft the panel shows.
 const DraftToolCall = ({
   toolCallId,
   draft,
@@ -40,6 +42,7 @@ const DraftToolCall = ({
     RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
     toolCallId,
   );
+  const { selectedToolCallId } = useReleaseDraftView();
 
   useEffect(() => {
     if (isLatest) {
@@ -47,13 +50,15 @@ const DraftToolCall = ({
     }
   }, [isLatest, draft, onSync]);
 
+  const isShown = selectedToolCallId ? selectedToolCallId === toolCallId : isLatest;
+
   return (
     <ReleaseDraftCard
       title={draft.version ? `Release notes · v${draft.version}` : 'Release notes'}
       subtitle={draft.label}
       isGenerating={false}
-      isViewing={isLatest && isPreviewOpen}
-      onOpen={onOpen}
+      isViewing={isShown && isPreviewOpen}
+      onOpen={() => onOpen(isLatest ? null : { toolCallId, draft })}
     />
   );
 };
@@ -80,6 +85,7 @@ export const useReleaseDraft = ({
 
   const view = useReleaseDraftView();
   const setDraft = useReleaseWorkspaceStore((state) => state.setDraft);
+  const selectDraft = useReleaseWorkspaceStore((state) => state.selectDraft);
 
   useRenderTool({
     name: RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
@@ -113,7 +119,10 @@ export const useReleaseDraft = ({
           draft={result.data}
           isPreviewOpen={isPreviewOpen}
           onSync={(draft) => setDraft(threadIdRef.current, draft)}
-          onOpen={onOpenPreview}
+          onOpen={(selected) => {
+            selectDraft(threadIdRef.current, selected);
+            onOpenPreview();
+          }}
         />
       );
     },
@@ -123,7 +132,8 @@ export const useReleaseDraft = ({
     description: joinLines(
       'The release-notes draft currently shown in the Live Preview panel — the',
       'exact text an edit request applies to, and the text the Slack card will',
-      'post. null means no draft has been generated yet. The title line is not',
+      'post. It may be an older draft the user reopened, not the newest one;',
+      'edit this one. null means no draft has been generated yet. The title line is not',
       'part of these bodies: the app builds it from releaseDate/titleOverride.',
     ),
     value: { draft: view.draft },

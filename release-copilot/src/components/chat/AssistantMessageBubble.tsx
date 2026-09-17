@@ -3,8 +3,13 @@ import {
   CopilotChatAssistantMessage,
   CopilotChatToolCallsView,
 } from '@copilotkit/react-core/v2';
+import { RotateCcw, ThumbsDown, ThumbsUp } from 'lucide-react';
 import BrandMark from '@/components/common/BrandMark.tsx';
 import CopyButton from '@/components/common/CopyButton.tsx';
+import IconButton, { IconButtonSize } from '@/components/common/IconButton.tsx';
+import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+import { useToast } from '@/hooks/use-toast.ts';
+import { ToastKind } from '@/store/toast-store.ts';
 import { copyText } from '@/lib/clipboard.ts';
 import { cn } from '@/lib/cn.ts';
 
@@ -31,11 +36,26 @@ const MARKDOWN_CLASSES = cn(
 
 // The design gives the assistant turn no bubble: the brand mark sits in a
 // gutter beside a plain column of text, tool cards and row actions.
+// Regenerate and Good/Bad response are not built yet — they open the Coming
+// soon dialog.
 const AssistantMessageBubble = ({
   message,
   messages,
 }: CopilotChatAssistantMessageProps) => {
+  const { showToast } = useToast();
+  const { showComingSoon } = useComingSoon();
+
   if (!message.content && !message.toolCalls?.length) return null;
+
+  const handleCopy = async (): Promise<boolean> => {
+    const isCopied = await copyText(message.content ?? '');
+    showToast(
+      isCopied
+        ? { kind: ToastKind.Success, title: 'Message copied' }
+        : { kind: ToastKind.Error, title: 'Couldn’t copy message' },
+    );
+    return isCopied;
+  };
 
   return (
     <div className="flex w-full items-start gap-3">
@@ -58,7 +78,25 @@ const AssistantMessageBubble = ({
               isIconOnly
               aria-label="Copy message"
               className="size-7 rounded-[7px]"
-              onCopy={() => copyText(message.content ?? '')}
+              onCopy={handleCopy}
+            />
+            <IconButton
+              icon={<RotateCcw className="size-3.75" />}
+              size={IconButtonSize.Sm}
+              aria-label="Regenerate"
+              onClick={() => showComingSoon('Regenerate response')}
+            />
+            <IconButton
+              icon={<ThumbsUp className="size-3.75" />}
+              size={IconButtonSize.Sm}
+              aria-label="Good response"
+              onClick={() => showComingSoon('Response feedback')}
+            />
+            <IconButton
+              icon={<ThumbsDown className="size-3.75" />}
+              size={IconButtonSize.Sm}
+              aria-label="Bad response"
+              onClick={() => showComingSoon('Response feedback')}
             />
           </div>
         )}

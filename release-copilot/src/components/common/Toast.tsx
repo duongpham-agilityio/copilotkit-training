@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { AlertTriangle, CheckCircle2, Loader2, X, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Info, Loader2, X, XCircle } from 'lucide-react';
 import { ToastKind, type ToastRecord } from '@/store/toast-store.ts';
 
 interface ToastProps {
@@ -11,6 +11,8 @@ const renderIcon = (kind: ToastKind): ReactNode => {
   switch (kind) {
     case ToastKind.Success:
       return <CheckCircle2 className="text-success-emerald size-[18px]" />;
+    case ToastKind.Info:
+      return <Info className="text-primary-container size-[18px]" />;
     case ToastKind.Progress:
       return <Loader2 className="text-primary-container size-[17px] animate-spin" />;
     case ToastKind.Warning:

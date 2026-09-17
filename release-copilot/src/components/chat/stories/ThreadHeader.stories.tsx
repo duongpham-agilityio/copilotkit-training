@@ -7,6 +7,8 @@ const meta: Meta<typeof ThreadHeader> = {
   title: 'chat/ThreadHeader',
   args: {
     title: 'v2.5.0 · Slack digest & templates',
+    onExportNotes: () => {},
+    canExportNotes: true,
   },
 };
 

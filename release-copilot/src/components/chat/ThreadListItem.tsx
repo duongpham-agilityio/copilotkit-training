@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { MoreHorizontal, Pencil, Pin, Trash2 } from 'lucide-react';
 import DropdownMenu from '@/components/common/DropdownMenu.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
+import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { cn } from '@/lib/cn.ts';
 import type { ThreadSummary } from '@/types/thread.ts';
 
@@ -12,13 +13,17 @@ interface ThreadListItemProps {
   onSelect: (threadId: string) => void;
 }
 
-// Rename / Pin thread / Delete have no backend action yet (no rename/pin/
-// delete endpoint on a thread) — their menu items close the menu only, same
-// "build the surface, defer the behavior" pattern already used for
+// Rename / Pin thread / Delete are not built yet (no rename/pin/delete
+// endpoint on a thread) — they open the Coming soon dialog, same as
 // ThreadHeader's options menu.
 const ThreadListItem = ({ thread, isActive, time, onSelect }: ThreadListItemProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { showComingSoon } = useComingSoon();
   const closeMenu = () => setIsMenuOpen(false);
+  const showComingSoonFor = (feature: string) => () => {
+    closeMenu();
+    showComingSoon(feature);
+  };
 
   return (
     <li>
@@ -69,14 +74,24 @@ const ThreadListItem = ({ thread, isActive, time, onSelect }: ThreadListItemProp
             )}
           />
           <DropdownMenu isOpen={isMenuOpen} onClose={closeMenu} align="end" className="top-7 w-49">
-            <DropdownMenu.Item icon={<Pencil className="size-3.75" />} onClick={closeMenu}>
+            <DropdownMenu.Item
+              icon={<Pencil className="size-3.75" />}
+              onClick={showComingSoonFor('Rename thread')}
+            >
               Rename
             </DropdownMenu.Item>
-            <DropdownMenu.Item icon={<Pin className="size-3.75" />} onClick={closeMenu}>
+            <DropdownMenu.Item
+              icon={<Pin className="size-3.75" />}
+              onClick={showComingSoonFor('Pin thread')}
+            >
               Pin thread
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
-            <DropdownMenu.Item icon={<Trash2 className="size-3.75" />} onClick={closeMenu} danger>
+            <DropdownMenu.Item
+              icon={<Trash2 className="size-3.75" />}
+              onClick={showComingSoonFor('Delete thread')}
+              danger
+            >
               Delete
             </DropdownMenu.Item>
           </DropdownMenu>

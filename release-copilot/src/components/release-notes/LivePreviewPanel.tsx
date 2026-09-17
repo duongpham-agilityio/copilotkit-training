@@ -1,20 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import { Archive, Code2, Download, Eye, X } from 'lucide-react';
+import { useState } from 'react';
+import { Archive, Check, Code2, Download, Eye, Loader2, X } from 'lucide-react';
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
 import CopyButton, { type CopyHandler } from '@/components/common/CopyButton.tsx';
 import Tabs, { TabsVariant, type TabItem } from '@/components/common/Tabs.tsx';
 import MarkdownPreview from './MarkdownPreview.tsx';
 import RawMarkdownView from './RawMarkdownView.tsx';
-
-const ARCHIVE_FEEDBACK_DURATION_MS = 2000;
-
-const enum ArchiveState {
-  Idle = 'idle',
-  Saving = 'saving',
-  Saved = 'saved',
-  Failed = 'failed',
-}
 
 const enum PreviewTab {
   Preview = 'preview',
@@ -29,39 +20,51 @@ const TAB_ITEMS: TabItem[] = [
 interface LivePreviewPanelProps {
   markdown: string | null;
   onCopy: CopyHandler;
-  onArchive: CopyHandler;
+  onExport: () => void;
+  onArchive: () => void;
+  isArchiving: boolean;
+  isArchived: boolean;
+  // False when the draft lacks a version/title, which History requires.
+  canArchive: boolean;
   onClose: () => void;
 }
 
 const LivePreviewPanel = ({
   markdown,
   onCopy,
+  onExport,
   onArchive,
+  isArchiving,
+  isArchived,
+  canArchive,
   onClose,
 }: LivePreviewPanelProps) => {
-  const [archiveState, setArchiveState] = useState<ArchiveState>(ArchiveState.Idle);
   const [activeTab, setActiveTab] = useState<PreviewTab>(PreviewTab.Preview);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  useEffect(() => () => clearTimeout(resetTimeoutRef.current), []);
-
-  const handleArchive = async () => {
-    setArchiveState(ArchiveState.Saving);
-    const succeeded = (await onArchive()) !== false;
-    setArchiveState(succeeded ? ArchiveState.Saved : ArchiveState.Failed);
-    clearTimeout(resetTimeoutRef.current);
-    resetTimeoutRef.current = setTimeout(
-      () => setArchiveState(ArchiveState.Idle),
-      ARCHIVE_FEEDBACK_DURATION_MS,
+  const renderArchiveContent = () => {
+    if (isArchiving) {
+      return (
+        <>
+          <Loader2 className="size-3.5 animate-spin" />
+          Archiving…
+        </>
+      );
+    }
+    if (isArchived) {
+      return (
+        <>
+          <Check className="size-3.5" />
+          Archived
+        </>
+      );
+    }
+    return (
+      <>
+        <Archive className="size-3.5" />
+        Archive
+      </>
     );
   };
-
-  const archiveLabel = {
-    [ArchiveState.Idle]: 'Archive',
-    [ArchiveState.Saving]: 'Saving…',
-    [ArchiveState.Saved]: 'Saved',
-    [ArchiveState.Failed]: 'Save failed',
-  }[archiveState];
 
   return (
     <section
@@ -90,15 +93,16 @@ const LivePreviewPanel = ({
             icon={<Download className="size-4" />}
             aria-label="Export release notes"
             disabled={!markdown}
+            onClick={onExport}
           />
           <Button
-            variant={archiveState === ArchiveState.Failed ? ButtonVariant.Danger : ButtonVariant.Primary}
-            disabled={!markdown || archiveState === ArchiveState.Saving}
-            onClick={() => void handleArchive()}
+            variant={ButtonVariant.Primary}
+            disabled={!markdown || !canArchive || isArchiving}
+            title={canArchive ? undefined : 'Ask Copilot for a version and title to archive'}
+            onClick={onArchive}
             className="text-body-sm ml-1 inline-flex h-8 items-center gap-1.5 rounded-lg px-3 py-0 font-semibold shadow-sm"
           >
-            <Archive className="size-3.5" />
-            {archiveLabel}
+            {renderArchiveContent()}
           </Button>
         </div>
       </div>
