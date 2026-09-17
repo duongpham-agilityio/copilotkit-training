@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#630ed4; --primary-hover:#560bb8; --primary-soft:#f3edfd; --primary-soft-2:#e8dffb; --primary-text:#5710c2;
+      --bg:#ffffff; --bg-subtle:#f8f7fb; --bg-muted:#f0eef4;
+      --border:#ebe8f0; --border-strong:#dcd7e5;
+      --text:#17151c; --text-2:#4d495c; --text-3:#686478;
+      --success:#047857; --success-soft:#e6f5ee; --danger:#be123c; --danger-soft:#fff1f3;
+      --font-ui:'Inter',system-ui,-apple-system,sans-serif;
+      --font-mono:'JetBrains Mono',ui-monospace,monospace;
+      --shadow-sm:0 1px 2px rgba(23,21,28,0.06);
+      --shadow-card:0 1px 2px rgba(23,21,28,0.04), 0 0 0 1px var(--border);
+      --shadow-pop:0 0 0 1px rgba(23,21,28,0.06), 0 12px 32px rgba(23,21,28,0.14), 0 2px 6px rgba(23,21,28,0.06);
+    }
+    body{ margin:0; font-family:var(--font-ui); font-feature-settings:'cv11','ss01'; -webkit-font-smoothing:antialiased; }
+    a{ text-decoration:none; color:inherit; }
+    button{ font-family:var(--font-ui); }
+    .btn-icon{ width:32px; height:32px; border-radius:8px; border:none; background:transparent; display:flex; align-items:center; justify-content:center; color:var(--text-3); cursor:pointer; flex-shrink:0; padding:0; }
+    .btn-icon:hover{ background:var(--bg-muted); color:var(--text); }
+    .btn-icon.is-on{ background:var(--bg-muted); color:var(--text); }
+    .btn-icon.sm{ width:28px; height:28px; border-radius:7px; }
+    .btn-icon.outlined{ border:1px solid var(--border-strong); box-shadow:var(--shadow-sm); background:var(--bg); box-sizing:border-box; }
+    .btn-icon.outlined:hover, .btn-icon.outlined.is-on{ background:var(--bg-subtle); }
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; height:32px; padding:0 12px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; box-sizing:border-box; }
+    .btn-primary{ background:var(--primary); color:#fff; border:1px solid var(--primary); box-shadow:var(--shadow-sm); }
+    .btn-primary:hover{ background:var(--primary-hover); }
+    .btn-secondary{ background:var(--bg); color:var(--text); border:1px solid var(--border-strong); box-shadow:var(--shadow-sm); }
+    .btn-secondary:hover{ background:var(--bg-subtle); }
+    .btn-danger{ background:var(--danger); color:#fff; border:1px solid var(--danger); box-shadow:var(--shadow-sm); }
+    .btn-danger:hover{ background:#9f1239; }
+    .kbd{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-3); background:var(--bg); border:1px solid var(--border-strong); border-bottom-width:2px; border-radius:5px; padding:0 5px; line-height:16px; }
+    .seg{ display:flex; align-items:center; gap:2px; background:var(--bg-muted); border-radius:9px; padding:2px; }
+    .seg-btn{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; height:28px; padding:0 12px; border:none; background:transparent; border-radius:7px; font-size:12.5px; font-weight:600; color:var(--text-3); cursor:pointer; white-space:nowrap; }
+    .seg-btn:hover{ color:var(--text); }
+    .seg-btn.on{ background:var(--bg); color:var(--text); box-shadow:0 1px 2px rgba(23,21,28,0.08), 0 0 0 1px rgba(23,21,28,0.04); }
+    .badge{ display:inline-flex; align-items:center; gap:5px; height:20px; padding:0 8px; border-radius:999px; font-size:11.5px; font-weight:600; white-space:nowrap; }
+    .badge-success{ background:var(--success-soft); color:var(--success); }
+    .badge-brand{ background:var(--primary-soft); color:var(--primary-text); }
+    .badge-muted{ background:var(--bg-muted); color:var(--text-2); }
+    .plat{ display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border:1px solid var(--border-strong); border-radius:6px; font-size:12px; font-weight:500; color:var(--text-2); background:var(--bg); white-space:nowrap; box-sizing:border-box; }
+    .mark{ width:28px; height:28px; border-radius:8px; background:var(--primary); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:inset 0 1px 0 rgba(255,255,255,0.18); }
+    .card{ background:var(--bg); border-radius:14px; box-shadow:var(--shadow-card); overflow:hidden; }
+    .search{ position:relative; }
+    .search input{ width:100%; box-sizing:border-box; height:36px; border:1px solid var(--border-strong); border-radius:9px; padding:0 40px 0 34px; font-family:var(--font-ui); font-size:13.5px; color:var(--text); background:var(--bg); outline:none; }
+    .search input:focus{ border-color:#b99bef; box-shadow:0 0 0 3px var(--primary-soft); }
+    .search input::placeholder{ color:var(--text-3); }
+    .month{ font-size:11.5px; font-weight:600; color:var(--text-3); padding:14px 10px 6px 10px; }
+    .rel{ width:100%; display:flex; flex-direction:column; gap:5px; padding:10px 12px; border:none; border-radius:10px; background:transparent; cursor:pointer; text-align:left; box-sizing:border-box; }
+    .rel:hover{ background:var(--bg-subtle); }
+    .rel.on{ background:var(--primary-soft); }
+    .ver{ font-size:13.5px; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; letter-spacing:-0.01em; }
+    .avatar{ width:24px; height:24px; border-radius:50%; background:var(--primary-soft-2); color:var(--primary-text); font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .doc-h2{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--text); margin:0 0 12px 0; }
+    .count{ font-size:11px; font-weight:600; color:var(--text-3); background:var(--bg-muted); border-radius:999px; padding:1px 7px; }
+    .li{ display:flex; align-items:flex-start; gap:12px; font-size:14.5px; line-height:1.65; color:var(--text); }
+    .dot{ width:6px; height:6px; border-radius:50%; margin-top:10px; flex-shrink:0; }
+    .hash{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-3); background:var(--bg-muted); padding:1px 6px; border-radius:5px; margin-left:8px; white-space:nowrap; }
+
+    /* Global sidebar (shared with Dashboard) */
+    .ws-switch{ flex:1; min-width:0; display:flex; align-items:center; gap:10px; padding:6px; margin-left:-6px; border:none; background:transparent; border-radius:10px; cursor:pointer; text-align:left; }
+    .ws-switch:hover{ background:var(--bg-muted); }
+    .side-search{ width:100%; display:flex; align-items:center; gap:8px; height:34px; padding:0 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text-3); font-size:13px; cursor:pointer; box-sizing:border-box; }
+    .side-search:hover{ border-color:var(--border-strong); }
+    .group-label{ font-size:11.5px; font-weight:600; color:var(--text-3); padding:16px 10px 6px 10px; }
+    .thread{ display:flex; align-items:center; gap:8px; height:34px; padding:0 4px 0 10px; border-radius:8px; font-size:13px; color:var(--text-2); cursor:pointer; box-sizing:border-box; }
+    .thread:hover{ background:var(--bg-muted); color:var(--text); }
+    .thread.on{ background:var(--bg); color:var(--text); font-weight:600; box-shadow:0 1px 2px rgba(23,21,28,0.06), 0 0 0 1px var(--border); }
+    .thread-title{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .thread-time{ font-size:11.5px; color:var(--text-3); font-weight:400; flex-shrink:0; padding-right:6px; }
+    .row-more{ width:24px; height:24px; border-radius:6px; }
+    .nav-item{ display:flex; align-items:center; gap:10px; height:34px; padding:0 10px; border-radius:8px; font-size:13px; font-weight:500; color:var(--text-2); cursor:pointer; box-sizing:border-box; }
+    .nav-item:hover{ background:var(--bg-muted); color:var(--text); }
+    .nav-item.on{ background:var(--bg-muted); color:var(--text); font-weight:600; }
+
+    .click-away{ position:absolute; top:0; left:0; width:1440px; height:920px; z-index:20; border:none; background:transparent; padding:0; cursor:default; }
+    .menu{ position:absolute; z-index:30; background:#fff; border-radius:12px; padding:6px; box-shadow:var(--shadow-pop); box-sizing:border-box; animation:pop 0.12s ease-out; }
+    .menu-item{ display:flex; align-items:center; gap:10px; width:100%; height:34px; padding:0 10px; border:none; background:transparent; border-radius:7px; font-size:13px; font-weight:500; color:var(--text); cursor:pointer; text-align:left; box-sizing:border-box; }
+    .menu-item:hover{ background:var(--bg-muted); }
+    .menu-item .mi-icon{ color:var(--text-3); flex-shrink:0; }
+    .menu-item.danger{ color:var(--danger); }
+    .menu-item.danger .mi-icon{ color:var(--danger); }
+    .menu-item.danger:hover{ background:var(--danger-soft); }
+    .menu-hint{ margin-left:auto; font-size:11.5px; color:var(--text-3); font-weight:400; }
+    .menu-sep{ height:1px; background:var(--border); margin:6px 4px; }
+    .toast{ position:absolute; right:24px; bottom:24px; z-index:40; width:372px; display:flex; gap:12px; align-items:flex-start; padding:14px 10px 14px 16px; background:#1d1a24; color:#fff; border-radius:12px; box-shadow:0 16px 40px rgba(23,21,28,0.3); box-sizing:border-box; animation:rise 0.2s ease-out; }
+    .toast-title{ font-size:13.5px; font-weight:600; line-height:20px; }
+    .toast-desc{ font-size:12.5px; color:rgba(255,255,255,0.66); line-height:18px; margin-top:1px; }
+    .toast-action{ border:none; background:transparent; padding:0; font-size:13px; font-weight:600; color:#c9b3f3; cursor:pointer; line-height:20px; white-space:nowrap; }
+    .toast-action:hover{ color:#fff; }
+    .toast-close{ width:24px; height:24px; border-radius:6px; border:none; background:transparent; color:rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; }
+    .toast-close:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+    .scrim{ position:absolute; top:0; left:0; width:1440px; height:920px; z-index:50; background:rgba(23,21,28,0.4); display:flex; align-items:center; justify-content:center; animation:fade 0.15s ease-out; }
+    .scrim-hit{ position:absolute; top:0; left:0; width:100%; height:100%; border:none; background:transparent; padding:0; cursor:default; }
+    .dialog{ position:relative; width:420px; background:#fff; border-radius:16px; box-shadow:0 24px 64px rgba(23,21,28,0.3); padding:24px; box-sizing:border-box; animation:pop 0.15s ease-out; }
+    @keyframes pop{ from{ opacity:0; transform:scale(0.97); } to{ opacity:1; transform:none; } }
+    @keyframes rise{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+    @keyframes fade{ from{ opacity:0; } to{ opacity:1; } }
+  </style>
+</helmet>
+<div style="position:relative; width:1440px; height:920px; box-sizing:border-box; overflow:hidden; display:flex; background:var(--bg); color:var(--text);">
+
+  <!-- ============ Sidebar (global — identical to Dashboard) ============ -->
+  <aside style="width:{{sidebarWidth}}; height:920px; flex-shrink:0; background:var(--bg-subtle); border-right:1px solid var(--border); display:flex; flex-direction:column; box-sizing:border-box; overflow:hidden;">
+
+    <sc-if value="{{sidebarExpanded}}" hint-placeholder-val="{{true}}">
+      <div style="display:flex; flex-direction:column; height:920px;">
+        <div style="padding:12px 12px 0 14px; display:flex; align-items:center; gap:4px; flex-shrink:0;">
+          <button type="button" class="ws-switch" aria-label="Switch repository">
+            <div class="mark">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h9"></path><path d="M10 6l6 6-6 6"></path></svg>
+            </div>
+            <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;">
+              <span style="font-size:13.5px; font-weight:600; color:var(--text); letter-spacing:-0.01em;">Release Builder</span>
+              <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">acme/release-builder</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M8 9l4-4 4 4"></path><path d="M16 15l-4 4-4-4"></path></svg>
+          </button>
+          <button type="button" class="btn-icon" onClick="{{toggleSidebar}}" aria-label="Collapse sidebar">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><path d="M9 4v16"></path></svg>
+          </button>
+        </div>
+
+        <div style="padding:14px 12px 4px 12px; display:flex; flex-direction:column; gap:8px; flex-shrink:0;">
+          <a href="Main.dc.html" class="btn btn-primary" style="width:100%; height:36px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New thread
+          </a>
+          <button type="button" class="side-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span style="flex:1; text-align:left;">Search threads</span>
+            <span class="kbd">⌘K</span>
+          </button>
+        </div>
+
+        <nav style="flex:1; min-height:0; overflow:auto; padding:0 12px 12px 12px;" aria-label="Threads">
+          <div class="group-label">Today</div>
+          <div class="thread on">
+            <a href="Main.dc.html" class="thread-title">v2.5.0 · Slack digest &amp; templates</a>
+            <button type="button" class="btn-icon row-more {{rowMoreCls}}" onClick="{{toggleRowMenu}}" aria-label="Thread actions">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg>
+            </button>
+          </div>
+          <a href="Main.dc.html" class="thread"><span class="thread-title">Changelog parser dependency bump</span><span class="thread-time">2h</span></a>
+          <div class="group-label">Yesterday</div>
+          <a href="Main.dc.html" class="thread"><span class="thread-title">App Store tone pass</span><span class="thread-time">Tue</span></a>
+          <a href="Main.dc.html" class="thread"><span class="thread-title">v2.4.0 · faster parsing</span><span class="thread-time">Tue</span></a>
+          <div class="group-label">Previous 30 days</div>
+          <a href="Main.dc.html" class="thread"><span class="thread-title">v2.3.1 · duplicate tag hotfix</span><span class="thread-time">Aug 26</span></a>
+          <a href="Main.dc.html" class="thread"><span class="thread-title">v2.3.0 · GitHub Releases sync</span><span class="thread-time">Aug 12</span></a>
+          <a href="Main.dc.html" class="thread"><span class="thread-title">Google Play length check</span><span class="thread-time">Aug 9</span></a>
+        </nav>
+
+        <div style="border-top:1px solid var(--border); padding:8px 12px 12px 12px; display:flex; flex-direction:column; gap:2px; flex-shrink:0;">
+          <a href="History.dc.html" class="nav-item on">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"></rect><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"></path><line x1="10" y1="13" x2="14" y2="13"></line></svg>
+            <span style="flex:1;">Release history</span>
+          </a>
+          <div class="nav-item" style="margin-top:4px; padding-right:4px; cursor:default;">
+            <span class="avatar">DP</span>
+            <span style="flex:1; color:var(--text); font-weight:600;">Duong Pham</span>
+            <button type="button" class="btn-icon sm {{accountMoreCls}}" onClick="{{toggleAccountMenu}}" aria-label="Account menu">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{sidebarCollapsed}}" hint-placeholder-val="{{false}}">
+      <div style="display:flex; flex-direction:column; align-items:center; height:920px; padding:14px 0 12px 0; box-sizing:border-box; gap:8px;">
+        <div class="mark">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h9"></path><path d="M10 6l6 6-6 6"></path></svg>
+        </div>
+        <button type="button" class="btn-icon" onClick="{{toggleSidebar}}" aria-label="Expand sidebar">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><path d="M9 4v16"></path></svg>
+        </button>
+        <div style="width:28px; height:1px; background:var(--border); margin:4px 0;"></div>
+        <a href="Main.dc.html" class="btn-icon" style="background:var(--primary); color:#fff; width:36px; height:36px; border-radius:9px;" aria-label="New thread">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </a>
+        <button type="button" class="btn-icon" style="width:36px; height:36px;" aria-label="Search threads">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+        <div style="flex:1;"></div>
+        <a href="History.dc.html" class="btn-icon is-on" style="width:36px; height:36px;" aria-label="Release history">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"></rect><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"></path><line x1="10" y1="13" x2="14" y2="13"></line></svg>
+        </a>
+        <span class="avatar" style="width:28px; height:28px; font-size:11px;">DP</span>
+      </div>
+    </sc-if>
+  </aside>
+
+  <!-- ============ Main ============ -->
+  <main style="flex:1; min-width:0; height:920px; display:flex; flex-direction:column; box-sizing:border-box;">
+
+    <header style="height:56px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:0 16px 0 24px; border-bottom:1px solid var(--border); box-sizing:border-box;">
+      <h1 style="margin:0; min-width:0; font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Release history</h1>
+      <span style="font-size:12.5px; color:var(--text-3); font-variant-numeric:tabular-nums; flex-shrink:0;">{{countLabel}}</span>
+    </header>
+
+    <div style="flex:1; min-height:0; display:flex; flex-direction:column; padding:20px 32px 24px 32px; gap:16px; box-sizing:border-box;">
+
+      <p style="margin:0; font-size:13.5px; color:var(--text-3); flex-shrink:0;">Release notes you’ve archived.</p>
+
+      <div style="flex:1; min-height:0; display:flex; gap:20px;">
+
+        <!-- List -->
+        <div class="card" style="width:340px; flex-shrink:0; display:flex; flex-direction:column;">
+          <div style="padding:14px 14px 12px 14px; display:flex; flex-direction:column; gap:10px; border-bottom:1px solid var(--border); flex-shrink:0;">
+            <div class="search">
+              <label for="rel-search" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">Search releases</label>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" style="position:absolute; left:11px; top:50%; transform:translateY(-50%); pointer-events:none;"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input id="rel-search" type="text" placeholder="Search version, title or platform" value="{{query}}" onChange="{{onSearch}}">
+              <span class="kbd" style="position:absolute; right:10px; top:50%; transform:translateY(-50%);">/</span>
+            </div>
+            <div class="seg" role="group" aria-label="Filter by status">
+              <button type="button" class="seg-btn {{fAllCls}}" onClick="{{fAll}}">All</button>
+              <button type="button" class="seg-btn {{fSentCls}}" onClick="{{fSent}}">Sent</button>
+              <button type="button" class="seg-btn {{fUnsentCls}}" onClick="{{fUnsent}}">Not sent</button>
+            </div>
+          </div>
+
+          <div style="flex:1; min-height:0; overflow:auto; padding:0 8px 8px 8px;">
+            <sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
+              <div>
+                <div class="month">{{g.label}}</div>
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                  <sc-for list="{{g.items}}" as="r" hint-placeholder-count="3">
+                    <button type="button" class="rel {{r.cls}}" onClick="{{r.pick}}">
+                      <div style="display:flex; align-items:center; gap:8px; width:100%;">
+                        <span class="ver">{{r.version}}</span>
+                        <sc-if value="{{r.latest}}" hint-placeholder-val="{{false}}"><span class="badge badge-success">Latest</span></sc-if>
+                        <span style="margin-left:auto; font-size:11.5px; color:var(--text-3);">{{r.short}}</span>
+                      </div>
+                      <div style="font-size:13px; color:var(--text-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">{{r.title}}</div>
+                      <div style="display:flex; align-items:center; gap:6px; width:100%; margin-top:1px; font-size:11.5px; color:var(--text-3);">
+                        <sc-if value="{{r.isApp}}" hint-placeholder-val="{{true}}"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M16.7 12.4c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.6.8 1.1 1.7 2.4 3 2.4 1.2-.1 1.6-.8 3.1-.8s1.9.8 3.1.7c1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.7-1-2.7-3.9zM14.4 5.4c.6-.8 1.1-1.9 1-3-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.5z"></path></svg></sc-if>
+                        <sc-if value="{{r.isPlay}}" hint-placeholder-val="{{false}}"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l16 9-16 9V3z"></path></svg></sc-if>
+                        <sc-if value="{{r.isGh}}" hint-placeholder-val="{{false}}"><svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg></sc-if>
+                        <span>{{r.platformName}}</span>
+                        <span style="margin-left:auto; display:flex; align-items:center; gap:5px;"><span style="width:6px; height:6px; border-radius:50%; background:{{r.statusDot}};"></span>{{r.statusShort}}</span>
+                      </div>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+
+            <sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+              <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:56px 24px; gap:8px;">
+                <div style="width:44px; height:44px; border-radius:12px; background:var(--bg-muted); color:var(--text-3); display:flex; align-items:center; justify-content:center; margin-bottom:6px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <div style="font-size:14px; font-weight:600;">No releases found</div>
+                <div style="font-size:13px; color:var(--text-3); line-height:1.5;">Try another search, or clear the filters.</div>
+                <button type="button" class="btn btn-secondary" style="margin-top:8px;" onClick="{{clearAll}}">Clear filters</button>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <!-- Detail -->
+        <div class="card" style="flex:1; min-width:0; display:flex; flex-direction:column;">
+          <sc-if value="{{hasSel}}" hint-placeholder-val="{{true}}">
+            <div style="display:flex; flex-direction:column; height:100%;">
+              <div style="padding:22px 24px 0 32px; flex-shrink:0;">
+                <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding-bottom:20px; border-bottom:1px solid var(--border);">
+                  <div style="min-width:0;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                      <h2 style="margin:0; font-size:26px; font-weight:700; letter-spacing:-0.02em; font-variant-numeric:tabular-nums;">{{sel.version}}</h2>
+                      <span class="plat">
+                        <sc-if value="{{sel.isApp}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16.7 12.4c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.6.8 1.1 1.7 2.4 3 2.4 1.2-.1 1.6-.8 3.1-.8s1.9.8 3.1.7c1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.7-1-2.7-3.9zM14.4 5.4c.6-.8 1.1-1.9 1-3-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.5z"></path></svg></sc-if>
+                        <sc-if value="{{sel.isPlay}}" hint-placeholder-val="{{false}}"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l16 9-16 9V3z"></path></svg></sc-if>
+                        <sc-if value="{{sel.isGh}}" hint-placeholder-val="{{true}}"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg></sc-if>
+                        {{sel.platformName}}
+                      </span>
+                      <span class="badge {{sel.statusCls}}">{{sel.status}}</span>
+                    </div>
+                    <div style="font-size:15px; color:var(--text-2); margin-top:6px;">{{sel.title}}</div>
+                    <div style="font-size:12.5px; color:var(--text-3); margin-top:4px;">Archived {{sel.date}}</div>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                    <button type="button" class="btn btn-secondary" onClick="{{sendSlack}}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 15a2 2 0 11-2-2h2v2zM7 15a2 2 0 014 0v5a2 2 0 11-4 0v-5zM9 6a2 2 0 112 2v-2H9zM9 7a2 2 0 010-4h5a2 2 0 110 4H9zM18 9a2 2 0 112 2h-2V9zM17 9a2 2 0 01-4 0V4a2 2 0 114 0v5zM15 18a2 2 0 11-2-2v2h2zM15 17a2 2 0 010 4H10a2 2 0 010-4h5z"></path></svg>
+                      {{slackLabel}}
+                    </button>
+                    <button type="button" class="btn btn-secondary" onClick="{{exportRel}}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M5 21h14"></path></svg>
+                      Export
+                    </button>
+                    <button type="button" class="btn btn-primary" onClick="{{copyRel}}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>
+                      Copy
+                    </button>
+                    <button type="button" class="btn-icon outlined {{relMoreCls}}" onClick="{{toggleRelMenu}}" aria-label="More actions">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <article style="flex:1; min-height:0; overflow:auto; padding:28px 32px 32px 32px;">
+                <div style="max-width:680px; display:flex; flex-direction:column; gap:28px;">
+                  <sc-for list="{{sections}}" as="sec" hint-placeholder-count="2">
+                    <div>
+                      <div class="doc-h2">{{sec.title}}<span class="count">{{sec.count}}</span></div>
+                      <div style="display:flex; flex-direction:column; gap:10px;">
+                        <sc-for list="{{sec.items}}" as="it" hint-placeholder-count="3">
+                          <div class="li">
+                            <span class="dot" style="background:{{sec.dot}};"></span>
+                            <span>{{it.text}}<sc-if value="{{it.hasHash}}" hint-placeholder-val="{{false}}"><span class="hash">{{it.hash}}</span></sc-if></span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </article>
+            </div>
+          </sc-if>
+          <sc-if value="{{noSel}}" hint-placeholder-val="{{false}}">
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; height:100%;">
+              <div style="width:44px; height:44px; border-radius:12px; background:var(--bg-muted); color:var(--text-3); display:flex; align-items:center; justify-content:center; margin-bottom:6px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"></rect><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"></path><line x1="10" y1="13" x2="14" y2="13"></line></svg>
+              </div>
+              <div style="font-size:14px; font-weight:600;">Nothing archived yet</div>
+              <div style="font-size:13px; color:var(--text-3);">Archive a draft from a thread and it will show up here.</div>
+              <a href="Main.dc.html" class="btn btn-secondary" style="margin-top:8px;">Go to Dashboard</a>
+            </div>
+          </sc-if>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ Menus ============ -->
+  <sc-if value="{{anyMenu}}" hint-placeholder-val="{{false}}">
+    <button type="button" class="click-away" onClick="{{closeMenu}}" aria-label="Close menu"></button>
+  </sc-if>
+
+  <sc-if value="{{rowMenuOpen}}" hint-placeholder-val="{{false}}">
+    <div class="menu" role="menu" style="top:227px; left:60px; width:196px;">
+      <button type="button" class="menu-item" role="menuitem" onClick="{{closeMenu}}">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
+        Rename
+      </button>
+      <button type="button" class="menu-item" role="menuitem" onClick="{{pinThread}}">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 3h6l-1 7 4 3v2H6v-2l4-3z"></path></svg>
+        Pin thread
+      </button>
+      <div class="menu-sep"></div>
+      <button type="button" class="menu-item" role="menuitem" onClick="{{copyLink}}">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.7-1.7"></path></svg>
+        Copy link
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{relMenuOpen}}" hint-placeholder-val="{{false}}">
+    <div class="menu" role="menu" style="top:150px; right:56px; width:224px;">
+      <a href="Main.dc.html" class="menu-item" role="menuitem">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"></path></svg>
+        Open in new thread
+      </a>
+      <button type="button" class="menu-item" role="menuitem" onClick="{{copyLink}}">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.7-1.7"></path></svg>
+        Copy link
+      </button>
+      <div class="menu-sep"></div>
+      <button type="button" class="menu-item danger" role="menuitem" onClick="{{askDelete}}">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"></path><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path></svg>
+        Remove from history
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{accountMenuOpen}}" hint-placeholder-val="{{false}}">
+    <div class="menu" role="menu" style="bottom:54px; left:12px; width:248px;">
+      <div style="display:flex; align-items:center; gap:10px; padding:8px 10px 10px 10px;">
+        <span class="avatar" style="width:32px; height:32px; font-size:12px;">DP</span>
+        <div style="min-width:0;">
+          <div style="font-size:13px; font-weight:600;">Duong Pham</div>
+          <div style="font-size:12px; color:var(--text-3);">Signed in with GitHub</div>
+        </div>
+      </div>
+      <div class="menu-sep" style="margin-top:0;"></div>
+      <button type="button" class="menu-item" role="menuitem" onClick="{{closeMenu}}">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"></path></svg>
+        Settings
+      </button>
+      <button type="button" class="menu-item" role="menuitem" onClick="{{closeMenu}}">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"></path></svg>
+        Keyboard shortcuts<span class="menu-hint">?</span>
+      </button>
+      <div class="menu-sep"></div>
+      <a href="SignIn.dc.html" class="menu-item" role="menuitem">
+        <svg class="mi-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><path d="M16 17l5-5-5-5"></path><path d="M21 12H9"></path></svg>
+        Sign out
+      </a>
+    </div>
+  </sc-if>
+
+  <!-- Toast -->
+  <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+    <div class="toast" role="status" aria-live="polite">
+      <div style="width:20px; height:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+        <sc-if value="{{toast.isSuccess}}" hint-placeholder-val="{{true}}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>
+        </sc-if>
+        <sc-if value="{{toast.isInfo}}" hint-placeholder-val="{{false}}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9b3f3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        </sc-if>
+      </div>
+      <div style="flex:1; min-width:0;">
+        <div class="toast-title">{{toast.title}}</div>
+        <sc-if value="{{toast.hasDesc}}" hint-placeholder-val="{{true}}"><div class="toast-desc">{{toast.desc}}</div></sc-if>
+      </div>
+      <sc-if value="{{toast.hasUndo}}" hint-placeholder-val="{{false}}">
+        <button type="button" class="toast-action" onClick="{{undoDelete}}">Undo</button>
+      </sc-if>
+      <button type="button" class="toast-close" onClick="{{dismissToast}}" aria-label="Dismiss">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  </sc-if>
+
+  <!-- Confirm dialog -->
+  <sc-if value="{{dialogOpen}}" hint-placeholder-val="{{false}}">
+    <div class="scrim">
+      <button type="button" class="scrim-hit" onClick="{{cancelDelete}}" aria-label="Close dialog"></button>
+      <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="rm-title">
+        <div style="width:40px; height:40px; border-radius:10px; background:var(--danger-soft); color:var(--danger); display:flex; align-items:center; justify-content:center;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"></path><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path></svg>
+        </div>
+        <h2 id="rm-title" style="margin:16px 0 0 0; font-size:17px; font-weight:600; letter-spacing:-0.01em;">Remove {{sel.version}} ({{sel.platformName}})?</h2>
+        <p style="margin:6px 0 0 0; font-size:13.5px; line-height:1.6; color:var(--text-2);">These archived release notes will be removed from history. Anything already sent to Slack stays in Slack.</p>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" onClick="{{cancelDelete}}">Cancel</button>
+          <button type="button" class="btn btn-danger" onClick="{{confirmDelete}}">Remove</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+class Component extends DCLogic {
+  data() {
+    const T = function (t, h) { return h ? { text: t, hash: h } : { text: t }; };
+    return [
+      { key: 'k1', version: 'v2.5.0', platform: 'app', title: 'Slack digests & per-platform templates', month: 'September 2026', short: 'Sep 16', date: 'Sep 16, 2026', sent: false,
+        notes: [{ title: 'What’s New', items: [T('Preview your release digest in Slack before it goes out.'), T('Send the digest to your team’s channel in one click.'), T('Choose a template for App Store, Google Play, or GitHub.'), T('Fixed an issue where re-pushed tags could duplicate changes.')] }] },
+      { key: 'k2', version: 'v2.4.0', platform: 'gh', title: 'Faster changelog parsing', month: 'September 2026', short: 'Sep 2', date: 'Sep 2, 2026', sent: true,
+        notes: [{ title: 'Performance', items: [T('Incremental changelog parsing', '4c2d9e1'), T('Cache resolved tags between runs', 'e08f3a7')] }, { title: 'Fixes', items: [T('Doubled entries when duplicate tags exist', '7b5a102')] }] },
+      { key: 'k3', version: 'v2.4.0', platform: 'app', title: 'Faster changelog parsing', month: 'September 2026', short: 'Sep 2', date: 'Sep 2, 2026', sent: false,
+        notes: [{ title: 'What’s New', items: [T('Release notes now generate up to 3× faster on large repositories.'), T('Fixed a bug where duplicate tags could create doubled changelog entries.'), T('Performance and stability improvements.')] }] },
+      { key: 'k4', version: 'v2.3.1', platform: 'play', title: 'Hotfix for duplicate tags', month: 'August 2026', short: 'Aug 26', date: 'Aug 26, 2026', sent: true,
+        notes: [{ title: 'What’s new', items: [T('Fixed a crash with duplicate tags.'), T('Steadier release range detection.')] }] },
+      { key: 'k5', version: 'v2.3.0', platform: 'gh', title: 'GitHub Releases sync', month: 'August 2026', short: 'Aug 12', date: 'Aug 12, 2026', sent: true,
+        notes: [{ title: 'Features', items: [T('GitHub Releases publishing', '5e7b2a9'), T('Pull request backlinks in generated notes', 'c3a1f60')] }, { title: 'Chores', items: [T('Upgrade Octokit to v21', '8d20b4e')] }] },
+      { key: 'k6', version: 'v2.2.0', platform: 'app', title: 'App Store note formatting', month: 'July 2026', short: 'Jul 29', date: 'Jul 29, 2026', sent: false,
+        notes: [{ title: 'What’s New', items: [T('App Store notes now follow Apple’s formatting guidelines automatically.'), T('Cleaner bullet spacing in long release notes.')] }] },
+      { key: 'k7', version: 'v2.1.0', platform: 'play', title: 'Initial Slack integration', month: 'July 2026', short: 'Jul 8', date: 'Jul 8, 2026', sent: true,
+        notes: [{ title: 'What’s new', items: [T('Share release notes to Slack.'), T('Pick which channel gets each release.')] }] }
+    ];
+  }
+  showToast(t, extra) {
+    clearTimeout(this._toastTimer);
+    this.setState(Object.assign({ toast: t, menu: null, dialog: false }, extra || {}));
+    this._toastTimer = setTimeout(() => this.setState({ toast: null }), 5000);
+  }
+  componentWillUnmount() {
+    clearTimeout(this._toastTimer);
+  }
+  renderVals() {
+    const s = this.state || {};
+    const collapsed = !!s.collapsed;
+    const removed = s.removed || {};
+    const sentNow = s.sentNow || {};
+    const filter = s.filter || 'all';
+    const query = s.query || '';
+    const q = query.trim().toLowerCase();
+    const menu = s.menu || null;
+    const names = { app: 'App Store', play: 'Google Play', gh: 'GitHub' };
+
+    const all = this.data()
+      .filter(function (r) { return !removed[r.key]; })
+      .map(function (r) { return Object.assign({}, r, { sent: r.sent || !!sentNow[r.key], platformName: names[r.platform] }); });
+
+    let selKey = s.selKey || 'k2';
+    if (!all.some(function (r) { return r.key === selKey; })) selKey = all.length ? all[0].key : null;
+    const selRaw = all.filter(function (r) { return r.key === selKey; })[0] || null;
+
+    const filtered = all.filter(function (r) {
+      if (filter === 'sent' && !r.sent) return false;
+      if (filter === 'unsent' && r.sent) return false;
+      if (q && (r.version + ' ' + r.title + ' ' + r.platformName).toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+
+    const groups = [];
+    filtered.forEach((r, i) => {
+      let g = groups[groups.length - 1];
+      if (!g || g.label !== r.month) { g = { label: r.month, items: [] }; groups.push(g); }
+      g.items.push({
+        version: r.version, title: r.title, short: r.short, platformName: r.platformName,
+        isApp: r.platform === 'app', isPlay: r.platform === 'play', isGh: r.platform === 'gh',
+        latest: all.length > 0 && r.key === all[0].key,
+        cls: r.key === selKey ? 'on' : '',
+        statusDot: r.sent ? '#630ed4' : '#a19cb0',
+        statusShort: r.sent ? 'Sent' : 'Not sent',
+        pick: () => this.setState({ selKey: r.key })
+      });
+    });
+
+    const sel = selRaw ? {
+      version: selRaw.version, title: selRaw.title, date: selRaw.date, platformName: selRaw.platformName,
+      isApp: selRaw.platform === 'app', isPlay: selRaw.platform === 'play', isGh: selRaw.platform === 'gh',
+      status: selRaw.sent ? 'Sent to Slack' : 'Not sent',
+      statusCls: selRaw.sent ? 'badge-brand' : 'badge-muted'
+    } : { version: '', title: '', date: '', platformName: '', isApp: false, isPlay: false, isGh: false, status: '', statusCls: '' };
+
+    const dotFor = { 'Fixes': '#e11d48', 'Performance': '#b45309', 'Chores': '#8a8599' };
+    const sections = selRaw ? selRaw.notes.map(function (sec) {
+      return {
+        title: sec.title,
+        count: sec.items.length,
+        dot: dotFor[sec.title] || '#630ed4',
+        items: sec.items.map(function (it) { return { text: it.text, hash: it.hash || '', hasHash: !!it.hash }; })
+      };
+    }) : [];
+
+    const label = selRaw ? selRaw.version + ' · ' + selRaw.platformName : '';
+    const fileName = selRaw ? selRaw.version + '-' + selRaw.platformName.toLowerCase().replace(' ', '-') + '.md' : '';
+    const toggle = (name) => () => this.setState({ menu: menu === name ? null : name });
+
+    const t = s.toast || null;
+    const toast = {
+      title: t ? t.title : '',
+      desc: t && t.desc ? t.desc : '',
+      hasDesc: !!(t && t.desc),
+      isSuccess: !!(t && t.kind === 'success'),
+      isInfo: !!(t && t.kind === 'info'),
+      hasUndo: !!(t && t.undo)
+    };
+
+    return {
+      sidebarCollapsed: collapsed,
+      sidebarExpanded: !collapsed,
+      sidebarWidth: collapsed ? '64px' : '272px',
+      toggleSidebar: () => this.setState({ collapsed: !collapsed, menu: null }),
+
+      query: query,
+      onSearch: (e) => this.setState({ query: e.target.value }),
+      clearAll: () => this.setState({ query: '', filter: 'all' }),
+      fAllCls: filter === 'all' ? 'on' : '',
+      fSentCls: filter === 'sent' ? 'on' : '',
+      fUnsentCls: filter === 'unsent' ? 'on' : '',
+      fAll: () => this.setState({ filter: 'all' }),
+      fSent: () => this.setState({ filter: 'sent' }),
+      fUnsent: () => this.setState({ filter: 'unsent' }),
+
+      groups: groups,
+      isEmpty: all.length > 0 && filtered.length === 0,
+      countLabel: filtered.length === all.length ? all.length + ' archived' : filtered.length + ' of ' + all.length + ' archived',
+
+      hasSel: !!selRaw,
+      noSel: !selRaw,
+      sel: sel,
+      sections: sections,
+      slackLabel: selRaw && selRaw.sent ? 'Resend to Slack' : 'Send to Slack',
+
+      sendSlack: () => {
+        const next = Object.assign({}, sentNow); next[selKey] = true;
+        this.showToast({ kind: 'success', title: 'Sent to #releases', desc: label }, { sentNow: next });
+      },
+      exportRel: () => this.showToast({ kind: 'success', title: 'Exported ' + fileName, desc: 'Saved to your Downloads folder.' }),
+      copyRel: () => this.showToast({ kind: 'success', title: 'Copied to clipboard', desc: label }),
+      copyLink: () => this.showToast({ kind: 'success', title: 'Link copied' }),
+      pinThread: () => this.showToast({ kind: 'success', title: 'Thread pinned', desc: 'It stays at the top of your sidebar.' }),
+
+      anyMenu: !!menu,
+      rowMenuOpen: menu === 'row',
+      relMenuOpen: menu === 'rel',
+      accountMenuOpen: menu === 'account',
+      rowMoreCls: menu === 'row' ? 'is-on' : '',
+      relMoreCls: menu === 'rel' ? 'is-on' : '',
+      accountMoreCls: menu === 'account' ? 'is-on' : '',
+      toggleRowMenu: toggle('row'),
+      toggleRelMenu: toggle('rel'),
+      toggleAccountMenu: toggle('account'),
+      closeMenu: () => this.setState({ menu: null }),
+
+      dialogOpen: !!s.dialog && !!selRaw,
+      askDelete: () => this.setState({ menu: null, dialog: true }),
+      cancelDelete: () => this.setState({ dialog: false }),
+      confirmDelete: () => {
+        const next = Object.assign({}, removed); next[selKey] = true;
+        this.lastRemoved = selKey;
+        this.showToast({ kind: 'success', title: 'Removed from history', desc: label, undo: true }, { removed: next });
+      },
+      undoDelete: () => {
+        const next = Object.assign({}, removed); delete next[this.lastRemoved];
+        this.showToast({ kind: 'info', title: 'Release notes restored' }, { removed: next, selKey: this.lastRemoved });
+      },
+
+      hasToast: !!t,
+      toast: toast,
+      dismissToast: () => { clearTimeout(this._toastTimer); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

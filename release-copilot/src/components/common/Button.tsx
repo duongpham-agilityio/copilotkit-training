@@ -9,9 +9,9 @@ export const enum ButtonVariant {
 }
 
 export const BUTTON_VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  [ButtonVariant.Primary]: 'bg-primary text-on-primary hover:bg-primary/90',
+  [ButtonVariant.Primary]: 'bg-primary text-white! hover:bg-primary-hover',
   [ButtonVariant.Secondary]:
-    'bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80',
+    'bg-surface-container-lowest text-on-surface border border-outline-strong shadow-sm hover:bg-surface-container-low',
   [ButtonVariant.Ghost]: 'bg-transparent text-primary hover:bg-primary/10',
   [ButtonVariant.Danger]: 'bg-error-rose text-on-error hover:bg-error-rose/90',
 };

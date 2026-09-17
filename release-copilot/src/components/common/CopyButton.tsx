@@ -17,12 +17,16 @@ export type CopyHandler = () => void | boolean | Promise<void | boolean>;
 interface CopyButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   onCopy: CopyHandler;
   variant?: ButtonVariant;
+  // Drops the label so the button reads as one of the design's 32px
+  // `.btn-icon` squares; the icon still swaps to show the result.
+  isIconOnly?: boolean;
   children?: ReactNode;
 }
 
 const CopyButton = ({
   onCopy,
   variant = ButtonVariant.Ghost,
+  isIconOnly = false,
   className,
   children = 'Copy',
   ...rest
@@ -67,7 +71,13 @@ const CopyButton = ({
   return (
     <Button
       variant={variant}
-      className={cn(isFailed && 'text-error', className)}
+      aria-label={isIconOnly ? 'Copy' : undefined}
+      className={cn(
+        isFailed && 'text-error',
+        isIconOnly &&
+          'text-on-surface-muted hover:bg-surface-container hover:text-on-surface inline-flex size-8 items-center justify-center rounded-lg bg-transparent p-0',
+        className,
+      )}
       {...rest}
       onClick={() => void handleClick()}
     >
@@ -94,7 +104,7 @@ const CopyButton = ({
             )}
           />
         </span>
-        {isCopied ? 'Copied' : isFailed ? 'Copy failed' : children}
+        {!isIconOnly && (isCopied ? 'Copied' : isFailed ? 'Copy failed' : children)}
       </span>
     </Button>
   );

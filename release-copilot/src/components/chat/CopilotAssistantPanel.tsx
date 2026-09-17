@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect } from 'react';
 import {
   CopilotChat,
   useAgent,
@@ -13,15 +13,10 @@ import ChatErrorBar from './ChatErrorBar.tsx';
 import UserMessageBubble from './UserMessageBubble.tsx';
 import WelcomeScreen from './WelcomeScreen.tsx';
 
-interface CopilotAssistantPanelProps {
-  leading?: ReactNode;
-  trailing?: ReactNode;
-}
-
-const CopilotAssistantPanel = ({
-  leading,
-  trailing,
-}: CopilotAssistantPanelProps) => {
+// No header of its own — ThreadHeader (rendered by DashboardPage, above this
+// panel) owns the thread title, Preview toggle, and options menu that the
+// design puts in a single row above the conversation.
+const CopilotAssistantPanel = () => {
   const { threadId } = useThreadSession();
 
   const { agent } = useAgent({ agentId: RELEASE_COPILOT_AGENT_ID });
@@ -41,18 +36,7 @@ const CopilotAssistantPanel = ({
   } = useChatError();
 
   return (
-    <div className="bg-surface-container-lowest border-outline-variant flex h-full w-full flex-col border-l">
-      <div className="border-outline-variant flex shrink-0 items-center gap-2 border-b px-4 py-4">
-        {leading}
-        <span
-          className="bg-success-emerald size-3 shrink-0 rounded-full"
-          aria-hidden="true"
-        />
-        <span className="text-headline-md text-on-surface">
-          Copilot Assistant
-        </span>
-        {trailing && <span className="ml-auto">{trailing}</span>}
-      </div>
+    <div className="bg-surface-container-lowest flex h-full w-full flex-col">
       <CopilotChat
         agentId={RELEASE_COPILOT_AGENT_ID}
         threadId={threadId}
@@ -71,7 +55,10 @@ const CopilotAssistantPanel = ({
                 assistantMessage:
                   AssistantMessageBubble as typeof CopilotChatAssistantMessage,
                 userMessage: UserMessageBubble as typeof CopilotChatUserMessage,
-                className: 'flex flex-row gap-4 py-4 h-full',
+                // The design runs the conversation as one 680px column,
+                // 24px between turns.
+                className:
+                  'mx-auto flex h-full w-full flex-col gap-6 px-8 pt-7 pb-3',
               }
             : { children: () => <WelcomeScreen /> }
         }

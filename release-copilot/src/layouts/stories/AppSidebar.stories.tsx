@@ -13,6 +13,7 @@ const meta: Meta<typeof AppSidebar> = {
     userName: 'Duong Pham',
     isHistoryActive: false,
     onSignOut: () => {},
+    onNewThread: () => {},
   },
 };
 
