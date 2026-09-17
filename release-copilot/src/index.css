@@ -33,6 +33,7 @@
   --color-outline-variant: var(--color-outline-variant);
   --color-surface-tint: var(--color-surface-tint);
   --color-primary: var(--color-primary);
+  --color-primary-ink: var(--color-primary-ink);
   --color-on-primary: var(--color-on-primary);
   --color-primary-container: var(--color-primary-container);
   --color-on-primary-container: var(--color-on-primary-container);

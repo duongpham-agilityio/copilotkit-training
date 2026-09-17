@@ -14,6 +14,7 @@ export type AuthStateListener = (session: AuthServiceSession | null) => void;
 
 export interface AuthService {
   signInWithOAuth: (provider: OAuthProvider, redirectTo: string) => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   onAuthStateChange: (listener: AuthStateListener) => () => void;
 }

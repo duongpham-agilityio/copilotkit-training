@@ -33,7 +33,10 @@ export const useAuth = () => {
       `${window.location.origin}${ROUTE_DASHBOARD}`,
     );
 
+  const signInWithPassword = (email: string, password: string) =>
+    supabaseAuthService.signInWithPassword(email, password);
+
   const signOut = () => supabaseAuthService.signOut();
 
-  return { session, status, signInWithOAuth, signOut };
+  return { session, status, signInWithOAuth, signInWithPassword, signOut };
 };
