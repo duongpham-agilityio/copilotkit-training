@@ -16,6 +16,7 @@ import BrandMark from '@/components/common/BrandMark.tsx';
 import Button from '@/components/common/Button.tsx';
 import IconButton, { IconButtonSize } from '@/components/common/IconButton.tsx';
 import Kbd from '@/components/common/Kbd.tsx';
+import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { cn } from '@/lib/cn.ts';
 
 interface AppSidebarProps {
@@ -46,6 +47,9 @@ const AppSidebar = ({
   isHistoryActive,
   children,
 }: AppSidebarProps) => {
+  const { showComingSoon } = useComingSoon();
+  const handleSearch = () => showComingSoon('Search threads');
+
   if (isCollapsed) {
     return (
       <aside className="bg-surface-container-low border-outline-subtle flex h-full w-16 shrink-0 flex-col items-center gap-2 overflow-hidden border-r pt-3.5 pb-3">
@@ -68,6 +72,7 @@ const AppSidebar = ({
           icon={<Search className="size-4" />}
           size={IconButtonSize.Lg}
           aria-label="Search threads"
+          onClick={handleSearch}
         />
         <div className="flex-1" />
         <Link
@@ -95,7 +100,11 @@ const AppSidebar = ({
   return (
     <aside className="bg-surface-container-low border-outline-subtle flex h-full w-80 shrink-0 flex-col overflow-hidden border-r">
       <div className="flex shrink-0 items-center gap-1 pt-3 pr-3 pl-3.5">
-        <WorkspaceSwitch name={workspaceName} slug={workspaceSlug} />
+        <WorkspaceSwitch
+          name={workspaceName}
+          slug={workspaceSlug}
+          onClick={() => showComingSoon('Switch workspace')}
+        />
         <IconButton
           icon={<SquareChevronLeft className="size-4.25" />}
           aria-label="Collapse sidebar"
@@ -113,6 +122,7 @@ const AppSidebar = ({
         </Button>
         <button
           type="button"
+          onClick={handleSearch}
           className="border-outline-subtle hover:border-outline-strong bg-surface-container-lowest text-on-surface-muted text-body-sm flex h-8.5 w-full cursor-pointer items-center gap-2 rounded-lg border px-2.5"
         >
           <Search className="size-3.5" />

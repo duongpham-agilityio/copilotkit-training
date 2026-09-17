@@ -17,7 +17,7 @@ import {
 } from '@/types/release.ts';
 import { KnownPlatformId } from '@/types/platform.ts';
 
-const RELEASE_HISTORY_QUERY_KEY = ['release-history'];
+export const RELEASE_HISTORY_QUERY_KEY = ['release-history'];
 
 interface PlatformContent {
   platformId: string;

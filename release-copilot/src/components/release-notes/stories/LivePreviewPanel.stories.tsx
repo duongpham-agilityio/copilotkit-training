@@ -26,7 +26,11 @@ export const Default: Story = {
   args: {
     markdown: SAMPLE_MARKDOWN,
     onCopy: () => {},
-    onArchive: () => true,
+    onExport: () => {},
+    onArchive: () => {},
+    isArchiving: false,
+    isArchived: false,
+    canArchive: true,
     onClose: () => {},
   },
 };
@@ -35,7 +39,19 @@ export const Empty: Story = {
   args: {
     markdown: null,
     onCopy: () => {},
-    onArchive: () => true,
+    onExport: () => {},
+    onArchive: () => {},
+    isArchiving: false,
+    isArchived: false,
+    canArchive: true,
     onClose: () => {},
   },
+};
+
+export const Archived: Story = {
+  args: { ...Default.args, isArchived: true },
+};
+
+export const MissingVersion: Story = {
+  args: { ...Default.args, canArchive: false },
 };

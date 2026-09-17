@@ -48,6 +48,7 @@ const CopilotAssistantPanel = () => {
         welcomeScreen={false}
         labels={{
           chatInputPlaceholder: 'Ask Copilot about your release notes...',
+          chatDisclaimerText: '',
         }}
         messageView={
           hasMessages

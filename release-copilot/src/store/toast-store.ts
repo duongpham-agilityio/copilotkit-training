@@ -3,6 +3,7 @@ import { createUUID } from '@/lib/uuid.ts';
 
 export const enum ToastKind {
   Success = 'success',
+  Info = 'info',
   Progress = 'progress',
   Warning = 'warning',
   Error = 'error',

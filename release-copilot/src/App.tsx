@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import AppShell from '@/layouts/AppShell.tsx';
 import AppSidebar from '@/layouts/AppSidebar.tsx';
 import ThreadListItem from '@/components/chat/ThreadListItem.tsx';
+import ComingSoonDialog from '@/components/common/ComingSoonDialog.tsx';
 import DisconnectBanner from '@/components/common/DisconnectBanner.tsx';
+import ToastViewport from '@/components/common/ToastViewport.tsx';
 import { useAuth } from '@/hooks/use-auth.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
+import { useThreadUrlSync } from '@/hooks/use-thread-url-sync.ts';
 import { groupThreadsByRecency } from '@/lib/group-threads-by-date.ts';
 import { ROUTE_DASHBOARD, ROUTE_HISTORY } from '@/constants/routings.ts';
 import AppProviders from './providers/AppProviders';
@@ -16,21 +19,17 @@ const WORKSPACE_SLUG = 'release-copilot';
 // AppSidebar is shared chrome across Dashboard and History — this is the one
 // place both routes mount under, so it owns collapse state and the thread
 // list. History gets the same sidebar with an empty thread slot and
-// isHistoryActive=true instead of a second, duplicated sidebar.
+// isHistoryActive=true instead of a second, duplicated sidebar. It also mounts
+// the app-wide overlays (toasts, Coming soon dialog) and the thread <-> URL sync.
 const AppContent = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { session, signOut } = useAuth();
   const { threadId, threads, selectThread, startNewChat } = useThreadSession();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  useThreadUrlSync();
 
   const isHistoryActive = location.pathname === ROUTE_HISTORY;
   const isDashboardActive = location.pathname === ROUTE_DASHBOARD;
-
-  const handleNewThread = () => {
-    startNewChat();
-    if (!isDashboardActive) navigate(ROUTE_DASHBOARD);
-  };
 
   return (
     <AppShell
@@ -41,7 +40,7 @@ const AppContent = () => {
           onToggleCollapse={() => setIsSidebarCollapsed((value) => !value)}
           workspaceName={WORKSPACE_NAME}
           workspaceSlug={WORKSPACE_SLUG}
-          onNewThread={handleNewThread}
+          onNewThread={startNewChat}
           userName={session?.user.email ?? 'Signed in'}
           onSignOut={() => void signOut()}
           isHistoryActive={isHistoryActive}
@@ -72,6 +71,8 @@ const AppContent = () => {
       }
     >
       <Outlet />
+      <ToastViewport />
+      <ComingSoonDialog />
     </AppShell>
   );
 };

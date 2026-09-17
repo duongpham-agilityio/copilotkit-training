@@ -67,3 +67,16 @@ export const composeReleaseContent = (
   draft: ReleaseNotesDraft,
   now?: Date,
 ): string => `${buildReleaseTitle(draft, now)}\n\n${draft.content}`;
+
+const DEFAULT_RELEASE_NOTES_FILE_NAME = 'RELEASE_NOTES.md';
+
+// "v2.4.0-github.md"; drafts without a version fall back to RELEASE_NOTES.md.
+export const buildReleaseNotesFileName = ({
+  version,
+  platform,
+}: ReleaseNotesDraft): string =>
+  version ? `v${version}-${platform}.md` : DEFAULT_RELEASE_NOTES_FILE_NAME;
+
+// "v2.4.0 · GitHub", or just the label when the draft has no version.
+export const describeReleaseDraft = ({ version, label }: ReleaseNotesDraft): string =>
+  version ? `v${version} · ${label}` : label;

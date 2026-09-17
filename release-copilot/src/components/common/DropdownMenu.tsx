@@ -59,6 +59,7 @@ interface DropdownMenuItemProps {
   icon?: ReactNode;
   hint?: string;
   danger?: boolean;
+  disabled?: boolean;
   onClick: () => void;
   children: ReactNode;
 }
@@ -67,6 +68,7 @@ const DropdownMenuItem = ({
   icon,
   hint,
   danger = false,
+  disabled = false,
   onClick,
   children,
 }: DropdownMenuItemProps) => (
@@ -74,8 +76,9 @@ const DropdownMenuItem = ({
     type="button"
     role="menuitem"
     onClick={onClick}
+    disabled={disabled}
     className={cn(
-      'text-body-md flex h-[34px] w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 text-left font-medium transition-colors',
+      'text-body-md flex h-[34px] w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 text-left font-medium transition-colors disabled:cursor-default disabled:opacity-50 disabled:hover:bg-transparent',
       danger
         ? 'text-error-rose hover:bg-error-rose/10'
         : 'text-on-surface hover:bg-surface-container',

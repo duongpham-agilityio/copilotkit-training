@@ -8,7 +8,6 @@ import { useReleaseDraftView } from '@/hooks/use-release-draft-view.ts';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
 import { CONFIRM_SLACK_PUBLISH_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
 import { publishToSlack } from '@/services/publish-to-slack.ts';
-import { saveReleaseToHistory } from '@/lib/release-notes/save-release-to-history.ts';
 import { joinLines } from '@/lib/text.ts';
 import { ConfirmSlackPublishSchema } from '@/types/confirm-slack-publish.ts';
 import type { ReleaseNotesDraft } from '@/types/release-notes-draft.ts';
@@ -65,12 +64,6 @@ const PublishFlow = ({ draft, content, respond }: PublishFlowProps) => {
       }
     },
     onSuccess: async (): Promise<void> => {
-      try {
-        await saveReleaseToHistory();
-      } catch (error: unknown) {
-        console.error('[useSlackPublish] saveReleaseToHistory failed', error);
-      }
-
       try {
         await respond(`Posted the ${label} release notes to Slack.`);
       } catch (error: unknown) {

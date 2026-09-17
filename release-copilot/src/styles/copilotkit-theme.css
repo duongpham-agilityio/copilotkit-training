@@ -148,6 +148,10 @@
   padding-bottom: 24px;
 }
 
+[data-testid='copilot-input-overlay'] > div {
+  background: transparent;
+}
+
 [data-testid='copilot-message-list'] {
   --none-spacing: 0;
   margin-left: var(--none-spacing);

@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useThreadSessionStore } from '@/store/thread-session-store.ts';
 import { listThreads } from '@/services/list-threads.ts';
 import { createUUID } from '@/lib/uuid.ts';
 import type { ThreadSummary } from '@/types/thread.ts';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id';
+import { buildThreadPath } from '@/constants/routings.ts';
 import { useAuth } from './use-auth';
 
 const THREADS_QUERY_KEY = ['threads'];
@@ -21,13 +23,14 @@ interface UseThreadSessionResult {
 }
 
 // Registers no CopilotKit primitive — safe to call from any number of
-// components. Every other domain hook in this plan calls this one internally
+// components. Thread changes go through the URL (`/?thread=<id>`), which
+// useThreadUrlSync copies into the store. Every other domain hook in this plan calls this one internally
 // to resolve the current thread instead of receiving threadId as a prop.
 export const useThreadSession = (): UseThreadSessionResult => {
   const threadId = useThreadSessionStore((state) => state.threadId);
   const { session } = useAuth();
   const resourceId = session!.user.id;
-  const setThreadId = useThreadSessionStore((state) => state.setThreadId);
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const {
@@ -71,7 +74,7 @@ export const useThreadSession = (): UseThreadSessionResult => {
     threads,
     isThreadsLoading,
     isThreadsError,
-    startNewChat: () => setThreadId(createUUID()),
-    selectThread: setThreadId,
+    startNewChat: () => navigate(buildThreadPath(createUUID())),
+    selectThread: (nextThreadId) => navigate(buildThreadPath(nextThreadId)),
   };
 };
