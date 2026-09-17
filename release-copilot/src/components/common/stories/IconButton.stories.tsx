@@ -29,3 +29,7 @@ export const Active: Story = {
 export const Disabled: Story = {
   args: { icon: <span>×</span>, 'aria-label': 'Close', disabled: true },
 };
+
+export const Outlined: Story = {
+  args: { icon: <span>⋯</span>, 'aria-label': 'More actions', isOutlined: true },
+};

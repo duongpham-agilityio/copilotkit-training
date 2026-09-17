@@ -25,3 +25,7 @@ export const Warning: Story = {
 export const Neutral: Story = {
   args: { variant: BadgeVariant.Neutral, children: 'chore' },
 };
+
+export const Brand: Story = {
+  args: { variant: BadgeVariant.Brand, children: 'Sent to Slack' },
+};

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import Button, { ButtonVariant } from '../Button.tsx';
+import Button, { ButtonSize, ButtonVariant } from '../Button.tsx';
 
 const meta: Meta<typeof Button> = {
   component: Button,
@@ -38,4 +38,8 @@ export const Disabled: Story = {
     children: 'Disabled',
     disabled: true,
   },
+};
+
+export const Small: Story = {
+  args: { variant: ButtonVariant.Secondary, size: ButtonSize.Sm, children: 'Export' },
 };

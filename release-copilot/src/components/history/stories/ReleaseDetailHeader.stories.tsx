@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ReleaseDetailHeader from '../ReleaseDetailHeader.tsx';
-import { ReleaseStatus, type ReleaseSummary } from '@/types/release.ts';
-import { KnownPlatformId } from '@/types/platform.ts';
+import { APP_STORE_ITEM, GITHUB_ITEM } from './fixtures.ts';
 
 const meta: Meta<typeof ReleaseDetailHeader> = {
   component: ReleaseDetailHeader,
@@ -12,22 +11,19 @@ export default meta;
 
 type Story = StoryObj<typeof ReleaseDetailHeader>;
 
-const RELEASE: ReleaseSummary = {
-  id: 'release-1',
-  version: 'v2.4.0',
-  status: ReleaseStatus.Published,
-  title: 'Custom commit types',
-  date: '2026-08-13',
-  featCount: 4,
-  fixCount: 2,
+const HANDLERS = {
+  onSendToSlack: () => {},
+  onExport: () => {},
+  onCopy: () => {},
+  onOpenInNewThread: () => {},
+  onCopyLink: () => {},
+  onRemove: () => {},
 };
 
-export const Default: Story = {
-  args: {
-    release: RELEASE,
-    activePlatform: KnownPlatformId.AppStore,
-    onPlatformChange: () => {},
-    onCopy: () => {},
-    onSendToSlack: () => true,
-  },
+export const Sent: Story = {
+  args: { item: GITHUB_ITEM, ...HANDLERS },
+};
+
+export const NotSent: Story = {
+  args: { item: APP_STORE_ITEM, ...HANDLERS },
 };
