@@ -5,6 +5,7 @@ export const enum ButtonVariant {
   Primary = 'primary',
   Secondary = 'secondary',
   Ghost = 'ghost',
+  Danger = 'danger',
 }
 
 export const BUTTON_VARIANT_CLASSES: Record<ButtonVariant, string> = {
@@ -12,6 +13,7 @@ export const BUTTON_VARIANT_CLASSES: Record<ButtonVariant, string> = {
   [ButtonVariant.Secondary]:
     'bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80',
   [ButtonVariant.Ghost]: 'bg-transparent text-primary hover:bg-primary/10',
+  [ButtonVariant.Danger]: 'bg-error-rose text-on-error hover:bg-error-rose/90',
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

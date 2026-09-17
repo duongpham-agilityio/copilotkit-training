@@ -28,6 +28,10 @@ export const Ghost: Story = {
   },
 };
 
+export const Danger: Story = {
+  args: { variant: ButtonVariant.Danger, children: 'Delete' },
+};
+
 export const Disabled: Story = {
   args: {
     variant: ButtonVariant.Primary,
