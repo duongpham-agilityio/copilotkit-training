@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRenderTool, useAgentContext } from '@copilotkit/react-core/v2';
 import { useReleaseWorkspaceStore } from '@/store/release-workspace-store.ts';
 import {
@@ -8,6 +8,7 @@ import {
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import { useIsLatestToolCall } from '@/hooks/use-is-latest-tool-call.ts';
 import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
+import ReleaseDraftCard from '@/components/release-notes/ReleaseDraftCard.tsx';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
 import { joinLines } from '@/lib/text.ts';
@@ -16,16 +17,25 @@ import {
   type ReleaseNotesDraft,
 } from '@/types/release-notes-draft.ts';
 
-interface DraftSyncProps {
+interface DraftToolCallProps {
   toolCallId: string;
   draft: ReleaseNotesDraft;
+  isPreviewOpen: boolean;
   onSync: (draft: ReleaseNotesDraft) => void;
+  onOpen: () => void;
 }
 
 // Only the thread's newest renderReleaseNotesPreview call may write to the
 // store — an older draft re-mounted by scrolling up must not overwrite the
-// latest one in the Live Preview. See useIsLatestToolCall.
-const DraftSync = ({ toolCallId, draft, onSync }: DraftSyncProps) => {
+// latest one in the Live Preview (see useIsLatestToolCall). That same call is
+// the one the panel is showing, so only its card reads as "Viewing".
+const DraftToolCall = ({
+  toolCallId,
+  draft,
+  isPreviewOpen,
+  onSync,
+  onOpen,
+}: DraftToolCallProps) => {
   const isLatest = useIsLatestToolCall(
     RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
     toolCallId,
@@ -36,7 +46,16 @@ const DraftSync = ({ toolCallId, draft, onSync }: DraftSyncProps) => {
       onSync(draft);
     }
   }, [isLatest, draft, onSync]);
-  return null;
+
+  return (
+    <ReleaseDraftCard
+      title={draft.version ? `Release notes · v${draft.version}` : 'Release notes'}
+      subtitle={draft.label}
+      isGenerating={false}
+      isViewing={isLatest && isPreviewOpen}
+      onOpen={onOpen}
+    />
+  );
 };
 
 // Owns the "Build release notes dynamic platform" domain end to end: registers
@@ -44,7 +63,15 @@ const DraftSync = ({ toolCallId, draft, onSync }: DraftSyncProps) => {
 // and returns the full draft view via useReleaseDraftView underneath. Any
 // OTHER hook or component that only needs to read the draft/platform content
 // must call useReleaseDraftView() instead of this one.
-export const useReleaseDraft = (): ReleaseDraftView => {
+interface UseReleaseDraftOptions {
+  isPreviewOpen: boolean;
+  onOpenPreview: () => void;
+}
+
+export const useReleaseDraft = ({
+  isPreviewOpen,
+  onOpenPreview,
+}: UseReleaseDraftOptions): ReleaseDraftView => {
   const { threadId } = useThreadSession();
   const threadIdRef = useRef(threadId);
   useEffect(() => {
@@ -60,7 +87,9 @@ export const useReleaseDraft = (): ReleaseDraftView => {
     agentId: RELEASE_COPILOT_AGENT_ID,
     render: (props) => {
       if (props.status === 'inProgress') {
-        return <Fragment />;
+        return (
+          <ReleaseDraftCard title="Release notes" isGenerating onOpen={onOpenPreview} />
+        );
       }
 
       const result = ReleaseNotesDraftSchema.safeParse(props.parameters);
@@ -79,10 +108,12 @@ export const useReleaseDraft = (): ReleaseDraftView => {
       }
 
       return (
-        <DraftSync
+        <DraftToolCall
           toolCallId={props.toolCallId}
           draft={result.data}
+          isPreviewOpen={isPreviewOpen}
           onSync={(draft) => setDraft(threadIdRef.current, draft)}
+          onOpen={onOpenPreview}
         />
       );
     },

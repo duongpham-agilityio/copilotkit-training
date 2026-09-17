@@ -1,4 +1,5 @@
-import { ArrowRight, ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown } from 'lucide-react';
+import BrandMark from './BrandMark.tsx';
 
 interface WorkspaceSwitchProps {
   name: string;
@@ -10,16 +11,16 @@ const WorkspaceSwitch = ({ name, slug, onClick }: WorkspaceSwitchProps) => (
   <button
     type="button"
     onClick={onClick}
-    className="hover:bg-surface-container -ml-1.5 flex min-w-0 flex-1 items-center gap-2.5 rounded-xl p-1.5 text-left"
+    className="hover:bg-surface-container -ml-1.5 flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 rounded-[10px] p-1.5 text-left"
   >
-    <span className="bg-primary flex size-7 shrink-0 items-center justify-center rounded-lg">
-      <ArrowRight className="size-3.5 text-white" strokeWidth={2.5} />
+    <BrandMark />
+    <span className="flex min-w-0 flex-1 flex-col gap-px">
+      <span className="text-body-sm text-on-surface truncate font-semibold tracking-[-0.01em]">
+        {name}
+      </span>
+      <span className="text-on-surface-muted truncate font-mono text-[11px]">{slug}</span>
     </span>
-    <span className="flex min-w-0 flex-1 flex-col">
-      <span className="text-label-sm text-on-surface truncate font-semibold">{name}</span>
-      <span className="text-on-surface-variant truncate font-mono text-[11px]">{slug}</span>
-    </span>
-    <ChevronsUpDown className="text-on-surface-variant size-3.5 shrink-0" />
+    <ChevronsUpDown className="text-on-surface-muted size-3.5 shrink-0" />
   </button>
 );
 

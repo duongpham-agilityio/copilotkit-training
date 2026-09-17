@@ -27,12 +27,19 @@
   --color-surface-container-highest: var(--color-surface-container-highest);
   --color-on-surface: var(--color-on-surface);
   --color-on-surface-variant: var(--color-on-surface-variant);
+  --color-on-surface-muted: var(--color-on-surface-muted);
   --color-inverse-surface: var(--color-inverse-surface);
   --color-inverse-on-surface: var(--color-inverse-on-surface);
   --color-outline: var(--color-outline);
   --color-outline-variant: var(--color-outline-variant);
+  --color-outline-subtle: var(--color-outline-subtle);
+  --color-outline-strong: var(--color-outline-strong);
   --color-surface-tint: var(--color-surface-tint);
   --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-primary-soft-strong: var(--color-primary-soft-strong);
+  --color-on-primary-soft: var(--color-on-primary-soft);
   --color-primary-ink: var(--color-primary-ink);
   --color-on-primary: var(--color-on-primary);
   --color-primary-container: var(--color-primary-container);
@@ -98,6 +105,14 @@
   --text-body-md: var(--text-body-md);
   --text-body-md--line-height: var(--text-body-md--line-height);
   --text-body-md--font-weight: var(--text-body-md--font-weight);
+
+  --text-body-sm: var(--text-body-sm);
+  --text-body-sm--line-height: var(--text-body-sm--line-height);
+  --text-body-sm--font-weight: var(--text-body-sm--font-weight);
+
+  --text-label-xs: var(--text-label-xs);
+  --text-label-xs--line-height: var(--text-label-xs--line-height);
+  --text-label-xs--font-weight: var(--text-label-xs--font-weight);
 
   --text-label-sm: var(--text-label-sm);
   --text-label-sm--line-height: var(--text-label-sm--line-height);

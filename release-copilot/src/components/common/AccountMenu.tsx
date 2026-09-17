@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { KeyRound, LogOut, Settings } from 'lucide-react';
+import { KeyRound, LogOut, MoreHorizontal, Settings } from 'lucide-react';
 import Avatar, { AvatarSize } from './Avatar.tsx';
 import DropdownMenu from './DropdownMenu.tsx';
+import IconButton, { IconButtonSize } from './IconButton.tsx';
 
 interface AccountMenuProps {
   userName: string;
@@ -13,23 +14,18 @@ const AccountMenu = ({ userName, avatarSrc, onSignOut }: AccountMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="relative flex items-center gap-2.5 px-1">
+    <div className="relative mt-1 flex h-8.5 items-center gap-2.5 rounded-lg pr-1 pl-2.5">
       <Avatar name={userName} src={avatarSrc} size={AvatarSize.Sm} />
-      <span className="text-on-surface text-label-sm min-w-0 flex-1 truncate font-semibold">
+      <span className="text-on-surface text-body-sm min-w-0 flex-1 truncate font-semibold">
         {userName}
       </span>
-      <button
-        type="button"
-        onClick={() => setIsOpen((open) => !open)}
+      <IconButton
+        icon={<MoreHorizontal className="size-4" />}
+        size={IconButtonSize.Sm}
+        isActive={isOpen}
         aria-label="Account menu"
-        className="text-on-surface-variant hover:bg-surface-container flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <circle cx="5" cy="12" r="1.6" />
-          <circle cx="12" cy="12" r="1.6" />
-          <circle cx="19" cy="12" r="1.6" />
-        </svg>
-      </button>
+        onClick={() => setIsOpen((open) => !open)}
+      />
       <DropdownMenu isOpen={isOpen} onClose={() => setIsOpen(false)} className="bottom-9 left-0">
         <DropdownMenu.Item icon={<Settings className="size-4" />} onClick={() => setIsOpen(false)}>
           Settings
