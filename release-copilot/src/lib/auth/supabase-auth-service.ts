@@ -17,6 +17,16 @@ export const supabaseAuthService: AuthService = {
       options: { redirectTo },
     });
   },
+  signInWithPassword: async (email, password) => {
+    const { error } = await supabaseBrowserClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw error;
+    }
+  },
   signOut: async () => {
     await supabaseBrowserClient.auth.signOut();
   },
