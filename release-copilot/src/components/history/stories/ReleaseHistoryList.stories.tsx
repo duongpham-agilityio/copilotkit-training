@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ReleaseHistoryList from '../ReleaseHistoryList.tsx';
-import { ReleaseStatus, type ReleaseSummary } from '@/types/release.ts';
+import { ReleaseHistoryFilter } from '@/types/release.ts';
+import { APP_STORE_ITEM, GITHUB_ITEM, GOOGLE_PLAY_ITEM } from './fixtures.ts';
 
 const meta: Meta<typeof ReleaseHistoryList> = {
   component: ReleaseHistoryList,
@@ -11,40 +12,32 @@ export default meta;
 
 type Story = StoryObj<typeof ReleaseHistoryList>;
 
-const RELEASES: ReleaseSummary[] = [
-  {
-    id: 'release-1',
-    version: 'v2.4.0',
-    status: ReleaseStatus.Published,
-    title: 'Custom commit types',
-    date: '2026-08-13',
-    featCount: 4,
-    fixCount: 2,
-  },
-  {
-    id: 'release-2',
-    version: 'v2.5.0',
-    status: ReleaseStatus.Draft,
-    title: 'History components',
-    date: '2026-08-14',
-    featCount: 3,
-    fixCount: 0,
-  },
-  {
-    id: 'release-3',
-    version: 'v2.3.0',
-    status: ReleaseStatus.Archived,
-    title: 'Base UI primitives',
-    date: '2026-08-10',
-    featCount: 6,
-    fixCount: 1,
-  },
-];
+const BASE_ARGS = {
+  isLoading: false,
+  selectedItemId: GITHUB_ITEM.id,
+  latestItemId: APP_STORE_ITEM.id,
+  query: '',
+  filter: ReleaseHistoryFilter.All,
+  onQueryChange: () => {},
+  onFilterChange: () => {},
+  onClearFilters: () => {},
+  onSelectItem: () => {},
+};
 
 export const Default: Story = {
   args: {
-    releases: RELEASES,
-    selectedReleaseId: RELEASES[0].id,
-    onSelectRelease: () => {},
+    ...BASE_ARGS,
+    groups: [
+      { label: 'September 2026', items: [APP_STORE_ITEM, GITHUB_ITEM] },
+      { label: 'August 2026', items: [GOOGLE_PLAY_ITEM] },
+    ],
   },
+};
+
+export const NoResults: Story = {
+  args: { ...BASE_ARGS, groups: [], query: 'v9' },
+};
+
+export const Loading: Story = {
+  args: { ...BASE_ARGS, groups: [], isLoading: true },
 };

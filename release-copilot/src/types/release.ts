@@ -4,12 +4,33 @@ export const enum ReleaseStatus {
   Archived = 'archived',
 }
 
-export interface ReleaseSummary {
+export const enum ReleaseSendStatus {
+  Sent = 'sent',
+  NotSent = 'not-sent',
+}
+
+export const enum ReleaseHistoryFilter {
+  All = 'all',
+  Sent = 'sent',
+  NotSent = 'not-sent',
+}
+
+// One History row: a single (version, platform) pair, not a whole release —
+// the design lists "v2.4.0 · GitHub" and "v2.4.0 · App Store" separately.
+export interface ReleaseHistoryItem {
   id: string;
   version: string;
-  status: ReleaseStatus;
   title: string;
+  platformId: string;
+  platformLabel: string;
+  sendStatus: ReleaseSendStatus;
   date: string;
-  featCount: number;
-  fixCount: number;
+  shortDate: string;
+  monthLabel: string;
+  markdown: string;
+}
+
+export interface ReleaseHistoryGroup {
+  label: string;
+  items: ReleaseHistoryItem[];
 }

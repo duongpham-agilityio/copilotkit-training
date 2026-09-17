@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import Button, { ButtonVariant } from './Button.tsx';
+import Button, { ButtonSize, ButtonVariant } from './Button.tsx';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -56,14 +56,10 @@ const ConfirmDialog = ({
         </h2>
         <p className="text-body-md text-on-surface-variant mt-1.5">{description}</p>
         <div className="mt-6 flex justify-end gap-2">
-          <Button
-            variant={ButtonVariant.Secondary}
-            onClick={onCancel}
-            className="bg-surface-container-lowest text-on-surface border-outline-variant hover:bg-surface-container border"
-          >
+          <Button variant={ButtonVariant.Secondary} size={ButtonSize.Sm} onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant={ButtonVariant.Danger} onClick={onConfirm}>
+          <Button variant={ButtonVariant.Danger} size={ButtonSize.Sm} onClick={onConfirm}>
             {confirmLabel}
           </Button>
         </div>
