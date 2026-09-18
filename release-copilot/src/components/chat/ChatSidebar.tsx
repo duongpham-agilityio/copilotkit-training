@@ -28,7 +28,7 @@ const ChatSidebar = () => {
       agentId={RELEASE_COPILOT_AGENT_ID}
       defaultOpen
       labels={{
-        modalHeaderTitle: 'Release Copilot',
+        modalHeaderTitle: 'Release Builder',
       }}
       header={{
         titleContent: {
@@ -38,7 +38,7 @@ const ChatSidebar = () => {
                 className="bg-success-emerald size-3 shrink-0 rounded-full"
                 aria-hidden="true"
               />
-              <span className="text-headline-md text-on-surface">Release Copilot</span>
+              <span className="text-headline-md text-on-surface">Release Builder</span>
             </span>
           ),
         },
