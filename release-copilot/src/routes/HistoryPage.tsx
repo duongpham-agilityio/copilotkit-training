@@ -1,15 +1,18 @@
-import { useNavigate } from 'react-router';
-import { Archive, RotateCcw } from 'lucide-react';
-import Button, { ButtonSize, ButtonVariant } from '@/components/common/Button.tsx';
+import { Archive, LayoutDashboard, RotateCcw } from 'lucide-react';
+import Button, {
+  ButtonSize,
+  ButtonVariant,
+} from '@/components/common/Button.tsx';
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
 import EmptyState from '@/components/common/EmptyState.tsx';
 import ErrorBoundary from '@/components/common/ErrorBoundary.tsx';
 import ReleaseHistoryList from '@/components/history/ReleaseHistoryList.tsx';
 import ReleaseDetailHeader from '@/components/history/ReleaseDetailHeader.tsx';
 import ReleaseDetailBody from '@/components/history/ReleaseDetailBody.tsx';
-import { ROUTE_DASHBOARD, buildHistoryPath } from '@/constants/routings.ts';
+import { buildHistoryPath } from '@/constants/routings.ts';
 import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { useReleaseHistory } from '@/hooks/use-release-history.ts';
+import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import { useSendReleaseToSlack } from '@/hooks/use-send-release-to-slack.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { ToastKind } from '@/store/toast-store.ts';
@@ -31,10 +34,13 @@ const PANE_CARD_CLASSES =
 // way to hand a draft to a fresh thread, the second a delete endpoint that
 // History's repository doesn't have yet.
 const HistoryPage = () => {
-  const navigate = useNavigate();
   const { showToast } = useToast();
   const { showComingSoon } = useComingSoon();
   const { sendToSlack, isSending } = useSendReleaseToSlack();
+  // Leaving History means picking up the work again, not resuming whatever
+  // thread happened to be open — the same fresh conversation the sidebar's New
+  // chat starts.
+  const { startNewChat } = useThreadSession();
   const {
     groups,
     selectedItem,
@@ -144,11 +150,21 @@ const HistoryPage = () => {
         <h1 className="text-body-md text-on-surface min-w-0 truncate font-semibold">
           Release history
         </h1>
-        {!isLoading && !isError && (
-          <span className="text-on-surface-muted shrink-0 text-[12.5px] tabular-nums">
-            {countLabel}
-          </span>
-        )}
+        <div className="flex shrink-0 items-center gap-3">
+          {!isLoading && !isError && (
+            <span className="text-on-surface-muted text-[12.5px] tabular-nums">
+              {countLabel}
+            </span>
+          )}
+          <Button
+            variant={ButtonVariant.Secondary}
+            size={ButtonSize.Sm}
+            onClick={startNewChat}
+          >
+            <LayoutDashboard className="size-3.75" />
+            Go to Dashboard
+          </Button>
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 px-8 pt-5 pb-6">
@@ -157,13 +173,19 @@ const HistoryPage = () => {
         </p>
 
         <div className="flex min-h-0 flex-1 gap-5">
-          <Card emphasis={CardEmphasis.Outlined} className={cn(PANE_CARD_CLASSES, 'w-85 shrink-0')}>
+          <Card
+            emphasis={CardEmphasis.Outlined}
+            className={cn(PANE_CARD_CLASSES, 'w-85 shrink-0')}
+          >
             <ErrorBoundary title="Release history unavailable">
               {renderListContent()}
             </ErrorBoundary>
           </Card>
 
-          <Card emphasis={CardEmphasis.Outlined} className={cn(PANE_CARD_CLASSES, 'min-w-0 flex-1')}>
+          <Card
+            emphasis={CardEmphasis.Outlined}
+            className={cn(PANE_CARD_CLASSES, 'min-w-0 flex-1')}
+          >
             <ErrorBoundary title="Release detail unavailable">
               {selectedItem ? (
                 <>
@@ -173,7 +195,9 @@ const HistoryPage = () => {
                     isSending={isSending}
                     onExport={handleExport}
                     onCopy={() => void handleCopy()}
-                    onOpenInNewThread={() => showComingSoon('Open in new thread')}
+                    onOpenInNewThread={() =>
+                      showComingSoon('Open in new thread')
+                    }
                     onCopyLink={() => void handleCopyLink()}
                     onRemove={() => showComingSoon('Remove from history')}
                   />
@@ -189,7 +213,7 @@ const HistoryPage = () => {
                       <Button
                         variant={ButtonVariant.Secondary}
                         size={ButtonSize.Sm}
-                        onClick={() => navigate(ROUTE_DASHBOARD)}
+                        onClick={startNewChat}
                       >
                         Go to Dashboard
                       </Button>
