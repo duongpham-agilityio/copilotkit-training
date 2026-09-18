@@ -140,14 +140,6 @@
   margin: 0;
 }
 
-/*
- * The input sits in an overlay pinned to `bottom-0`; the design leaves 24px
- * of page below the composer.
- */
-[data-testid='copilot-input-overlay'] {
-  padding-bottom: 24px;
-}
-
 [data-testid='copilot-input-overlay'] > div {
   background: transparent;
 }
