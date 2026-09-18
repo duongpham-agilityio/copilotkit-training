@@ -9,9 +9,12 @@ import {
 import { MastraAuthSupabase } from '@mastra/auth-supabase';
 import { releaseCopilotAgent } from './agents/release-copilot-agent';
 import { renderReleaseNotesPreviewTool } from './tools/render-release-notes-preview-tool';
-import { slackPublishRoute } from './api/slack-publish-route';
+import { publishReleaseNotesToSlackTool } from './tools/publish-release-notes-to-slack-tool';
 import { RELEASE_COPILOT_AGENT_ID } from '../constants/agent-tools/agent-id';
-import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../constants/agent-tools/tools-name';
+import {
+  RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
+  PUBLISH_RELEASE_NOTES_TO_SLACK_TOOL_NAME,
+} from '../constants/agent-tools/tools-name';
 import {
   MASTRA_CORS_CONFIG,
   MASTRA_LOGGER_NAME,
@@ -20,6 +23,7 @@ import {
 import { getRequiredEnv } from '../lib/env';
 import { releaseCopilotFactoryStorage } from './storage/factory-storage';
 import { copilotKitRoute } from './api/copilotkit-route';
+import { slackPublishRoute } from './api/slack-publish-route';
 import { saveReleaseHistoryRoute } from './api/save-release-history-route';
 import {
   listReleaseHistoryRoute,
@@ -59,6 +63,7 @@ export const mastra = new Mastra({
   },
   tools: {
     [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
+    [PUBLISH_RELEASE_NOTES_TO_SLACK_TOOL_NAME]: publishReleaseNotesToSlackTool,
   },
   server: {
     cors: MASTRA_CORS_CONFIG,

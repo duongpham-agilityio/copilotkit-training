@@ -6,7 +6,11 @@ import {
 } from '../../constants/models/model-name';
 import { buildReleaseCopilotInstructionsV2 } from '../instructions/v2';
 import { renderReleaseNotesPreviewTool } from '../tools/render-release-notes-preview-tool';
-import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '../../constants/agent-tools/tools-name';
+import { publishReleaseNotesToSlackTool } from '../tools/publish-release-notes-to-slack-tool';
+import {
+  RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME,
+  PUBLISH_RELEASE_NOTES_TO_SLACK_TOOL_NAME,
+} from '../../constants/agent-tools/tools-name';
 import {
   classificationRulesSkill,
   commitPrParsingSkill,
@@ -37,6 +41,7 @@ export const releaseCopilotAgent = new Agent({
   ],
   tools: {
     [RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME]: renderReleaseNotesPreviewTool,
+    [PUBLISH_RELEASE_NOTES_TO_SLACK_TOOL_NAME]: publishReleaseNotesToSlackTool,
   },
   skills: [
     classificationRulesSkill,
