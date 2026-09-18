@@ -6,7 +6,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.tsx';
 import { useArchiveRelease } from '@/hooks/use-archive-release.ts';
 import { usePreviewPanel } from '@/hooks/use-preview-panel.ts';
 import { useReleaseDraft } from '@/hooks/use-release-draft.tsx';
-import { useSlackPublish } from '@/hooks/use-slack-publish.tsx';
+import { useSlackSuggestion } from '@/hooks/use-slack-suggestion.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { ToastKind } from '@/store/toast-store.ts';
@@ -18,10 +18,13 @@ import {
   describeReleaseDraft,
 } from '@/lib/release-notes/release-title.ts';
 
-// Single call site for the two CopilotKit tool registrations this page owns:
-// useReleaseDraft (renderReleaseNotesPreview) and useSlackPublish
-// (confirmSlackPublish). Anything that only READS the draft uses
-// useReleaseDraftView() instead — usePreviewPanel does exactly that.
+// Single call site for the CopilotKit tool registration this page owns:
+// useReleaseDraft (renderReleaseNotesPreview). Anything that only READS the
+// draft uses useReleaseDraftView() instead — usePreviewPanel does exactly
+// that. Slack publishing is now a backend agent tool
+// (publish-release-notes-to-slack-tool.ts) triggered by the LLM itself, not a
+// client tool registration — useSlackSuggestion below only configures the
+// chat suggestion that nudges the user toward asking for it.
 const DashboardPage = () => {
   const {
     isOpen: isPreviewOpen,
@@ -32,7 +35,7 @@ const DashboardPage = () => {
     isPreviewOpen,
     onOpenPreview: openPreview,
   });
-  useSlackPublish();
+  useSlackSuggestion(draft);
   const { threadId, threads } = useThreadSession();
   const { showToast } = useToast();
   const { archive, isArchiving } = useArchiveRelease();
@@ -93,7 +96,10 @@ const DashboardPage = () => {
                 onArchive={() => draft && archive(draft)}
                 isArchiving={isArchiving}
                 isArchived={isArchived}
-                canArchive={draft !== null && buildSaveReleaseHistoryRequest(draft) !== null}
+                canArchive={
+                  draft !== null &&
+                  buildSaveReleaseHistoryRequest(draft) !== null
+                }
                 onClose={closePreview}
               />
             </ErrorBoundary>
