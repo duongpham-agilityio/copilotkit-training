@@ -38,7 +38,7 @@ const BrandPanel = () => (
     <div className="relative flex items-center gap-3">
       <img src="/images/app-logo.png" alt="" className="size-9 rounded-xl" />
       <span className="text-body-lg font-bold tracking-tight text-white">
-        Release Copilot
+        Release Builder
       </span>
     </div>
 
@@ -47,7 +47,7 @@ const BrandPanel = () => (
         Ship release notes your team will actually read.
       </h1>
       <p className="text-body-lg max-w-130 leading-relaxed text-white/70">
-        Release Copilot turns your commit history into clear, on-brand notes for
+        Release Builder turns your commit history into clear, on-brand notes for
         Slack, the App Store, and GitHub — in minutes, not hours.
       </p>
       <div className="mt-2 flex flex-col gap-5">
@@ -74,6 +74,8 @@ const SignInPage = () => {
       signInWithPassword(variables.email, variables.password),
   });
 
+  const isSubmitting = mutation.isPending || mutation.isSuccess;
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     mutation.mutate({ email, password });
@@ -87,7 +89,7 @@ const SignInPage = () => {
         <div className="flex items-center gap-2.5">
           <img src="/images/app-logo.png" alt="" className="size-7 rounded-lg" />
           <span className="text-body-md text-on-surface-variant font-semibold">
-            Release Copilot
+            Release Builder
           </span>
         </div>
 
@@ -117,6 +119,7 @@ const SignInPage = () => {
                   autoComplete="email"
                   placeholder="you@company.com"
                   value={email}
+                  disabled={isSubmitting}
                   onChange={(event) => setEmail(event.target.value)}
                 />
               </FormField>
@@ -127,15 +130,13 @@ const SignInPage = () => {
                   autoComplete="current-password"
                   placeholder="Enter your password"
                   value={password}
+                  disabled={isSubmitting}
                   onChange={(event) => setPassword(event.target.value)}
                 />
               </FormField>
 
-              <Button
-                type="submit"
-                disabled={!email || !password || mutation.isPending}
-              >
-                {mutation.isPending ? 'Signing in…' : 'Sign in'}
+              <Button type="submit" disabled={!email || !password || isSubmitting}>
+                {isSubmitting ? 'Signing in…' : 'Sign in'}
               </Button>
             </form>
 
@@ -148,6 +149,7 @@ const SignInPage = () => {
             <Button
               variant={ButtonVariant.Secondary}
               className="bg-surface-container-lowest text-on-surface border-outline-variant hover:bg-surface-container border"
+              disabled={isSubmitting}
               onClick={() => void signInWithOAuth('github')}
             >
               <span className="flex items-center justify-center gap-2.5">

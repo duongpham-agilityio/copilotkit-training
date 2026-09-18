@@ -4,7 +4,6 @@ import {
   CopilotChatToolCallsView,
 } from '@copilotkit/react-core/v2';
 import { RotateCcw, ThumbsDown, ThumbsUp } from 'lucide-react';
-import BrandMark from '@/components/common/BrandMark.tsx';
 import CopyButton from '@/components/common/CopyButton.tsx';
 import IconButton, { IconButtonSize } from '@/components/common/IconButton.tsx';
 import { useComingSoon } from '@/hooks/use-coming-soon.ts';
@@ -34,8 +33,8 @@ const MARKDOWN_CLASSES = cn(
   '[&_pre_code]:bg-transparent [&_pre_code]:p-0',
 );
 
-// The design gives the assistant turn no bubble: the brand mark sits in a
-// gutter beside a plain column of text, tool cards and row actions.
+// The design gives the assistant turn no bubble: just a plain column of
+// text, tool cards and row actions.
 // Regenerate and Good/Bad response are not built yet — they open the Coming
 // soon dialog.
 const AssistantMessageBubble = ({
@@ -58,49 +57,41 @@ const AssistantMessageBubble = ({
   };
 
   return (
-    <div className="flex w-full items-start gap-3">
-      <BrandMark className="size-6.5 rounded-[7px]" />
-      <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-        <div className="flex h-6.5 items-center gap-2">
-          <span className="text-body-sm text-on-surface font-semibold">
-            Release Copilot
-          </span>
+    <div className="flex w-full flex-col gap-2.5">
+      {message.content && (
+        <div className={cn('text-body-md text-on-surface leading-[1.65]', MARKDOWN_CLASSES)}>
+          <CopilotChatAssistantMessage.MarkdownRenderer content={message.content} />
         </div>
-        {message.content && (
-          <div className={cn('text-body-md text-on-surface leading-[1.65]', MARKDOWN_CLASSES)}>
-            <CopilotChatAssistantMessage.MarkdownRenderer content={message.content} />
-          </div>
-        )}
-        <CopilotChatToolCallsView message={message} messages={messages} />
-        {message.content && (
-          <div className="-ml-1.5 flex items-center gap-0.5">
-            <CopyButton
-              isIconOnly
-              aria-label="Copy message"
-              className="size-7 rounded-[7px]"
-              onCopy={handleCopy}
-            />
-            <IconButton
-              icon={<RotateCcw className="size-3.75" />}
-              size={IconButtonSize.Sm}
-              aria-label="Regenerate"
-              onClick={() => showComingSoon('Regenerate response')}
-            />
-            <IconButton
-              icon={<ThumbsUp className="size-3.75" />}
-              size={IconButtonSize.Sm}
-              aria-label="Good response"
-              onClick={() => showComingSoon('Response feedback')}
-            />
-            <IconButton
-              icon={<ThumbsDown className="size-3.75" />}
-              size={IconButtonSize.Sm}
-              aria-label="Bad response"
-              onClick={() => showComingSoon('Response feedback')}
-            />
-          </div>
-        )}
-      </div>
+      )}
+      <CopilotChatToolCallsView message={message} messages={messages} />
+      {message.content && (
+        <div className="-ml-1.5 flex items-center gap-0.5">
+          <CopyButton
+            isIconOnly
+            aria-label="Copy message"
+            className="size-7 rounded-[7px]"
+            onCopy={handleCopy}
+          />
+          <IconButton
+            icon={<RotateCcw className="size-3.75" />}
+            size={IconButtonSize.Sm}
+            aria-label="Regenerate"
+            onClick={() => showComingSoon('Regenerate response')}
+          />
+          <IconButton
+            icon={<ThumbsUp className="size-3.75" />}
+            size={IconButtonSize.Sm}
+            aria-label="Good response"
+            onClick={() => showComingSoon('Response feedback')}
+          />
+          <IconButton
+            icon={<ThumbsDown className="size-3.75" />}
+            size={IconButtonSize.Sm}
+            aria-label="Bad response"
+            onClick={() => showComingSoon('Response feedback')}
+          />
+        </div>
+      )}
     </div>
   );
 };
