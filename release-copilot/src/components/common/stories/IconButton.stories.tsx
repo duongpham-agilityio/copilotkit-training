@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import IconButton from '../IconButton.tsx';
-import { ButtonVariant } from '../Button.tsx';
+import IconButton, { IconButtonSize } from '../IconButton.tsx';
 
 const meta: Meta<typeof IconButton> = {
   component: IconButton,
@@ -11,14 +10,26 @@ export default meta;
 
 type Story = StoryObj<typeof IconButton>;
 
-export const Ghost: Story = {
-  args: { icon: <span>×</span>, 'aria-label': 'Close', variant: ButtonVariant.Ghost },
+export const Default: Story = {
+  args: { icon: <span>×</span>, 'aria-label': 'Close' },
 };
 
-export const Primary: Story = {
-  args: { icon: <span>×</span>, 'aria-label': 'Close', variant: ButtonVariant.Primary },
+export const Small: Story = {
+  args: { icon: <span>×</span>, 'aria-label': 'Close', size: IconButtonSize.Sm },
+};
+
+export const Large: Story = {
+  args: { icon: <span>×</span>, 'aria-label': 'Close', size: IconButtonSize.Lg },
+};
+
+export const Active: Story = {
+  args: { icon: <span>×</span>, 'aria-label': 'Close', isActive: true },
 };
 
 export const Disabled: Story = {
   args: { icon: <span>×</span>, 'aria-label': 'Close', disabled: true },
+};
+
+export const Outlined: Story = {
+  args: { icon: <span>⋯</span>, 'aria-label': 'More actions', isOutlined: true },
 };

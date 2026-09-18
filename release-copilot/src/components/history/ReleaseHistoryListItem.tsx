@@ -1,54 +1,61 @@
-import { Calendar } from 'lucide-react';
-import Card, { CardEmphasis } from '@/components/common/Card.tsx';
+import Badge, { BadgeVariant } from '@/components/common/Badge.tsx';
 import { cn } from '@/lib/cn.ts';
-import type { ReleaseSummary } from '@/types/release.ts';
+import { ReleaseSendStatus, type ReleaseHistoryItem } from '@/types/release.ts';
 
 interface ReleaseHistoryListItemProps {
-  release: ReleaseSummary;
+  item: ReleaseHistoryItem;
   isLatest: boolean;
   isSelected: boolean;
-  onSelect: (id: string) => void;
+  onSelect: (item: ReleaseHistoryItem) => void;
 }
 
+// The design's `.rel` row: version + date, title, then platform and send
+// status. Platform is text only — no platform brand icons.
 const ReleaseHistoryListItem = ({
-  release,
+  item,
   isLatest,
   isSelected,
   onSelect,
-}: ReleaseHistoryListItemProps) => (
-  <Card
-    emphasis={CardEmphasis.Outlined}
-    onClick={() => onSelect(release.id)}
-    className={cn(
-      'flex flex-col gap-1 rounded-lg p-4.25',
-      isSelected && 'border-primary bg-primary/5',
-    )}
-  >
-    <div className="flex items-center justify-between">
-      <span
-        className={cn(
-          'text-headline-md',
-          isSelected
-            ? 'text-primary font-bold'
-            : 'text-on-surface font-semibold',
-        )}
-      >
-        {release.version}
-      </span>
-      {isLatest && (
-        <span className="bg-primary text-on-primary text-label-mono-xs rounded-full px-2 py-0.5 font-mono font-bold tracking-wide uppercase">
-          Latest
-        </span>
+}: ReleaseHistoryListItemProps) => {
+  const { version, title, shortDate, platformLabel, sendStatus } = item;
+  const isSent = sendStatus === ReleaseSendStatus.Sent;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(item)}
+      aria-current={isSelected ? 'true' : undefined}
+      className={cn(
+        'flex w-full cursor-pointer flex-col gap-1.25 rounded-[10px] px-3 py-2.5 text-left transition-colors',
+        isSelected ? 'bg-primary-soft' : 'hover:bg-surface-container-low',
       )}
-    </div>
-    <div className="text-body-md text-on-surface-variant">
-      {release.title}
-    </div>
-    <div className="text-label-sm text-outline flex items-center gap-1">
-      <Calendar className="size-3.5" />
-      {release.date}
-    </div>
-  </Card>
-);
+    >
+      <div className="flex w-full items-center gap-2">
+        <span className="text-on-surface text-[13.5px] font-bold tracking-[-0.01em] tabular-nums">
+          {version}
+        </span>
+        {isLatest && <Badge variant={BadgeVariant.Success}>Latest</Badge>}
+        <span className="text-label-xs text-on-surface-muted ml-auto font-normal">
+          {shortDate}
+        </span>
+      </div>
+      <div className="text-body-sm text-on-surface-variant w-full truncate">
+        {title}
+      </div>
+      <div className="text-label-xs text-on-surface-muted mt-px flex w-full items-center gap-1.5 font-normal">
+        <span>{platformLabel}</span>
+        <span className="ml-auto flex items-center gap-1.25">
+          <span
+            className={cn(
+              'size-1.5 rounded-full',
+              isSent ? 'bg-primary' : 'bg-outline/70',
+            )}
+          />
+          {isSent ? 'Sent' : 'Not sent'}
+        </span>
+      </div>
+    </button>
+  );
+};
 
 export default ReleaseHistoryListItem;

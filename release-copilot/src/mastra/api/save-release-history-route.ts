@@ -28,17 +28,17 @@ export const saveReleaseHistoryRoute = registerApiRoute(
       }
 
       try {
+        const { version, title, releaseDate, titleOverride, platform, label, content } =
+          parsed.data;
+        // A request carries one platform draft; it goes into `platforms`, and the
+        // legacy named-platform columns stay empty (History skips empty bodies).
         const release = await insertRelease({
           ownerId,
-          version: parsed.data.version,
-          title: parsed.data.title,
-          releaseDate: parsed.data.releaseDate ?? formatReleaseDate(),
-          titleOverride: parsed.data.titleOverride ?? undefined,
-          github: parsed.data.github,
-          appStore: parsed.data.appStore ?? undefined,
-          googlePlay: parsed.data.googlePlay ?? undefined,
-          platforms: parsed.data.platforms,
-          entries: parsed.data.entries,
+          version,
+          title,
+          releaseDate: releaseDate ?? formatReleaseDate(),
+          titleOverride: titleOverride ?? undefined,
+          platforms: [{ platform, label, content }],
         });
 
         return context.json({ id: release.id }, 201);

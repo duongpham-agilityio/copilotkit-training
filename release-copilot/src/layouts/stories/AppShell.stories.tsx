@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { MemoryRouter } from 'react-router';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import AppShell from '../AppShell.tsx';
+import AppSidebar from '../AppSidebar.tsx';
 import { ROUTE_DASHBOARD } from '@/constants/routings.ts';
 
 const meta: Meta<typeof AppShell> = {
@@ -13,11 +15,29 @@ export default meta;
 type Story = StoryObj<typeof AppShell>;
 
 export const Dashboard: Story = {
-  render: () => (
-    <MemoryRouter initialEntries={[ROUTE_DASHBOARD]}>
-      <AppShell>
-        <div className="text-body-md text-on-surface">Content</div>
-      </AppShell>
-    </MemoryRouter>
-  ),
+  render: () => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    return (
+      <MemoryRouter initialEntries={[ROUTE_DASHBOARD]}>
+        <div className="h-140">
+          <AppShell
+            sidebar={
+              <AppSidebar
+                isCollapsed={isCollapsed}
+                onToggleCollapse={() => setIsCollapsed((value) => !value)}
+                workspaceName="Release Builder"
+                workspaceSlug="acme/release-builder"
+                onNewThread={() => {}}
+                userName="Duong Pham"
+                onSignOut={() => Promise.resolve()}
+                isHistoryActive={false}
+              />
+            }
+          >
+            <div className="text-body-md text-on-surface p-6">Content</div>
+          </AppShell>
+        </div>
+      </MemoryRouter>
+    );
+  },
 };

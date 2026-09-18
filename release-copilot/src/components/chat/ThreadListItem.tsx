@@ -1,28 +1,102 @@
+import { useState } from 'react';
+import { MoreHorizontal, Pencil, Pin, Trash2 } from 'lucide-react';
+import DropdownMenu from '@/components/common/DropdownMenu.tsx';
+import IconButton from '@/components/common/IconButton.tsx';
+import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { cn } from '@/lib/cn.ts';
 import type { ThreadSummary } from '@/types/thread.ts';
 
 interface ThreadListItemProps {
   thread: ThreadSummary;
   isActive: boolean;
+  time?: string;
   onSelect: (threadId: string) => void;
 }
 
-const ThreadListItem = ({ thread, isActive, onSelect }: ThreadListItemProps) => {
-  const handleClick = () => onSelect(thread.id);
+// Rename / Pin thread / Delete are not built yet (no rename/pin/delete
+// endpoint on a thread) — they open the Coming soon dialog, same as
+// ThreadHeader's options menu.
+const ThreadListItem = ({ thread, isActive, time, onSelect }: ThreadListItemProps) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { showComingSoon } = useComingSoon();
+  const closeMenu = () => setIsMenuOpen(false);
+  const showComingSoonFor = (feature: string) => () => {
+    closeMenu();
+    showComingSoon(feature);
+  };
 
   return (
     <li>
-      <button
-        type="button"
-        onClick={handleClick}
-        aria-current={isActive ? 'true' : undefined}
+      <div
         className={cn(
-          'text-label-sm hover:bg-surface-container w-full truncate px-3 py-2 text-left',
-          isActive && 'bg-primary/10 text-primary font-medium',
+          'group/thread flex h-8.5 items-center gap-2 rounded-lg pr-1 pl-2.5',
+          isActive
+            ? 'bg-surface-container-lowest ring-outline-subtle shadow-sm ring-1'
+            : 'hover:bg-surface-container',
         )}
       >
-        {thread.title || thread.id}
-      </button>
+        <button
+          type="button"
+          onClick={() => onSelect(thread.id)}
+          aria-current={isActive ? 'true' : undefined}
+          className={cn(
+            'text-body-sm min-w-0 flex-1 cursor-pointer truncate text-left',
+            isActive
+              ? 'text-on-surface font-semibold'
+              : 'text-on-surface-variant group-hover/thread:text-on-surface',
+          )}
+        >
+          {thread.title || thread.id}
+        </button>
+
+        {!isActive && time && (
+          <span
+            className={cn(
+              'text-label-xs text-on-surface-muted shrink-0 pr-1.5 font-normal',
+              isMenuOpen ? 'hidden' : 'group-hover/thread:hidden',
+            )}
+          >
+            {time}
+          </span>
+        )}
+
+        <div className="relative shrink-0">
+          <IconButton
+            icon={<MoreHorizontal className="size-3.75" />}
+            aria-label="Thread actions"
+            isActive={isMenuOpen}
+            onClick={() => setIsMenuOpen((open) => !open)}
+            className={cn(
+              'size-6 rounded-md',
+              isActive || isMenuOpen
+                ? 'opacity-100'
+                : 'opacity-0 group-hover/thread:opacity-100',
+            )}
+          />
+          <DropdownMenu isOpen={isMenuOpen} onClose={closeMenu} align="end" className="top-7 w-49">
+            <DropdownMenu.Item
+              icon={<Pencil className="size-3.75" />}
+              onClick={showComingSoonFor('Rename thread')}
+            >
+              Rename
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<Pin className="size-3.75" />}
+              onClick={showComingSoonFor('Pin thread')}
+            >
+              Pin thread
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              icon={<Trash2 className="size-3.75" />}
+              onClick={showComingSoonFor('Delete thread')}
+              danger
+            >
+              Delete
+            </DropdownMenu.Item>
+          </DropdownMenu>
+        </div>
+      </div>
     </li>
   );
 };

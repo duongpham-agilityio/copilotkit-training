@@ -6,23 +6,24 @@ export const enum AvatarSize {
 }
 
 const SIZE_CLASSES: Record<AvatarSize, string> = {
-  [AvatarSize.Sm]: 'w-6 h-6 text-label-sm',
-  [AvatarSize.Md]: 'w-8 h-8 text-body-md',
+  [AvatarSize.Sm]: 'size-6 text-[10.5px]',
+  [AvatarSize.Md]: 'size-8 text-label-xs',
 };
 
 interface AvatarProps {
   name: string;
   src?: string;
   size?: AvatarSize;
+  className?: string;
 }
 
-const Avatar = ({ name, src, size = AvatarSize.Md }: AvatarProps) => {
+const Avatar = ({ name, src, size = AvatarSize.Md, className }: AvatarProps) => {
   if (src) {
     return (
       <img
         src={src}
         alt={name}
-        className={cn('rounded-full object-cover', SIZE_CLASSES[size])}
+        className={cn('rounded-full object-cover', SIZE_CLASSES[size], className)}
       />
     );
   }
@@ -30,8 +31,9 @@ const Avatar = ({ name, src, size = AvatarSize.Md }: AvatarProps) => {
   return (
     <span
       className={cn(
-        'bg-secondary-container text-on-secondary-container inline-flex items-center justify-center rounded-full font-medium',
+        'bg-primary-soft-strong text-on-primary-soft inline-flex shrink-0 items-center justify-center rounded-full font-bold',
         SIZE_CLASSES[size],
+        className,
       )}
     >
       {name.charAt(0).toUpperCase()}

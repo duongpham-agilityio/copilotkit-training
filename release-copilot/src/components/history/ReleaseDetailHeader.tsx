@@ -1,114 +1,132 @@
-import { useEffect, useRef, useState } from 'react';
-import { Download, Send } from 'lucide-react';
-import Button, { ButtonVariant } from '@/components/common/Button.tsx';
-import CopyButton, { type CopyHandler } from '@/components/common/CopyButton.tsx';
-import type { TabItem } from '@/components/common/Tabs.tsx';
-import PlatformTabs from '@/components/platform-selector/PlatformTabs.tsx';
-import type { ReleaseSummary } from '@/types/release.ts';
-import { KnownPlatformId } from '@/types/platform.ts';
-
-const PLATFORM_ITEMS: TabItem[] = [
-  { value: KnownPlatformId.AppStore, label: 'App Store' },
-  { value: KnownPlatformId.GooglePlay, label: 'Google Play' },
-  { value: KnownPlatformId.Github, label: 'GitHub' },
-];
-
-const SEND_FEEDBACK_DURATION_MS = 2000;
-
-const enum SendState {
-  Idle = 'idle',
-  Sending = 'sending',
-  Sent = 'sent',
-  Failed = 'failed',
-}
+import { useState } from 'react';
+import {
+  Copy,
+  Download,
+  Link2,
+  MessageCircle,
+  MoreHorizontal,
+  Send,
+  Trash2,
+} from 'lucide-react';
+import Badge, { BadgeVariant } from '@/components/common/Badge.tsx';
+import Button, { ButtonSize, ButtonVariant } from '@/components/common/Button.tsx';
+import DropdownMenu from '@/components/common/DropdownMenu.tsx';
+import IconButton from '@/components/common/IconButton.tsx';
+import { ReleaseSendStatus, type ReleaseHistoryItem } from '@/types/release.ts';
 
 interface ReleaseDetailHeaderProps {
-  release: ReleaseSummary;
-  activePlatform: KnownPlatformId;
-  onPlatformChange: (platform: KnownPlatformId) => void;
-  onCopy: (platform: KnownPlatformId) => void;
-  onSendToSlack: CopyHandler;
+  item: ReleaseHistoryItem;
+  onSendToSlack: () => void;
+  // True while the Slack post is in flight — the button locks until it lands.
+  isSending: boolean;
+  onExport: () => void;
+  onCopy: () => void;
+  onOpenInNewThread: () => void;
+  onCopyLink: () => void;
+  onRemove: () => void;
 }
 
 const ReleaseDetailHeader = ({
-  release,
-  activePlatform,
-  onPlatformChange,
-  onCopy,
+  item,
   onSendToSlack,
+  isSending,
+  onExport,
+  onCopy,
+  onOpenInNewThread,
+  onCopyLink,
+  onRemove,
 }: ReleaseDetailHeaderProps) => {
-  const [sendState, setSendState] = useState<SendState>(SendState.Idle);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { version, title, date, platformLabel, sendStatus } = item;
+  const isSent = sendStatus === ReleaseSendStatus.Sent;
 
-  useEffect(() => () => clearTimeout(resetTimeoutRef.current), []);
-
-  const handleSendToSlack = async () => {
-    setSendState(SendState.Sending);
-    const succeeded = (await onSendToSlack()) !== false;
-    setSendState(succeeded ? SendState.Sent : SendState.Failed);
-    clearTimeout(resetTimeoutRef.current);
-    resetTimeoutRef.current = setTimeout(
-      () => setSendState(SendState.Idle),
-      SEND_FEEDBACK_DURATION_MS,
-    );
+  const runMenuAction = (action: () => void) => () => {
+    setIsMenuOpen(false);
+    action();
   };
 
-  const sendLabel = {
-    [SendState.Idle]: 'Send to Slack',
-    [SendState.Sending]: 'Sending…',
-    [SendState.Sent]: 'Sent',
-    [SendState.Failed]: 'Failed to send',
-  }[sendState];
-
   return (
-    <div className="bg-surface-container-lowest border-outline-variant flex flex-col gap-4 border-b px-6 py-6">
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-1">
-          <span className="text-headline-lg text-on-surface font-bold">
-            {release.version}
-          </span>
-          <span className="text-body-md text-on-surface-variant">
-            Generated on {release.date}
-          </span>
+    <div className="shrink-0 pt-5.5 pr-6 pl-8">
+      <div className="border-outline-subtle flex items-start justify-between gap-4 border-b pb-5">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-on-surface text-[26px] leading-8 font-bold tracking-[-0.02em] tabular-nums">
+              {version}
+            </h2>
+            <span className="border-outline-strong bg-surface-container-lowest text-on-surface-variant inline-flex h-5.5 items-center rounded-md border px-2 text-xs font-medium whitespace-nowrap">
+              {platformLabel}
+            </span>
+            <Badge variant={isSent ? BadgeVariant.Brand : BadgeVariant.Neutral}>
+              {isSent ? 'Sent to Slack' : 'Not sent'}
+            </Badge>
+          </div>
+          <div className="text-on-surface-variant mt-1.5 truncate text-[15px]">
+            {title}
+          </div>
+          <div className="text-on-surface-muted mt-1 text-[12.5px]">Archived {date}</div>
         </div>
-        <div className="flex gap-2">
+
+        <div className="flex shrink-0 items-center gap-2">
           <Button
-            variant={ButtonVariant.Ghost}
-            disabled={sendState === SendState.Sending}
-            onClick={() => void handleSendToSlack()}
-            className={
-              sendState === SendState.Failed
-                ? 'border-error text-error border'
-                : 'border-outline-variant bg-surface-container-lowest text-on-surface hover:bg-surface-container border'
-            }
+            variant={ButtonVariant.Secondary}
+            size={ButtonSize.Sm}
+            onClick={onSendToSlack}
+            disabled={isSending}
           >
-            <span className="inline-flex items-center gap-2">
-              <Send className="size-4" />
-              {sendLabel}
-            </span>
+            <Send className="size-3.5" />
+            {isSending ? 'Sending…' : isSent ? 'Resend to Slack' : 'Send to Slack'}
+          </Button>
+          <Button variant={ButtonVariant.Secondary} size={ButtonSize.Sm} onClick={onExport}>
+            <Download className="size-3.5" />
+            Export
           </Button>
           <Button
-            variant={ButtonVariant.Ghost}
-            className="bg-primary/10 hover:bg-primary/20"
-          >
-            <span className="inline-flex items-center gap-2">
-              <Download className="size-4" />
-              Export
-            </span>
-          </Button>
-          <CopyButton
             variant={ButtonVariant.Primary}
-            onCopy={() => onCopy(activePlatform)}
-          />
+            size={ButtonSize.Sm}
+            onClick={onCopy}
+            className="shadow-sm"
+          >
+            <Copy className="size-3.5" />
+            Copy
+          </Button>
+          <div className="relative">
+            <IconButton
+              icon={<MoreHorizontal className="size-4" />}
+              aria-label="More actions"
+              isOutlined
+              isActive={isMenuOpen}
+              onClick={() => setIsMenuOpen((open) => !open)}
+            />
+            <DropdownMenu
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              align="end"
+              className="top-10"
+            >
+              <DropdownMenu.Item
+                icon={<MessageCircle className="size-3.75" />}
+                onClick={runMenuAction(onOpenInNewThread)}
+              >
+                Open in new thread
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<Link2 className="size-3.75" />}
+                onClick={runMenuAction(onCopyLink)}
+              >
+                Copy link
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item
+                icon={<Trash2 className="size-3.75" />}
+                onClick={runMenuAction(onRemove)}
+                danger
+              >
+                Remove from history
+              </DropdownMenu.Item>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
-      <PlatformTabs
-        items={PLATFORM_ITEMS}
-        value={activePlatform}
-        onChange={(value) => onPlatformChange(value as KnownPlatformId)}
-        className="rounded-md px-6"
-        containerClassName="bg-surface-variant/50 rounded-md"
-      />
     </div>
   );
 };

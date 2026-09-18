@@ -2,25 +2,11 @@ import { registerApiRoute } from '@mastra/core/server';
 import { SlackPublishRequestSchema } from '../../types/slack-publish-request';
 import { SLACK_PUBLISH_ROUTE_PATH } from '../../constants/endpoints';
 import { SLACK_ERROR_MESSAGES } from '../../constants/messages';
-import { SLACK_WEBHOOK_TIMEOUT_MS } from '../../constants/time';
-
-const buildSlackText = (label: string, content: string): string =>
-  `*Release notes* · ${label}\n\`\`\`\n${content}\n\`\`\``;
+import { postToSlackWebhook } from '../lib/slack/post-to-slack-webhook';
 
 export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
   method: 'POST',
   handler: async (context) => {
-    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-    if (!webhookUrl) {
-      return context.json(
-        {
-          ok: false,
-          error: SLACK_ERROR_MESSAGES.MISSING_WEBHOOK_URL,
-        },
-        500,
-      );
-    }
-
     let body: unknown;
     try {
       body = await context.req.json();
@@ -46,41 +32,8 @@ export const slackPublishRoute = registerApiRoute(SLACK_PUBLISH_ROUTE_PATH, {
     }
 
     const { label, content } = parsed.data;
+    const result = await postToSlackWebhook(label, content);
 
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: buildSlackText(label, content) }),
-        signal: AbortSignal.timeout(SLACK_WEBHOOK_TIMEOUT_MS),
-      });
-
-      if (!response.ok) {
-        return context.json(
-          {
-            ok: false,
-            error: `${SLACK_ERROR_MESSAGES.SLACK_REJECTED} (${response.status}): ${await response.text()}`,
-          },
-          502,
-        );
-      }
-
-      return context.json({ ok: true });
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'TimeoutError') {
-        return context.json(
-          { ok: false, error: SLACK_ERROR_MESSAGES.WEBHOOK_TIMEOUT },
-          504,
-        );
-      }
-
-      return context.json(
-        {
-          ok: false,
-          error: error instanceof Error ? error.message : String(error),
-        },
-        502,
-      );
-    }
+    return context.json(result, result.ok ? 200 : 502);
   },
 });

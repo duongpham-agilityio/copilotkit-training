@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import Button, { ButtonVariant } from '../Button.tsx';
+import Button, { ButtonSize, ButtonVariant } from '../Button.tsx';
 
 const meta: Meta<typeof Button> = {
   component: Button,
@@ -28,10 +28,18 @@ export const Ghost: Story = {
   },
 };
 
+export const Danger: Story = {
+  args: { variant: ButtonVariant.Danger, children: 'Delete' },
+};
+
 export const Disabled: Story = {
   args: {
     variant: ButtonVariant.Primary,
     children: 'Disabled',
     disabled: true,
   },
+};
+
+export const Small: Story = {
+  args: { variant: ButtonVariant.Secondary, size: ButtonSize.Sm, children: 'Export' },
 };

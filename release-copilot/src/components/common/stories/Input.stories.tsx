@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import Input from '../Input.tsx';
 
 const meta: Meta<typeof Input> = {
@@ -19,5 +19,12 @@ export const WithIcon: Story = {
   args: {
     placeholder: 'Search releases...',
     icon: <Search className="h-4 w-4" />,
+  },
+};
+
+export const WithRightSlot: Story = {
+  args: {
+    placeholder: 'Search releases...',
+    rightSlot: <X className="h-4 w-4" />,
   },
 };
