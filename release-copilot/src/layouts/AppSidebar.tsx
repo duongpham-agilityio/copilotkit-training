@@ -27,7 +27,7 @@ interface AppSidebarProps {
   onNewThread: () => void;
   userName: string;
   avatarSrc?: string;
-  onSignOut: () => void;
+  onSignOut: () => Promise<void>;
   isHistoryActive: boolean;
   children?: ReactNode;
 }
