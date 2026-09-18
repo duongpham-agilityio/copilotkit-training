@@ -1,22 +1,48 @@
 import { useState } from 'react';
 import { KeyRound, LogOut, MoreHorizontal, Settings } from 'lucide-react';
 import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+import { useToast } from '@/hooks/use-toast.ts';
+import { ToastKind } from '@/store/toast-store.ts';
 import Avatar, { AvatarSize } from './Avatar.tsx';
+import ConfirmDialog from './ConfirmDialog.tsx';
 import DropdownMenu from './DropdownMenu.tsx';
 import IconButton, { IconButtonSize } from './IconButton.tsx';
 
 interface AccountMenuProps {
   userName: string;
   avatarSrc?: string;
-  onSignOut: () => void;
+  onSignOut: () => Promise<void>;
 }
 
 const AccountMenu = ({ userName, avatarSrc, onSignOut }: AccountMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSignOutConfirmOpen, setIsSignOutConfirmOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { showComingSoon } = useComingSoon();
+  const { showToast } = useToast();
   const showComingSoonFor = (feature: string) => () => {
     setIsOpen(false);
     showComingSoon(feature);
+  };
+  const handleSignOutRequest = () => {
+    setIsOpen(false);
+    setIsSignOutConfirmOpen(true);
+  };
+  const handleSignOutConfirm = async () => {
+    setIsSigningOut(true);
+    try {
+      await onSignOut();
+      // Stays blocking: the store's session update lands async after this
+      // resolves, and AppBootstrap redirects once it does — this component
+      // unmounts then, so there's no "success" state to fall back to here.
+    } catch (error) {
+      setIsSigningOut(false);
+      showToast({
+        kind: ToastKind.Error,
+        title: 'Couldn’t sign out',
+        description: error instanceof Error ? error.message : undefined,
+      });
+    }
   };
 
   return (
@@ -47,10 +73,21 @@ const AccountMenu = ({ userName, avatarSrc, onSignOut }: AccountMenuProps) => {
           Keyboard shortcuts
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
-        <DropdownMenu.Item icon={<LogOut className="size-4" />} onClick={onSignOut} danger>
+        <DropdownMenu.Item icon={<LogOut className="size-4" />} onClick={handleSignOutRequest} danger>
           Sign out
         </DropdownMenu.Item>
       </DropdownMenu>
+      <ConfirmDialog
+        isOpen={isSignOutConfirmOpen}
+        icon={<LogOut className="size-5" />}
+        title="Sign out?"
+        description="You’ll need to sign in again to access your workspace."
+        confirmLabel="Sign out"
+        confirmingLabel="Signing out…"
+        isConfirming={isSigningOut}
+        onConfirm={handleSignOutConfirm}
+        onCancel={() => setIsSignOutConfirmOpen(false)}
+      />
     </div>
   );
 };

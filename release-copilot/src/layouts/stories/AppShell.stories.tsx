@@ -29,7 +29,7 @@ export const Dashboard: Story = {
                 workspaceSlug="acme/release-builder"
                 onNewThread={() => {}}
                 userName="Duong Pham"
-                onSignOut={() => {}}
+                onSignOut={() => Promise.resolve()}
                 isHistoryActive={false}
               />
             }

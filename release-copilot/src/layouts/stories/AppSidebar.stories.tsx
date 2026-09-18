@@ -12,7 +12,7 @@ const meta: Meta<typeof AppSidebar> = {
     workspaceSlug: 'acme/release-builder',
     userName: 'Duong Pham',
     isHistoryActive: false,
-    onSignOut: () => {},
+    onSignOut: () => Promise.resolve(),
     onNewThread: () => {},
   },
 };

@@ -45,7 +45,7 @@ const AppContent = () => {
           workspaceSlug={WORKSPACE_SLUG}
           onNewThread={startNewChat}
           userName={session?.user.email ?? 'Signed in'}
-          onSignOut={() => void signOut()}
+          onSignOut={signOut}
           isHistoryActive={isHistoryActive}
         >
           <div className="flex flex-col px-3">

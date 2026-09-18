@@ -6,7 +6,7 @@ const meta: Meta<typeof AccountMenu> = {
   title: 'common/AccountMenu',
   args: {
     userName: 'Duong Pham',
-    onSignOut: () => {},
+    onSignOut: () => Promise.resolve(),
   },
 };
 
