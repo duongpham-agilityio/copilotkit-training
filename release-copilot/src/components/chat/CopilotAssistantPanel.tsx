@@ -1,21 +1,11 @@
 import { useEffect } from 'react';
-import {
-  CopilotChat,
-  useAgent,
-  type CopilotChatAssistantMessage,
-  type CopilotChatUserMessage,
-} from '@copilotkit/react-core/v2';
+import { CopilotChat, useAgent } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id';
 import { useChatError } from '@/hooks/use-chat-error.ts';
 import { useDraftThreadRow } from '@/hooks/use-draft-thread-row.ts';
-import AssistantMessageBubble from './AssistantMessageBubble.tsx';
 import ChatErrorBar from './ChatErrorBar.tsx';
-import UserMessageBubble from './UserMessageBubble.tsx';
 import WelcomeScreen from './WelcomeScreen.tsx';
 
-// No header of its own — ThreadHeader (rendered by DashboardPage, above this
-// panel) owns the thread title, Preview toggle, and options menu that the
-// design puts in a single row above the conversation.
 const CopilotAssistantPanel = () => {
   const { agent } = useAgent({ agentId: RELEASE_COPILOT_AGENT_ID });
 
@@ -49,9 +39,9 @@ const CopilotAssistantPanel = () => {
           chatDisclaimerText: '',
         }}
         messageView={{
-          assistantMessage:
-            AssistantMessageBubble as typeof CopilotChatAssistantMessage,
-          userMessage: UserMessageBubble as typeof CopilotChatUserMessage,
+          userMessage: {
+            messageRenderer: 'bg-primary! text-white! rounded-br-none!',
+          },
 
           className: 'mx-auto flex h-full w-full flex-col gap-6 px-8 pt-7 pb-3',
         }}
