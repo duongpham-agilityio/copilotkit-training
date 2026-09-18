@@ -36,7 +36,6 @@ const BrandPanel = () => (
     <div className="bg-primary/45 pointer-events-none absolute -right-40 -bottom-55 size-155 rounded-full blur-3xl" />
 
     <div className="relative flex items-center gap-3">
-      <img src="/images/app-logo.png" alt="" className="size-9 rounded-xl" />
       <span className="text-body-lg font-bold tracking-tight text-white">
         Release Builder
       </span>
@@ -87,7 +86,6 @@ const SignInPage = () => {
 
       <div className="flex flex-1 flex-col px-8 py-10 sm:px-16">
         <div className="flex items-center gap-2.5">
-          <img src="/images/app-logo.png" alt="" className="size-7 rounded-lg" />
           <span className="text-body-md text-on-surface-variant font-semibold">
             Release Builder
           </span>
