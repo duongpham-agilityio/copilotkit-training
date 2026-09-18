@@ -59,8 +59,15 @@ const AssistantMessageBubble = ({
   return (
     <div className="flex w-full flex-col gap-2.5">
       {message.content && (
-        <div className={cn('text-body-md text-on-surface leading-[1.65]', MARKDOWN_CLASSES)}>
-          <CopilotChatAssistantMessage.MarkdownRenderer content={message.content} />
+        <div
+          className={cn(
+            'text-body-md text-on-surface leading-[1.65]',
+            MARKDOWN_CLASSES,
+          )}
+        >
+          <CopilotChatAssistantMessage.MarkdownRenderer
+            content={message.content}
+          />
         </div>
       )}
       <CopilotChatToolCallsView message={message} messages={messages} />
