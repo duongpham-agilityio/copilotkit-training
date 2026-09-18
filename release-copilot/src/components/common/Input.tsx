@@ -1,12 +1,13 @@
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import type { InputHTMLAttributes, ReactNode, Ref } from 'react';
 import { cn } from '@/lib/cn';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: ReactNode;
   rightSlot?: ReactNode;
+  ref?: Ref<HTMLInputElement>;
 }
 
-const Input = ({ icon, rightSlot, className, ...rest }: InputProps) => (
+const Input = ({ icon, rightSlot, className, ref, ...rest }: InputProps) => (
   <div className="relative">
     {icon && (
       <span className="text-on-surface-variant absolute top-1/2 left-3 -translate-y-1/2">
@@ -14,6 +15,7 @@ const Input = ({ icon, rightSlot, className, ...rest }: InputProps) => (
       </span>
     )}
     <input
+      ref={ref}
       className={cn(
         'border-outline-variant bg-surface-container-lowest w-full rounded-xl border',
         'text-body-md text-on-surface placeholder:text-on-surface-variant',

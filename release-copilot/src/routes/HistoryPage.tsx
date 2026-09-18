@@ -1,31 +1,40 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Archive, Trash2 } from 'lucide-react';
+import { Archive, RotateCcw } from 'lucide-react';
 import Button, { ButtonSize, ButtonVariant } from '@/components/common/Button.tsx';
 import Card, { CardEmphasis } from '@/components/common/Card.tsx';
-import ConfirmDialog from '@/components/common/ConfirmDialog.tsx';
 import EmptyState from '@/components/common/EmptyState.tsx';
 import ErrorBoundary from '@/components/common/ErrorBoundary.tsx';
 import ReleaseHistoryList from '@/components/history/ReleaseHistoryList.tsx';
 import ReleaseDetailHeader from '@/components/history/ReleaseDetailHeader.tsx';
 import ReleaseDetailBody from '@/components/history/ReleaseDetailBody.tsx';
-import { ROUTE_DASHBOARD } from '@/constants/routings.ts';
+import { ROUTE_DASHBOARD, buildHistoryPath } from '@/constants/routings.ts';
+import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+import { useReleaseHistory } from '@/hooks/use-release-history.ts';
+import { useSendReleaseToSlack } from '@/hooks/use-send-release-to-slack.ts';
+import { useToast } from '@/hooks/use-toast.ts';
+import { ToastKind } from '@/store/toast-store.ts';
 import { cn } from '@/lib/cn.ts';
 import { copyText } from '@/lib/clipboard.ts';
-import { publishToSlack } from '@/services/publish-to-slack.ts';
-import { useReleaseHistory } from '@/hooks/use-release-history.ts';
+import { downloadTextFile } from '@/lib/download-text-file.ts';
+import {
+  buildReleaseHistoryFileName,
+  describeReleaseHistoryItem,
+} from '@/lib/release-notes/release-title.ts';
 
 // The design's `.card`: 14px radius, hairline ring, no inner padding — each
 // pane owns its own spacing.
 const PANE_CARD_CLASSES =
   'border-outline-subtle flex flex-col overflow-hidden rounded-[14px] p-0 shadow-[0_1px_2px_rgba(23,21,28,0.04)]';
 
-// Export / Open in new thread / Copy link / Remove have no handler yet —
-// UI-first pass, same "build the surface, defer the behavior" pattern as
-// ThreadHeader. Copy and Send to Slack keep their existing wiring.
+// Send to Slack, Copy, Export and Copy link are wired; "Open in new thread"
+// and "Remove from history" open the Coming soon dialog — the first needs a
+// way to hand a draft to a fresh thread, the second a delete endpoint that
+// History's repository doesn't have yet.
 const HistoryPage = () => {
   const navigate = useNavigate();
-  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+  const { showToast } = useToast();
+  const { showComingSoon } = useComingSoon();
+  const { sendToSlack, isSending } = useSendReleaseToSlack();
   const {
     groups,
     selectedItem,
@@ -41,6 +50,7 @@ const HistoryPage = () => {
     setQuery,
     setFilter,
     clearFilters,
+    refetch,
   } = useReleaseHistory();
 
   const countLabel =
@@ -48,22 +58,69 @@ const HistoryPage = () => {
       ? `${totalCount} archived`
       : `${filteredCount} of ${totalCount} archived`;
 
-  const handleCopy = () => {
+  const handleCopy = async (): Promise<void> => {
     if (!selectedItem) return;
-    void copyText(selectedItem.markdown);
+
+    const isCopied = await copyText(selectedItem.markdown);
+    showToast(
+      isCopied
+        ? {
+            kind: ToastKind.Success,
+            title: 'Copied to clipboard',
+            description: describeReleaseHistoryItem(selectedItem),
+          }
+        : { kind: ToastKind.Error, title: 'Couldn’t copy release notes' },
+    );
   };
 
-  const handleSendToSlack = () => {
+  const handleExport = () => {
     if (!selectedItem) return;
-    const { platformId, platformLabel, markdown } = selectedItem;
-    void publishToSlack({ platformId, label: platformLabel, content: markdown });
+
+    const fileName = buildReleaseHistoryFileName(selectedItem);
+    downloadTextFile(fileName, selectedItem.markdown);
+    showToast({
+      kind: ToastKind.Success,
+      title: `Exported ${fileName}`,
+      description: 'Saved to your Downloads folder.',
+    });
   };
 
-  const closeRemoveDialog = () => setIsRemoveDialogOpen(false);
+  const handleCopyLink = async (): Promise<void> => {
+    if (!selectedItem) return;
+
+    const { releaseId, platformId } = selectedItem;
+    const isCopied = await copyText(
+      `${window.location.origin}${buildHistoryPath(releaseId, platformId)}`,
+    );
+    showToast(
+      isCopied
+        ? {
+            kind: ToastKind.Success,
+            title: 'Link copied',
+            description: describeReleaseHistoryItem(selectedItem),
+          }
+        : { kind: ToastKind.Error, title: 'Couldn’t copy the link' },
+    );
+  };
 
   const renderListContent = () => {
     if (isError) {
-      return <p className="text-body-sm text-error p-4">Failed to load release history.</p>;
+      return (
+        <EmptyState
+          icon={<RotateCcw className="size-5" />}
+          title="Couldn’t load release history"
+          description="The request failed. Check your connection and try again."
+          action={
+            <Button
+              variant={ButtonVariant.Secondary}
+              size={ButtonSize.Sm}
+              onClick={refetch}
+            >
+              Retry
+            </Button>
+          }
+        />
+      );
     }
     return (
       <ReleaseHistoryList
@@ -112,12 +169,13 @@ const HistoryPage = () => {
                 <>
                   <ReleaseDetailHeader
                     item={selectedItem}
-                    onSendToSlack={handleSendToSlack}
-                    onExport={() => {}}
-                    onCopy={handleCopy}
-                    onOpenInNewThread={() => {}}
-                    onCopyLink={() => {}}
-                    onRemove={() => setIsRemoveDialogOpen(true)}
+                    onSendToSlack={() => sendToSlack(selectedItem)}
+                    isSending={isSending}
+                    onExport={handleExport}
+                    onCopy={() => void handleCopy()}
+                    onOpenInNewThread={() => showComingSoon('Open in new thread')}
+                    onCopyLink={() => void handleCopyLink()}
+                    onRemove={() => showComingSoon('Remove from history')}
                   />
                   <ReleaseDetailBody markdown={selectedItem.markdown} />
                 </>
@@ -144,16 +202,6 @@ const HistoryPage = () => {
           </Card>
         </div>
       </div>
-
-      <ConfirmDialog
-        isOpen={isRemoveDialogOpen && !!selectedItem}
-        icon={<Trash2 className="size-4.75" />}
-        title={`Remove ${selectedItem?.version} (${selectedItem?.platformLabel})?`}
-        description="These archived release notes will be removed from history. Anything already sent to Slack stays in Slack."
-        confirmLabel="Remove"
-        onConfirm={closeRemoveDialog}
-        onCancel={closeRemoveDialog}
-      />
     </div>
   );
 };

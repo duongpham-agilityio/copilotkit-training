@@ -18,7 +18,10 @@ export const enum ReleaseHistoryFilter {
 // One History row: a single (version, platform) pair, not a whole release —
 // the design lists "v2.4.0 · GitHub" and "v2.4.0 · App Store" separately.
 export interface ReleaseHistoryItem {
+  // `${releaseId}:${platformId}` — React key and list selection only; every
+  // action needs the two ids on their own, so they are stored, not re-split.
   id: string;
+  releaseId: string;
   version: string;
   title: string;
   platformId: string;

@@ -2,6 +2,7 @@ import { ReleaseSendStatus, type ReleaseHistoryItem } from '@/types/release.ts';
 
 export const GITHUB_ITEM: ReleaseHistoryItem = {
   id: 'release-2:github',
+  releaseId: 'release-2',
   version: 'v2.4.0',
   title: 'Faster changelog parsing',
   platformId: 'github',
@@ -23,6 +24,7 @@ export const GITHUB_ITEM: ReleaseHistoryItem = {
 
 export const APP_STORE_ITEM: ReleaseHistoryItem = {
   id: 'release-1:app-store',
+  releaseId: 'release-1',
   version: 'v2.5.0',
   title: 'Slack digests & per-platform templates',
   platformId: 'app-store',
@@ -39,6 +41,7 @@ export const APP_STORE_ITEM: ReleaseHistoryItem = {
 
 export const GOOGLE_PLAY_ITEM: ReleaseHistoryItem = {
   id: 'release-3:google-play',
+  releaseId: 'release-3',
   version: 'v2.3.1',
   title: 'Hotfix for duplicate tags',
   platformId: 'google-play',

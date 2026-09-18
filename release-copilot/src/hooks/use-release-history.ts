@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { listReleaseHistory } from '@/services/list-release-history.ts';
+import { PLATFORM_SEARCH_PARAM, RELEASE_SEARCH_PARAM } from '@/constants/routings.ts';
 import {
   formatReleaseDateDisplay,
   formatReleaseMonthDisplay,
   formatReleaseShortDateDisplay,
+  formatReleaseVersion,
 } from '@/lib/release-notes/release-title.ts';
 import { groupReleaseHistoryByMonth } from '@/lib/release-notes/group-release-history-by-month.ts';
 import type { ReleaseHistoryRecord } from '@/types/release-history-record.ts';
@@ -58,7 +61,8 @@ const mapRecordToItems = (record: ReleaseHistoryRecord): ReleaseHistoryItem[] =>
       ? [
           {
             id: `${id}:${platformId}`,
-            version,
+            releaseId: id,
+            version: formatReleaseVersion(version),
             title,
             platformId,
             platformLabel: label,
@@ -105,18 +109,22 @@ interface UseReleaseHistoryResult {
   filter: ReleaseHistoryFilter;
   isLoading: boolean;
   isError: boolean;
-  selectItem: (id: string) => void;
+  selectItem: (item: ReleaseHistoryItem) => void;
   setQuery: (query: string) => void;
   setFilter: (filter: ReleaseHistoryFilter) => void;
   clearFilters: () => void;
+  refetch: () => void;
 }
 
+// Selection lives in the URL (`/history?release=…&platform=…`) rather than in
+// component state so "Copy link" has something to copy and a reload reopens
+// the same notes. Falls back to the newest item when the URL names none.
 export const useReleaseHistory = (): UseReleaseHistoryResult => {
-  const [selectedItemId, setSelectedItemId] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ReleaseHistoryFilter>(ReleaseHistoryFilter.All);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: RELEASE_HISTORY_QUERY_KEY,
     queryFn: () => listReleaseHistory(),
   });
@@ -126,8 +134,13 @@ export const useReleaseHistory = (): UseReleaseHistoryResult => {
     (item) => matchesFilter(item, filter) && matchesQuery(item, query),
   );
 
+  const selectedReleaseId = searchParams.get(RELEASE_SEARCH_PARAM);
+  const selectedPlatformId = searchParams.get(PLATFORM_SEARCH_PARAM);
   const selectedItem =
-    items.find((item) => item.id === selectedItemId) ?? items.at(0);
+    items.find(
+      (item) =>
+        item.releaseId === selectedReleaseId && item.platformId === selectedPlatformId,
+    ) ?? items.at(0);
 
   return {
     groups: groupReleaseHistoryByMonth(filteredItems),
@@ -140,12 +153,17 @@ export const useReleaseHistory = (): UseReleaseHistoryResult => {
     filter,
     isLoading,
     isError,
-    selectItem: setSelectedItemId,
+    selectItem: ({ releaseId, platformId }) =>
+      setSearchParams({
+        [RELEASE_SEARCH_PARAM]: releaseId,
+        [PLATFORM_SEARCH_PARAM]: platformId,
+      }),
     setQuery,
     setFilter,
     clearFilters: () => {
       setQuery('');
       setFilter(ReleaseHistoryFilter.All);
     },
+    refetch: () => void refetch(),
   };
 };
