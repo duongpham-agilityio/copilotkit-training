@@ -18,9 +18,12 @@ const WORKSPACE_SLUG = 'release-copilot';
 
 // AppSidebar is shared chrome across Dashboard and History — this is the one
 // place both routes mount under, so it owns collapse state and the thread
-// list. History gets the same sidebar with an empty thread slot and
-// isHistoryActive=true instead of a second, duplicated sidebar. It also mounts
-// the app-wide overlays (toasts, Coming soon dialog) and the thread <-> URL sync.
+// list. Both routes show the same full thread list (History.dc.html's sidebar
+// is identical to Main.dc.html's); picking a thread from History navigates
+// back to the Dashboard with it open. No thread is highlighted while History
+// is the open route though — the store still holds the last thread id, but
+// nothing on screen belongs to it. It also mounts the app-wide overlays
+// (toasts, Coming soon dialog) and the thread <-> URL sync.
 const AppContent = () => {
   const location = useLocation();
   const { session, signOut } = useAuth();
@@ -45,28 +48,26 @@ const AppContent = () => {
           onSignOut={() => void signOut()}
           isHistoryActive={isHistoryActive}
         >
-          {isDashboardActive && (
-            <div className="flex flex-col px-3">
-              {groupThreadsByRecency(threads ?? []).map((group) => (
-                <div key={group.label}>
-                  <div className="text-label-xs text-on-surface-muted px-2.5 pt-4 pb-1.5 font-semibold">
-                    {group.label}
-                  </div>
-                  <ul className="flex flex-col gap-0.5">
-                    {group.threads.map((thread) => (
-                      <ThreadListItem
-                        key={thread.id}
-                        thread={thread}
-                        isActive={thread.id === threadId}
-                        time={thread.timeLabel}
-                        onSelect={selectThread}
-                      />
-                    ))}
-                  </ul>
+          <div className="flex flex-col px-3">
+            {groupThreadsByRecency(threads ?? []).map((group) => (
+              <div key={group.label}>
+                <div className="text-label-xs text-on-surface-muted px-2.5 pt-4 pb-1.5 font-semibold">
+                  {group.label}
                 </div>
-              ))}
-            </div>
-          )}
+                <ul className="flex flex-col gap-0.5">
+                  {group.threads.map((thread) => (
+                    <ThreadListItem
+                      key={thread.id}
+                      thread={thread}
+                      isActive={isDashboardActive && thread.id === threadId}
+                      time={thread.timeLabel}
+                      onSelect={selectThread}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </AppSidebar>
       }
     >

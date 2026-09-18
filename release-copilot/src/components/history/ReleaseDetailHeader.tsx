@@ -17,6 +17,8 @@ import { ReleaseSendStatus, type ReleaseHistoryItem } from '@/types/release.ts';
 interface ReleaseDetailHeaderProps {
   item: ReleaseHistoryItem;
   onSendToSlack: () => void;
+  // True while the Slack post is in flight — the button locks until it lands.
+  isSending: boolean;
   onExport: () => void;
   onCopy: () => void;
   onOpenInNewThread: () => void;
@@ -27,6 +29,7 @@ interface ReleaseDetailHeaderProps {
 const ReleaseDetailHeader = ({
   item,
   onSendToSlack,
+  isSending,
   onExport,
   onCopy,
   onOpenInNewThread,
@@ -68,9 +71,10 @@ const ReleaseDetailHeader = ({
             variant={ButtonVariant.Secondary}
             size={ButtonSize.Sm}
             onClick={onSendToSlack}
+            disabled={isSending}
           >
             <Send className="size-3.5" />
-            {isSent ? 'Resend to Slack' : 'Send to Slack'}
+            {isSending ? 'Sending…' : isSent ? 'Resend to Slack' : 'Send to Slack'}
           </Button>
           <Button variant={ButtonVariant.Secondary} size={ButtonSize.Sm} onClick={onExport}>
             <Download className="size-3.5" />

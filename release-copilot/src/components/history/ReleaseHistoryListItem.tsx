@@ -6,7 +6,7 @@ interface ReleaseHistoryListItemProps {
   item: ReleaseHistoryItem;
   isLatest: boolean;
   isSelected: boolean;
-  onSelect: (id: string) => void;
+  onSelect: (item: ReleaseHistoryItem) => void;
 }
 
 // The design's `.rel` row: version + date, title, then platform and send
@@ -17,13 +17,13 @@ const ReleaseHistoryListItem = ({
   isSelected,
   onSelect,
 }: ReleaseHistoryListItemProps) => {
-  const { id, version, title, shortDate, platformLabel, sendStatus } = item;
+  const { version, title, shortDate, platformLabel, sendStatus } = item;
   const isSent = sendStatus === ReleaseSendStatus.Sent;
 
   return (
     <button
       type="button"
-      onClick={() => onSelect(id)}
+      onClick={() => onSelect(item)}
       aria-current={isSelected ? 'true' : undefined}
       className={cn(
         'flex w-full cursor-pointer flex-col gap-1.25 rounded-[10px] px-3 py-2.5 text-left transition-colors',

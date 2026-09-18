@@ -1,6 +1,7 @@
 import { RELEASE_NOTES_DEFAULT_TIME_ZONE } from '../../constants/config/time-zone';
 import { RELEASE_NOTES_TITLE_PREFIX } from '../../constants/config/lib-config';
 import type { ReleaseNotesDraft } from '../../types/release-notes-draft';
+import type { ReleaseHistoryItem } from '../../types/release';
 
 export const formatReleaseDate = (
   now: Date = new Date(),
@@ -80,3 +81,21 @@ export const buildReleaseNotesFileName = ({
 // "v2.4.0 · GitHub", or just the label when the draft has no version.
 export const describeReleaseDraft = ({ version, label }: ReleaseNotesDraft): string =>
   version ? `v${version} · ${label}` : label;
+
+// "2.4.0" -> "v2.4.0". Drafts carry a bare MAJOR.MINOR.PATCH, so History
+// prefixes it once on the way in; already-prefixed values pass through.
+export const formatReleaseVersion = (version: string): string =>
+  version.startsWith('v') ? version : `v${version}`;
+
+// "v2.4.0-github.md" — the History twin of buildReleaseNotesFileName, whose
+// version is already display-formatted.
+export const buildReleaseHistoryFileName = ({
+  version,
+  platformId,
+}: ReleaseHistoryItem): string => `${version}-${platformId}.md`;
+
+// "v2.4.0 · GitHub"
+export const describeReleaseHistoryItem = ({
+  version,
+  platformLabel,
+}: ReleaseHistoryItem): string => `${version} · ${platformLabel}`;

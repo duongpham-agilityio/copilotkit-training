@@ -12,6 +12,7 @@ export default meta;
 type Story = StoryObj<typeof ReleaseDetailHeader>;
 
 const HANDLERS = {
+  isSending: false,
   onSendToSlack: () => {},
   onExport: () => {},
   onCopy: () => {},
@@ -26,4 +27,8 @@ export const Sent: Story = {
 
 export const NotSent: Story = {
   args: { item: APP_STORE_ITEM, ...HANDLERS },
+};
+
+export const Sending: Story = {
+  args: { item: APP_STORE_ITEM, ...HANDLERS, isSending: true },
 };
