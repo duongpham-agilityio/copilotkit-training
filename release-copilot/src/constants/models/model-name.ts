@@ -19,3 +19,7 @@ export const RELEASE_COPILOT_GUARDRAIL_MODEL = requireModelEnv(
 export const RELEASE_COPILOT_JUDGE_MODEL = requireModelEnv(
   'RELEASE_COPILOT_JUDGE_MODEL',
 );
+
+export const RELEASE_COPILOT_EMBEDDING_MODEL = requireModelEnv(
+  'RELEASE_COPILOT_EMBEDDING_MODEL',
+);
