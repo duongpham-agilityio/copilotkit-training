@@ -4,7 +4,7 @@ import AppShell from '@/layouts/AppShell.tsx';
 import AppSidebar from '@/layouts/AppSidebar.tsx';
 import ThreadListItem from '@/components/chat/ThreadListItem.tsx';
 import ComingSoonDialog from '@/components/common/ComingSoonDialog.tsx';
-import DisconnectBanner from '@/components/common/DisconnectBanner.tsx';
+import ConnectionErrorDialog from '@/components/common/ConnectionErrorDialog.tsx';
 import ToastViewport from '@/components/common/ToastViewport.tsx';
 import { useAuth } from '@/hooks/use-auth.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
@@ -36,7 +36,6 @@ const AppContent = () => {
 
   return (
     <AppShell
-      banner={<DisconnectBanner />}
       sidebar={
         <AppSidebar
           isCollapsed={isSidebarCollapsed}
@@ -74,6 +73,7 @@ const AppContent = () => {
       <Outlet />
       <ToastViewport />
       <ComingSoonDialog />
+      <ConnectionErrorDialog />
     </AppShell>
   );
 };
