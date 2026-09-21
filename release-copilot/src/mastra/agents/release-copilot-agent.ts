@@ -22,6 +22,14 @@ import {
   piiDetector,
   promptInjectionDetector,
 } from '../processors/guardrail-processors';
+import {
+  ANSWER_RELEVANCY_SCORER_NAME,
+  HALLUCINATION_SCORER_NAME,
+} from '../../constants/agent-tools/scorers-name';
+import {
+  answerRelevancyScorer,
+  hallucinationScorer,
+} from '../scorers/release-copilot-scorers';
 
 export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
@@ -50,6 +58,16 @@ export const releaseCopilotAgent = new Agent({
     releaseReportingSkill,
   ],
   inputProcessors: [promptInjectionDetector, piiDetector],
+  scorers: {
+    [ANSWER_RELEVANCY_SCORER_NAME]: {
+      scorer: answerRelevancyScorer,
+      sampling: { type: 'ratio', rate: 1 },
+    },
+    [HALLUCINATION_SCORER_NAME]: {
+      scorer: hallucinationScorer,
+      sampling: { type: 'ratio', rate: 0.5 },
+    },
+  },
   memory: new Memory({
     options: {
       lastMessages: 10,
