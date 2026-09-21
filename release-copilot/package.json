@@ -27,6 +27,7 @@
     "@mastra/auth-supabase": "^1.1.4",
     "@mastra/client-js": "^1.38.0",
     "@mastra/core": "^1.57.0",
+    "@mastra/evals": "^1.10.2",
     "@mastra/libsql": "^1.19.0",
     "@mastra/loggers": "^1.2.0",
     "@mastra/memory": "^1.26.0",

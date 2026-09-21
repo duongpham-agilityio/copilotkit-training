@@ -15,3 +15,7 @@ export const RELEASE_COPILOT_FALLBACK_MODEL = requireModelEnv(
 export const RELEASE_COPILOT_GUARDRAIL_MODEL = requireModelEnv(
   'RELEASE_COPILOT_GUARDRAIL_MODEL',
 );
+
+export const RELEASE_COPILOT_JUDGE_MODEL = requireModelEnv(
+  'RELEASE_COPILOT_JUDGE_MODEL',
+);

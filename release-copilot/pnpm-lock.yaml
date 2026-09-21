@@ -43,6 +43,9 @@ importers:
       '@mastra/core':
         specifier: ^1.57.0
         version: 1.57.0(patch_hash=be520f123ed1111f907b637d0cd9aaadb9d8157eb709aa1128ebb7ee44eb3b40)(@bufbuild/protobuf@2.13.0)(@cfworker/json-schema@4.1.1)(ai@6.0.246(zod@4.4.3))(express@5.2.1)(rxjs@7.8.1)(zod@4.4.3)
+      '@mastra/evals':
+        specifier: ^1.10.2
+        version: 1.10.2(@mastra/core@1.57.0(patch_hash=be520f123ed1111f907b637d0cd9aaadb9d8157eb709aa1128ebb7ee44eb3b40)(@bufbuild/protobuf@2.13.0)(@cfworker/json-schema@4.1.1)(ai@6.0.246(zod@4.4.3))(express@5.2.1)(rxjs@7.8.1)(zod@4.4.3))(vitest@4.1.10)
       '@mastra/libsql':
         specifier: ^1.19.0
         version: 1.19.0(@mastra/core@1.57.0(patch_hash=be520f123ed1111f907b637d0cd9aaadb9d8157eb709aa1128ebb7ee44eb3b40)(@bufbuild/protobuf@2.13.0)(@cfworker/json-schema@4.1.1)(ai@6.0.246(zod@4.4.3))(express@5.2.1)(rxjs@7.8.1)(zod@4.4.3))
@@ -1368,6 +1371,16 @@ packages:
     engines: {node: '>=22.13.0'}
     peerDependencies:
       '@mastra/core': '>=1.50.0-0 <2.0.0-0'
+
+  '@mastra/evals@1.10.2':
+    resolution: {integrity: sha512-Tms55WxxcwyTBixWiHVdE+hf1YWbM+7tCwhza17uWn3+GUyBAaCycESGUjyIdSyUeeaw4lH0rjjEBoG4Q/ESJQ==}
+    engines: {node: '>=22.13.0'}
+    peerDependencies:
+      '@mastra/core': '>=1.0.0-0 <2.0.0-0'
+      vitest: '>=3.0.0 <5.0.0'
+    peerDependenciesMeta:
+      vitest:
+        optional: true
 
   '@mastra/libsql@1.19.0':
     resolution: {integrity: sha512-BbxEMhHHhXJSL5Argwre3ybJRgwxGQu6N2fj4nTFEmDQ4wj+CjaeEAuen2wD6wLA58PB4BtMMCcHDm1GoeME7Q==}
@@ -3545,6 +3558,10 @@ packages:
     resolution: {integrity: sha512-9mAqGPHLakhCLeNyxPkK4xVo746zQ/czLH1Ky+vkitMnWfWZps8r0qXuwhwizagCRttsL4lfG4pIOvaWLpAP0w==}
     engines: {node: '>= 0.8.0'}
 
+  compromise@14.17.0:
+    resolution: {integrity: sha512-zw9iEcts/8tMDASNopMQEs3Pclkx2Xk7XCltAb/oV1LEZcCQpDaalAtFmvuxYo+wnVDsW3H3oT16mw9qVHpkqA==}
+    engines: {node: '>=12.0.0'}
+
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
@@ -3964,6 +3981,10 @@ packages:
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
+
+  efrt@2.7.0:
+    resolution: {integrity: sha512-/RInbCy1d4P6Zdfa+TMVsf/ufZVotat5hCw3QXmWtjU+3pFEOvOQ7ibo3aIxyCJw2leIeAMjmPj+1SLJiCpdrQ==}
+    engines: {node: '>=12.0.0'}
 
   electron-to-chromium@1.5.402:
     resolution: {integrity: sha512-/oOpMaPT6Yg+6/1XQhyIPlzgj7Ye9zf+nNM2Uh6OcE2G2oNptWazFa+qB2Pdqqbsc9KnIDzgAntoYN0dbwOXwA==}
@@ -4410,6 +4431,10 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  grad-school@0.0.5:
+    resolution: {integrity: sha512-rXunEHF9M9EkMydTBux7+IryYXEZinRk6g8OBOGDBzo/qWJjhTxy86i5q7lQYpCLHN8Sqv1XX3OIOc7ka2gtvQ==}
+    engines: {node: '>=8.0.0'}
 
   graphql-query-complexity@0.12.0:
     resolution: {integrity: sha512-fWEyuSL6g/+nSiIRgIipfI6UXTI7bAxrpPlCY1c0+V3pAEUo1ybaKmSBgNr1ed2r+agm1plJww8Loig9y6s2dw==}
@@ -4864,6 +4889,10 @@ packages:
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
+
+  keyword-extractor@0.0.28:
+    resolution: {integrity: sha512-oi7dSPpYtW/3fE0vZiqQgZ8mW3F1V9K4+rBJ0FcVrdXBEQuhZ0zKj7sX74eqGASuepLHf9aYdeonyKHWhYpHQA==}
+    engines: {node: '>= 0.10.0'}
 
   khroma@2.1.0:
     resolution: {integrity: sha512-Ls993zuzfayK269Svk9hzpeGUKob/sIgZzyHYdjQoAdQetRKpOLj+k/QQQ/6Qi0Yz65mlROrfd+Ev+1+7dz9Kw==}
@@ -6374,6 +6403,10 @@ packages:
     resolution: {integrity: sha512-1gnZf7DFcoIcajTjTwjwuDjzuz4PPcY2StKPlsGAQ1+YH20IRVrBaXSWmdjowTJ6u8Rc01PoYOGHXfP1mYcZNQ==}
     engines: {node: '>= 18'}
 
+  sentiment@5.0.2:
+    resolution: {integrity: sha512-ZeC3y0JsOYTdwujt5uOd7ILJNilbgFzUtg/LEG4wUv43LayFNLZ28ec8+Su+h3saHlJmIwYxBzfDHHZuiMA15g==}
+    engines: {node: '>=8.0'}
+
   serve-handler@6.1.7:
     resolution: {integrity: sha512-CinAq1xWb0vR3twAv9evEU8cNWkXCb9kd5ePAHUKJBkOsUpR1wt/CvGdeca7vqumL1U5cSaeVQ6zZMxiJ3yWsg==}
 
@@ -6506,6 +6539,10 @@ packages:
     resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}
     engines: {node: '>=0.6.19'}
 
+  string-similarity@4.0.4:
+    resolution: {integrity: sha512-/q/8Q4Bl4ZKAPjj8WerIBJWALKkaPRfrvhfF8k/B23i4nzrlRj2/go1m90In7nG/3XDSbOo0+pu6RvCTM9RGMQ==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
@@ -6586,6 +6623,9 @@ packages:
 
   stylis@4.4.0:
     resolution: {integrity: sha512-5Z9ZpRzfuH6l/UAvCPAPUo3665Nk2wLaZU3x+TLHKVzIz33+sbJqbtrYoC3KD4/uVOr2Zp+L0LySezP9OHV9yA==}
+
+  suffix-thumb@5.0.3:
+    resolution: {integrity: sha512-d77avV91FwJkDA0juRQ19XjE1lE1cNCVIWS0ZRicXqdMN28yjO5LltzEkZBNAWS7qHpn37c1fU4PkIJ/rjJQEA==}
 
   supports-color@10.2.2:
     resolution: {integrity: sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==}
@@ -8861,6 +8901,16 @@ snapshots:
       - utf-8-validate
       - zod
 
+  '@mastra/evals@1.10.2(@mastra/core@1.57.0(patch_hash=be520f123ed1111f907b637d0cd9aaadb9d8157eb709aa1128ebb7ee44eb3b40)(@bufbuild/protobuf@2.13.0)(@cfworker/json-schema@4.1.1)(ai@6.0.246(zod@4.4.3))(express@5.2.1)(rxjs@7.8.1)(zod@4.4.3))(vitest@4.1.10)':
+    dependencies:
+      '@mastra/core': 1.57.0(patch_hash=be520f123ed1111f907b637d0cd9aaadb9d8157eb709aa1128ebb7ee44eb3b40)(@bufbuild/protobuf@2.13.0)(@cfworker/json-schema@4.1.1)(ai@6.0.246(zod@4.4.3))(express@5.2.1)(rxjs@7.8.1)(zod@4.4.3)
+      compromise: 14.17.0
+      keyword-extractor: 0.0.28
+      sentiment: 5.0.2
+      string-similarity: 4.0.4
+    optionalDependencies:
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+
   '@mastra/libsql@1.19.0(@mastra/core@1.57.0(patch_hash=be520f123ed1111f907b637d0cd9aaadb9d8157eb709aa1128ebb7ee44eb3b40)(@bufbuild/protobuf@2.13.0)(@cfworker/json-schema@4.1.1)(ai@6.0.246(zod@4.4.3))(express@5.2.1)(rxjs@7.8.1)(zod@4.4.3))':
     dependencies:
       '@libsql/client': 0.17.4
@@ -11040,6 +11090,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  compromise@14.17.0:
+    dependencies:
+      efrt: 2.7.0
+      grad-school: 0.0.5
+      suffix-thumb: 5.0.3
+
   concat-map@0.0.1: {}
 
   concurrently@10.0.5:
@@ -11424,6 +11480,8 @@ snapshots:
       safe-buffer: 5.2.1
 
   ee-first@1.1.1: {}
+
+  efrt@2.7.0: {}
 
   electron-to-chromium@1.5.402: {}
 
@@ -11986,6 +12044,8 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
+  grad-school@0.0.5: {}
+
   graphql-query-complexity@0.12.0(graphql@16.14.2):
     dependencies:
       graphql: 16.14.2
@@ -12467,6 +12527,8 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  keyword-extractor@0.0.28: {}
 
   khroma@2.1.0: {}
 
@@ -14425,6 +14487,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  sentiment@5.0.2: {}
+
   serve-handler@6.1.7:
     dependencies:
       bytes: 3.0.0
@@ -14634,6 +14698,8 @@ snapshots:
 
   string-argv@0.3.2: {}
 
+  string-similarity@4.0.4: {}
+
   string-width@4.2.3:
     dependencies:
       emoji-regex: 8.0.0
@@ -14711,6 +14777,8 @@ snapshots:
       inline-style-parser: 0.2.7
 
   stylis@4.4.0: {}
+
+  suffix-thumb@5.0.3: {}
 
   supports-color@10.2.2: {}
 
