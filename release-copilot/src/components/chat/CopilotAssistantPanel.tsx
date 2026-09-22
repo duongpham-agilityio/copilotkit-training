@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { CopilotChat, useAgent } from '@copilotkit/react-core/v2';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id';
-import { useChatError } from '@/hooks/use-chat-error.ts';
+import { useChatSendFailureListener } from '@/hooks/use-chat-send-failure.ts';
 import { useDraftThreadRow } from '@/hooks/use-draft-thread-row.ts';
-import ChatErrorBar from './ChatErrorBar.tsx';
+import CopilotUserMessage from './CopilotUserMessage.tsx';
 import WelcomeScreen from './WelcomeScreen.tsx';
 
 const CopilotAssistantPanel = () => {
@@ -21,12 +21,7 @@ const CopilotAssistantPanel = () => {
     isRunning: agent.isRunning,
   });
 
-  const {
-    message: chatErrorMessage,
-    canRetry,
-    retry,
-    dismiss: dismissChatError,
-  } = useChatError();
+  useChatSendFailureListener();
 
   return (
     <div className="bg-surface-container-lowest flex h-full w-full flex-col">
@@ -39,21 +34,11 @@ const CopilotAssistantPanel = () => {
           chatDisclaimerText: '',
         }}
         messageView={{
-          userMessage: {
-            messageRenderer: 'bg-primary! text-white! rounded-br-none!',
-          },
+          userMessage: CopilotUserMessage,
 
           className: 'mx-auto flex h-full w-full flex-col gap-6 px-8 pt-7 pb-3',
         }}
       />
-      {chatErrorMessage && (
-        <ChatErrorBar
-          message={chatErrorMessage}
-          canRetry={canRetry}
-          onRetry={retry}
-          onDismiss={dismissChatError}
-        />
-      )}
     </div>
   );
 };
