@@ -8,7 +8,7 @@ import {
   SquareChevronLeft,
   SquareChevronRight,
 } from 'lucide-react';
-import { ROUTE_HISTORY } from '@/constants/routings.ts';
+import { ROUTE_DASHBOARD, ROUTE_HISTORY } from '@/constants/routings.ts';
 import WorkspaceSwitch from '@/components/common/WorkspaceSwitch.tsx';
 import AccountMenu from '@/components/common/AccountMenu.tsx';
 import Avatar, { AvatarSize } from '@/components/common/Avatar.tsx';
@@ -23,7 +23,6 @@ interface AppSidebarProps {
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   workspaceName: string;
-  workspaceSlug: string;
   onNewThread: () => void;
   userName: string;
   avatarSrc?: string;
@@ -39,7 +38,6 @@ const AppSidebar = ({
   isCollapsed,
   onToggleCollapse,
   workspaceName,
-  workspaceSlug,
   onNewThread,
   userName,
   avatarSrc,
@@ -49,6 +47,9 @@ const AppSidebar = ({
 }: AppSidebarProps) => {
   const { showComingSoon } = useComingSoon();
   const handleSearch = () => showComingSoon('Search threads');
+  // Workspace switching is disabled — the brand button is a hard reset instead:
+  // full page reload back to the dashboard, dropping any in-memory draft state.
+  const handleWorkspaceClick = () => window.location.assign(ROUTE_DASHBOARD);
 
   if (isCollapsed) {
     return (
@@ -100,11 +101,7 @@ const AppSidebar = ({
   return (
     <aside className="bg-surface-container-low border-outline-subtle flex h-full w-80 shrink-0 flex-col overflow-hidden border-r">
       <div className="flex shrink-0 items-center gap-1 pt-3 pr-3 pl-3.5">
-        <WorkspaceSwitch
-          name={workspaceName}
-          slug={workspaceSlug}
-          onClick={() => showComingSoon('Switch workspace')}
-        />
+        <WorkspaceSwitch name={workspaceName} onClick={handleWorkspaceClick} />
         <IconButton
           icon={<SquareChevronLeft className="size-4.25" />}
           aria-label="Collapse sidebar"

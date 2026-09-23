@@ -6,7 +6,6 @@ const meta: Meta<typeof WorkspaceSwitch> = {
   title: 'common/WorkspaceSwitch',
   args: {
     name: 'Release Builder',
-    slug: 'acme/release-builder',
   },
 };
 

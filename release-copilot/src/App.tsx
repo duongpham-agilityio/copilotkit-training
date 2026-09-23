@@ -14,7 +14,6 @@ import { ROUTE_DASHBOARD, ROUTE_HISTORY } from '@/constants/routings.ts';
 import AppProviders from './providers/AppProviders';
 
 const WORKSPACE_NAME = 'Release Builder';
-const WORKSPACE_SLUG = 'release-copilot';
 
 // AppSidebar is shared chrome across Dashboard and History — this is the one
 // place both routes mount under, so it owns collapse state and the thread
@@ -41,7 +40,6 @@ const AppContent = () => {
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed((value) => !value)}
           workspaceName={WORKSPACE_NAME}
-          workspaceSlug={WORKSPACE_SLUG}
           onNewThread={startNewChat}
           userName={session?.user.email ?? 'Signed in'}
           onSignOut={signOut}
