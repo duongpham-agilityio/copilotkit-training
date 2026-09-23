@@ -26,7 +26,6 @@ export const Dashboard: Story = {
                 isCollapsed={isCollapsed}
                 onToggleCollapse={() => setIsCollapsed((value) => !value)}
                 workspaceName="Release Builder"
-                workspaceSlug="acme/release-builder"
                 onNewThread={() => {}}
                 userName="Duong Pham"
                 onSignOut={() => Promise.resolve()}

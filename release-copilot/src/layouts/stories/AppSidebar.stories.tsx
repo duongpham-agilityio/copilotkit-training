@@ -9,7 +9,6 @@ const meta: Meta<typeof AppSidebar> = {
   title: 'layouts/AppSidebar',
   args: {
     workspaceName: 'Release Builder',
-    workspaceSlug: 'acme/release-builder',
     userName: 'Duong Pham',
     isHistoryActive: false,
     onSignOut: () => Promise.resolve(),
