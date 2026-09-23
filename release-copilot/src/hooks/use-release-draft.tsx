@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useRenderTool, useAgentContext } from '@copilotkit/react-core/v2';
+import { useRenderTool } from '@copilotkit/react-core/v2';
 import { useReleaseWorkspaceStore } from '@/store/release-workspace-store.ts';
 import type { SelectedDraft } from '@/store/draft-slice.ts';
 import {
@@ -12,7 +12,6 @@ import ToolErrorCard from '@/components/chat/ToolErrorCard.tsx';
 import ReleaseDraftCard from '@/components/release-notes/ReleaseDraftCard.tsx';
 import { RELEASE_COPILOT_AGENT_ID } from '@/constants/agent-tools/agent-id.ts';
 import { RENDER_RELEASE_NOTES_PREVIEW_TOOL_NAME } from '@/constants/agent-tools/tools-name.ts';
-import { joinLines } from '@/lib/text.ts';
 import {
   ReleaseNotesDraftSchema,
   type ReleaseNotesDraft,
@@ -50,11 +49,15 @@ const DraftToolCall = ({
     }
   }, [isLatest, draft, onSync]);
 
-  const isShown = selectedToolCallId ? selectedToolCallId === toolCallId : isLatest;
+  const isShown = selectedToolCallId
+    ? selectedToolCallId === toolCallId
+    : isLatest;
 
   return (
     <ReleaseDraftCard
-      title={draft.version ? `Release notes · v${draft.version}` : 'Release notes'}
+      title={
+        draft.version ? `Release notes · v${draft.version}` : 'Release notes'
+      }
       subtitle={draft.label}
       isGenerating={false}
       isViewing={isShown && isPreviewOpen}
@@ -94,7 +97,11 @@ export const useReleaseDraft = ({
     render: (props) => {
       if (props.status === 'inProgress') {
         return (
-          <ReleaseDraftCard title="Release notes" isGenerating onOpen={onOpenPreview} />
+          <ReleaseDraftCard
+            title="Release notes"
+            isGenerating
+            onOpen={onOpenPreview}
+          />
         );
       }
 
@@ -126,17 +133,6 @@ export const useReleaseDraft = ({
         />
       );
     },
-  });
-
-  useAgentContext({
-    description: joinLines(
-      'The release-notes draft currently shown in the Live Preview panel — the',
-      'exact text an edit request applies to, and the text the Slack card will',
-      'post. It may be an older draft the user reopened, not the newest one;',
-      'edit this one. null means no draft has been generated yet. The title line is not',
-      'part of these bodies: the app builds it from releaseDate/titleOverride.',
-    ),
-    value: { draft: view.draft },
   });
 
   return view;

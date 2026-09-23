@@ -5,9 +5,12 @@ import { useChatSendFailureListener } from '@/hooks/use-chat-send-failure.ts';
 import { useDraftThreadRow } from '@/hooks/use-draft-thread-row.ts';
 import CopilotUserMessage from './CopilotUserMessage.tsx';
 import WelcomeScreen from './WelcomeScreen.tsx';
+import { useAgentContext } from '@/hooks/use-agent-context.ts';
 
 const CopilotAssistantPanel = () => {
   const { agent } = useAgent({ agentId: RELEASE_COPILOT_AGENT_ID });
+
+  useAgentContext();
 
   useEffect(() => {
     return () => {
