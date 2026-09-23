@@ -1,3 +1,2 @@
 patchedDependencies:
-  '@ag-ui/mastra': patches/@ag-ui__mastra.patch
   '@mastra/core': patches/@mastra__core.patch
