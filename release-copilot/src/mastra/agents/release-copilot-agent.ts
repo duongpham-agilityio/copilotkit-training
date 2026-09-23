@@ -33,6 +33,7 @@ import {
   hallucinationScorer,
 } from '../scorers/release-copilot-scorers';
 import { releaseCopilotVectorStore } from '../storage/vector-store';
+import { externalContextProcessor } from '../processors/external-context';
 
 export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
@@ -60,7 +61,11 @@ export const releaseCopilotAgent = new Agent({
     platformFormattingSkill,
     releaseReportingSkill,
   ],
-  inputProcessors: [promptInjectionDetector, piiDetector],
+  inputProcessors: [
+    promptInjectionDetector,
+    piiDetector,
+    externalContextProcessor,
+  ],
   scorers: {
     [ANSWER_RELEVANCY_SCORER_NAME]: {
       scorer: answerRelevancyScorer,
