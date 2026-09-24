@@ -10,7 +10,7 @@ import ReleaseHistoryList from '@/components/history/ReleaseHistoryList.tsx';
 import ReleaseDetailHeader from '@/components/history/ReleaseDetailHeader.tsx';
 import ReleaseDetailBody from '@/components/history/ReleaseDetailBody.tsx';
 import { buildHistoryPath } from '@/constants/routings.ts';
-import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+// import { useComingSoon } from '@/hooks/use-coming-soon.ts'; // TODO(coming-soon)
 import { useReleaseHistory } from '@/hooks/use-release-history.ts';
 import { useThreadSession } from '@/hooks/use-thread-session.ts';
 import { useSendReleaseToSlack } from '@/hooks/use-send-release-to-slack.ts';
@@ -29,13 +29,13 @@ import {
 const PANE_CARD_CLASSES =
   'border-outline-subtle flex flex-col overflow-hidden rounded-[14px] p-0 shadow-[0_1px_2px_rgba(23,21,28,0.04)]';
 
-// Send to Slack, Copy, Export and Copy link are wired; "Open in new thread"
-// and "Remove from history" open the Coming soon dialog — the first needs a
-// way to hand a draft to a fresh thread, the second a delete endpoint that
-// History's repository doesn't have yet.
+// Send to Slack, Copy, Export and Copy link are wired. TODO(coming-soon): "Open in
+// new thread" and "Remove from history" are disabled until implemented — the
+// first needs a way to hand a draft to a fresh thread, the second a delete
+// endpoint that History's repository doesn't have yet.
 const HistoryPage = () => {
   const { showToast } = useToast();
-  const { showComingSoon } = useComingSoon();
+  // const { showComingSoon } = useComingSoon();
   const { sendToSlack, isSending } = useSendReleaseToSlack();
   // Leaving History means picking up the work again, not resuming whatever
   // thread happened to be open — the same fresh conversation the sidebar's New
@@ -195,11 +195,10 @@ const HistoryPage = () => {
                     isSending={isSending}
                     onExport={handleExport}
                     onCopy={() => void handleCopy()}
-                    onOpenInNewThread={() =>
-                      showComingSoon('Open in new thread')
-                    }
+                    // TODO(coming-soon): onOpenInNewThread / onRemove — to be implemented later.
+                    // onOpenInNewThread={() => showComingSoon('Open in new thread')}
                     onCopyLink={() => void handleCopyLink()}
-                    onRemove={() => showComingSoon('Remove from history')}
+                    // onRemove={() => showComingSoon('Remove from history')}
                   />
                   <ReleaseDetailBody markdown={selectedItem.markdown} />
                 </>

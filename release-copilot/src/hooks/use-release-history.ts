@@ -9,7 +9,7 @@ import {
   formatReleaseShortDateDisplay,
   formatReleaseVersion,
 } from '@/lib/release-notes/release-title.ts';
-import { groupReleaseHistoryByMonth } from '@/lib/release-notes/group-release-history-by-month.ts';
+import { groupReleaseHistoryByRecency } from '@/lib/release-notes/group-release-history-by-recency.ts';
 import type { ReleaseHistoryRecord } from '@/types/release-history-record.ts';
 import {
   ReleaseHistoryFilter,
@@ -70,6 +70,7 @@ const mapRecordToItems = (record: ReleaseHistoryRecord): ReleaseHistoryItem[] =>
               status === ReleaseStatus.Published
                 ? ReleaseSendStatus.Sent
                 : ReleaseSendStatus.NotSent,
+            releaseDate,
             date: formatReleaseDateDisplay(releaseDate),
             shortDate: formatReleaseShortDateDisplay(releaseDate),
             monthLabel: formatReleaseMonthDisplay(releaseDate),
@@ -143,7 +144,7 @@ export const useReleaseHistory = (): UseReleaseHistoryResult => {
     ) ?? items.at(0);
 
   return {
-    groups: groupReleaseHistoryByMonth(filteredItems),
+    groups: groupReleaseHistoryByRecency(filteredItems),
     selectedItem,
     selectedItemId: selectedItem?.id ?? '',
     latestItemId: items.at(0)?.id,

@@ -97,7 +97,7 @@ const LivePreviewPanel = ({
           />
           <Button
             variant={ButtonVariant.Primary}
-            disabled={!markdown || !canArchive || isArchiving}
+            disabled={!markdown || !canArchive || isArchiving || isArchived}
             title={canArchive ? undefined : 'Ask Copilot for a version and title to archive'}
             onClick={onArchive}
             className="text-body-sm ml-1 inline-flex h-8 items-center gap-1.5 rounded-lg px-3 py-0 font-semibold shadow-sm"

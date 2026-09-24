@@ -37,3 +37,6 @@ mastra.duckdb*
 
 *storybook.log
 storybook-static
+
+# Local daily work log (input for progress emails)
+docs/daily-log/

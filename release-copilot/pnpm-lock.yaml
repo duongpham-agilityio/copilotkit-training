@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  '@ag-ui/mastra':
-    hash: f3bd873257cfd29250d6ae9f935f45cfc920448b9e771134724e58f94bc18e29
-    path: patches/@ag-ui__mastra.patch
   '@mastra/core':
     hash: be520f123ed1111f907b637d0cd9aaadb9d8157eb709aa1128ebb7ee44eb3b40
     path: patches/@mastra__core.patch
@@ -23,8 +20,8 @@ importers:
         specifier: ^0.0.58
         version: 0.0.58
       '@ag-ui/mastra':
-        specifier: ^1.1.2
-        version: 1.1.2(patch_hash=f3bd873257cfd29250d6ae9f935f45cfc920448b9e771134724e58f94bc18e29)(a6b818aa925f34fdfd3930506bb659b3)
+        specifier: ^1.1.4
+        version: 1.1.4(a6b818aa925f34fdfd3930506bb659b3)
       '@copilotkit/react-core':
         specifier: ^1.66.4
         version: 1.66.4(@types/mdast@4.0.4)(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(graphql@16.14.2)(micromark-util-types@2.0.2)(micromark@4.0.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(zod@4.4.3)
@@ -253,11 +250,11 @@ packages:
       '@ag-ui/client': '>=0.0.42'
       '@ag-ui/core': '>=0.0.42'
 
-  '@ag-ui/mastra@1.1.2':
-    resolution: {integrity: sha512-jbtpCZP89BPAWzf8sStY6Y06P/O9DidO0TNQKYnxXsjKwe2YtBF49rY/6k3L7N3rx/0PVniPV68qY+D3G4AtiA==}
+  '@ag-ui/mastra@1.1.4':
+    resolution: {integrity: sha512-4snACp7ZSNRgHnSa0OIASoOMv6ytmEPWT4C+36yLc2c3YC4Heth84bhfnZhQBJ2Erjs1AluExzcpbB5CdVh2Yg==}
     peerDependencies:
-      '@ag-ui/client': '>=0.0.44'
-      '@ag-ui/core': '>=0.0.44'
+      '@ag-ui/client': '>=0.0.58'
+      '@ag-ui/core': '>=0.0.58'
       '@copilotkit/runtime': ^1.60.1
       '@mastra/client-js': '>=1.0.0-0 <2.0.0-0'
       '@mastra/core': '>=1.29.0 <2.0.0-0'
@@ -7319,7 +7316,7 @@ snapshots:
       - vue
       - ws
 
-  '@ag-ui/mastra@1.1.2(patch_hash=f3bd873257cfd29250d6ae9f935f45cfc920448b9e771134724e58f94bc18e29)(a6b818aa925f34fdfd3930506bb659b3)':
+  '@ag-ui/mastra@1.1.4(a6b818aa925f34fdfd3930506bb659b3)':
     dependencies:
       '@ag-ui/a2ui-toolkit': 0.0.4
       '@ag-ui/client': 0.0.58
@@ -8028,7 +8025,7 @@ snapshots:
       '@slack/bolt': 4.7.3(@types/express@5.0.6)
       '@slack/types': 2.22.0
       '@slack/web-api': 7.19.0
-      rxjs: 7.8.1
+      rxjs: 7.8.2
       zod: 3.25.76
       zod-to-json-schema: 3.25.2(zod@3.25.76)
     transitivePeerDependencies:
@@ -8051,7 +8048,7 @@ snapshots:
       '@microsoft/agents-activity': 1.7.2
       '@microsoft/agents-hosting': 1.7.2(@opentelemetry/api@1.9.1)
       express: 4.22.2
-      rxjs: 7.8.1
+      rxjs: 7.8.2
       zod: 3.25.76
       zod-to-json-schema: 3.25.2(zod@3.25.76)
     transitivePeerDependencies:
