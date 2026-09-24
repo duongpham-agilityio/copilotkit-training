@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { KeyRound, LogOut, MoreHorizontal, Settings } from 'lucide-react';
-import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+// TODO(coming-soon): restore KeyRound / Settings / useComingSoon with the Settings
+// and Keyboard shortcuts items below.
+// import { KeyRound, LogOut, MoreHorizontal, Settings } from 'lucide-react';
+// import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+import { LogOut, MoreHorizontal } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast.ts';
 import { ToastKind } from '@/store/toast-store.ts';
 import Avatar, { AvatarSize } from './Avatar.tsx';
@@ -18,12 +21,12 @@ const AccountMenu = ({ userName, avatarSrc, onSignOut }: AccountMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSignOutConfirmOpen, setIsSignOutConfirmOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const { showComingSoon } = useComingSoon();
+  // const { showComingSoon } = useComingSoon();
   const { showToast } = useToast();
-  const showComingSoonFor = (feature: string) => () => {
-    setIsOpen(false);
-    showComingSoon(feature);
-  };
+  // const showComingSoonFor = (feature: string) => () => {
+  //   setIsOpen(false);
+  //   showComingSoon(feature);
+  // };
   const handleSignOutRequest = () => {
     setIsOpen(false);
     setIsSignOutConfirmOpen(true);
@@ -68,6 +71,7 @@ const AccountMenu = ({ userName, avatarSrc, onSignOut }: AccountMenuProps) => {
           align="end"
           className="bottom-full mb-1.5"
         >
+          {/* TODO(coming-soon): Settings / Keyboard shortcuts — to be implemented later.
           <DropdownMenu.Item
             icon={<Settings className="size-4" />}
             onClick={showComingSoonFor('Settings')}
@@ -82,6 +86,7 @@ const AccountMenu = ({ userName, avatarSrc, onSignOut }: AccountMenuProps) => {
             Keyboard shortcuts
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
+          */}
           <DropdownMenu.Item
             icon={<LogOut className="size-4" />}
             onClick={handleSignOutRequest}

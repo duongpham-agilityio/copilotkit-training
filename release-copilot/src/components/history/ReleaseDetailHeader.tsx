@@ -1,13 +1,7 @@
 import { useState } from 'react';
-import {
-  Copy,
-  Download,
-  Link2,
-  MessageCircle,
-  MoreHorizontal,
-  Send,
-  Trash2,
-} from 'lucide-react';
+// TODO(coming-soon): restore MessageCircle / Trash2 with the Open in new thread and
+// Remove from history items below.
+import { Copy, Download, Link2, MoreHorizontal, Send } from 'lucide-react';
 import Badge, { BadgeVariant } from '@/components/common/Badge.tsx';
 import Button, { ButtonSize, ButtonVariant } from '@/components/common/Button.tsx';
 import DropdownMenu from '@/components/common/DropdownMenu.tsx';
@@ -21,9 +15,10 @@ interface ReleaseDetailHeaderProps {
   isSending: boolean;
   onExport: () => void;
   onCopy: () => void;
-  onOpenInNewThread: () => void;
+  // TODO(coming-soon): onOpenInNewThread / onRemove come back with their menu items.
+  // onOpenInNewThread: () => void;
   onCopyLink: () => void;
-  onRemove: () => void;
+  // onRemove: () => void;
 }
 
 const ReleaseDetailHeader = ({
@@ -32,9 +27,9 @@ const ReleaseDetailHeader = ({
   isSending,
   onExport,
   onCopy,
-  onOpenInNewThread,
+  // onOpenInNewThread,
   onCopyLink,
-  onRemove,
+  // onRemove,
 }: ReleaseDetailHeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { version, title, date, platformLabel, sendStatus } = item;
@@ -103,18 +98,21 @@ const ReleaseDetailHeader = ({
               align="end"
               className="top-10"
             >
+              {/* TODO(coming-soon): Open in new thread — to be implemented later.
               <DropdownMenu.Item
                 icon={<MessageCircle className="size-3.75" />}
                 onClick={runMenuAction(onOpenInNewThread)}
               >
                 Open in new thread
               </DropdownMenu.Item>
+              */}
               <DropdownMenu.Item
                 icon={<Link2 className="size-3.75" />}
                 onClick={runMenuAction(onCopyLink)}
               >
                 Copy link
               </DropdownMenu.Item>
+              {/* TODO(coming-soon): Remove from history — to be implemented later.
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<Trash2 className="size-3.75" />}
@@ -123,6 +121,7 @@ const ReleaseDetailHeader = ({
               >
                 Remove from history
               </DropdownMenu.Item>
+              */}
             </DropdownMenu>
           </div>
         </div>

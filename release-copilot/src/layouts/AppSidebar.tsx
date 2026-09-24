@@ -4,7 +4,6 @@ import {
   Archive,
   ChevronRight,
   Plus,
-  Search,
   SquareChevronLeft,
   SquareChevronRight,
 } from 'lucide-react';
@@ -14,9 +13,13 @@ import AccountMenu from '@/components/common/AccountMenu.tsx';
 import Avatar, { AvatarSize } from '@/components/common/Avatar.tsx';
 import BrandMark from '@/components/common/BrandMark.tsx';
 import Button from '@/components/common/Button.tsx';
-import IconButton, { IconButtonSize } from '@/components/common/IconButton.tsx';
-import Kbd from '@/components/common/Kbd.tsx';
-import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+import IconButton from '@/components/common/IconButton.tsx';
+// TODO(coming-soon): restore Search / IconButtonSize / Kbd / useComingSoon imports
+// with the Search threads buttons below.
+// import { Search } from 'lucide-react';
+// import { IconButtonSize } from '@/components/common/IconButton.tsx';
+// import Kbd from '@/components/common/Kbd.tsx';
+// import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { cn } from '@/lib/cn.ts';
 
 interface AppSidebarProps {
@@ -45,8 +48,9 @@ const AppSidebar = ({
   isHistoryActive,
   children,
 }: AppSidebarProps) => {
-  const { showComingSoon } = useComingSoon();
-  const handleSearch = () => showComingSoon('Search threads');
+  // TODO(coming-soon): Search threads is disabled until it is implemented.
+  // const { showComingSoon } = useComingSoon();
+  // const handleSearch = () => showComingSoon('Search threads');
   // Workspace switching is disabled — the brand button is a hard reset instead:
   // full page reload back to the dashboard, dropping any in-memory draft state.
   const handleWorkspaceClick = () => window.location.assign(ROUTE_DASHBOARD);
@@ -69,12 +73,14 @@ const AppSidebar = ({
         >
           <Plus className="size-4" />
         </button>
+        {/* TODO(coming-soon): Search threads — to be implemented later.
         <IconButton
           icon={<Search className="size-4" />}
           size={IconButtonSize.Lg}
           aria-label="Search threads"
           onClick={handleSearch}
         />
+        */}
         <div className="flex-1" />
         <Link
           to={ROUTE_HISTORY}
@@ -117,6 +123,7 @@ const AppSidebar = ({
           <Plus className="size-3.75" strokeWidth={2.2} />
           New thread
         </Button>
+        {/* TODO(coming-soon): Search threads (⌘K) — to be implemented later.
         <button
           type="button"
           onClick={handleSearch}
@@ -126,6 +133,7 @@ const AppSidebar = ({
           <span className="flex-1 text-left">Search threads</span>
           <Kbd>⌘K</Kbd>
         </button>
+        */}
       </div>
 
       <nav className="min-h-0 flex-1 overflow-y-auto pb-3" aria-label="Threads">

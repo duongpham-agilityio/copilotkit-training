@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { MoreHorizontal, Pencil, Pin, Trash2 } from 'lucide-react';
-import DropdownMenu from '@/components/common/DropdownMenu.tsx';
-import IconButton from '@/components/common/IconButton.tsx';
-import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+// TODO(coming-soon): restore these imports with the thread actions menu below.
+// import { useState } from 'react';
+// import { MoreHorizontal, Pencil, Pin, Trash2 } from 'lucide-react';
+// import DropdownMenu from '@/components/common/DropdownMenu.tsx';
+// import IconButton from '@/components/common/IconButton.tsx';
+// import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { cn } from '@/lib/cn.ts';
 import type { ThreadSummary } from '@/types/thread.ts';
 
@@ -13,17 +14,17 @@ interface ThreadListItemProps {
   onSelect: (threadId: string) => void;
 }
 
-// Rename / Pin thread / Delete are not built yet (no rename/pin/delete
-// endpoint on a thread) — they open the Coming soon dialog, same as
-// ThreadHeader's options menu.
+// TODO(coming-soon): the whole per-thread actions menu (Rename / Pin thread /
+// Delete) is disabled until implemented (no rename/pin/delete endpoint on a
+// thread yet) — every item in it only opened the Coming soon dialog.
 const ThreadListItem = ({ thread, isActive, time, onSelect }: ThreadListItemProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { showComingSoon } = useComingSoon();
-  const closeMenu = () => setIsMenuOpen(false);
-  const showComingSoonFor = (feature: string) => () => {
-    closeMenu();
-    showComingSoon(feature);
-  };
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const { showComingSoon } = useComingSoon();
+  // const closeMenu = () => setIsMenuOpen(false);
+  // const showComingSoonFor = (feature: string) => () => {
+  //   closeMenu();
+  //   showComingSoon(feature);
+  // };
 
   return (
     <li>
@@ -49,17 +50,18 @@ const ThreadListItem = ({ thread, isActive, time, onSelect }: ThreadListItemProp
           {thread.title || thread.id}
         </button>
 
+        {/* The timestamp used to hide on hover to make room for the actions
+            button; with the menu disabled it stays visible. Original className:
+            cn('text-label-xs text-on-surface-muted shrink-0 pr-1.5 font-normal',
+               isMenuOpen ? 'hidden' : 'group-hover/thread:hidden') */}
         {!isActive && time && (
-          <span
-            className={cn(
-              'text-label-xs text-on-surface-muted shrink-0 pr-1.5 font-normal',
-              isMenuOpen ? 'hidden' : 'group-hover/thread:hidden',
-            )}
-          >
+          <span className="text-label-xs text-on-surface-muted shrink-0 pr-1.5 font-normal">
             {time}
           </span>
         )}
 
+        {/* TODO(coming-soon): thread actions menu (Rename / Pin thread / Delete) —
+            to be implemented later.
         <div className="relative shrink-0">
           <IconButton
             icon={<MoreHorizontal className="size-3.75" />}
@@ -96,6 +98,7 @@ const ThreadListItem = ({ thread, isActive, time, onSelect }: ThreadListItemProp
             </DropdownMenu.Item>
           </DropdownMenu>
         </div>
+        */}
       </div>
     </li>
   );
