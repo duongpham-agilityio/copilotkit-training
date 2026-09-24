@@ -16,7 +16,7 @@ export const formatReleaseDate = (
     .format(now)
     .replaceAll('-', '');
 
-const parseReleaseDate = (releaseDate: string): Date => {
+export const parseReleaseDate = (releaseDate: string): Date => {
   const year = Number(releaseDate.slice(0, 4));
   const month = Number(releaseDate.slice(4, 6));
   const day = Number(releaseDate.slice(6, 8));

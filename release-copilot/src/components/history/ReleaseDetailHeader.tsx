@@ -3,7 +3,10 @@ import { useState } from 'react';
 // Remove from history items below.
 import { Copy, Download, Link2, MoreHorizontal, Send } from 'lucide-react';
 import Badge, { BadgeVariant } from '@/components/common/Badge.tsx';
-import Button, { ButtonSize, ButtonVariant } from '@/components/common/Button.tsx';
+import Button, {
+  ButtonSize,
+  ButtonVariant,
+} from '@/components/common/Button.tsx';
 import DropdownMenu from '@/components/common/DropdownMenu.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
 import { ReleaseSendStatus, type ReleaseHistoryItem } from '@/types/release.ts';
@@ -46,7 +49,7 @@ const ReleaseDetailHeader = ({
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">
             <h2 className="text-on-surface text-[26px] leading-8 font-bold tracking-[-0.02em] tabular-nums">
-              {version}
+              {title}
             </h2>
             <span className="border-outline-strong bg-surface-container-lowest text-on-surface-variant inline-flex h-5.5 items-center rounded-md border px-2 text-xs font-medium whitespace-nowrap">
               {platformLabel}
@@ -56,9 +59,11 @@ const ReleaseDetailHeader = ({
             </Badge>
           </div>
           <div className="text-on-surface-variant mt-1.5 truncate text-[15px]">
-            {title}
+            {version}
           </div>
-          <div className="text-on-surface-muted mt-1 text-[12.5px]">Archived {date}</div>
+          <div className="text-on-surface-muted mt-1 text-[12.5px]">
+            Archived {date}
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -69,9 +74,17 @@ const ReleaseDetailHeader = ({
             disabled={isSending}
           >
             <Send className="size-3.5" />
-            {isSending ? 'Sending…' : isSent ? 'Resend to Slack' : 'Send to Slack'}
+            {isSending
+              ? 'Sending…'
+              : isSent
+                ? 'Resend to Slack'
+                : 'Send to Slack'}
           </Button>
-          <Button variant={ButtonVariant.Secondary} size={ButtonSize.Sm} onClick={onExport}>
+          <Button
+            variant={ButtonVariant.Secondary}
+            size={ButtonSize.Sm}
+            onClick={onExport}
+          >
             <Download className="size-3.5" />
             Export
           </Button>
