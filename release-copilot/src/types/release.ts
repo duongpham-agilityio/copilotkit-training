@@ -27,6 +27,8 @@ export interface ReleaseHistoryItem {
   platformId: string;
   platformLabel: string;
   sendStatus: ReleaseSendStatus;
+  // Raw `YYYYMMDD` — the display strings below can't be bucketed by recency.
+  releaseDate: string;
   date: string;
   shortDate: string;
   monthLabel: string;

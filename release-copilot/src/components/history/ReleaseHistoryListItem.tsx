@@ -32,7 +32,7 @@ const ReleaseHistoryListItem = ({
     >
       <div className="flex w-full items-center gap-2">
         <span className="text-on-surface text-[13.5px] font-bold tracking-[-0.01em] tabular-nums">
-          {version}
+          {title}
         </span>
         {isLatest && <Badge variant={BadgeVariant.Success}>Latest</Badge>}
         <span className="text-label-xs text-on-surface-muted ml-auto font-normal">
@@ -40,7 +40,7 @@ const ReleaseHistoryListItem = ({
         </span>
       </div>
       <div className="text-body-sm text-on-surface-variant w-full truncate">
-        {title}
+        {version}
       </div>
       <div className="text-label-xs text-on-surface-muted mt-px flex w-full items-center gap-1.5 font-normal">
         <span>{platformLabel}</span>
