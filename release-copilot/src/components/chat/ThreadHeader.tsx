@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Download, Link2, MoreHorizontal, PanelRightOpen, Pencil, Pin, Trash2 } from 'lucide-react';
+// TODO(coming-soon): restore Link2 / Pencil / Pin / Trash2 / useComingSoon with the
+// Rename / Pin / Copy link / Delete items below.
+// import { Download, Link2, MoreHorizontal, PanelRightOpen, Pencil, Pin, Trash2 } from 'lucide-react';
+// import { useComingSoon } from '@/hooks/use-coming-soon.ts';
+import { Download, MoreHorizontal, PanelRightOpen } from 'lucide-react';
 import Button, { ButtonVariant } from '@/components/common/Button.tsx';
 import DropdownMenu from '@/components/common/DropdownMenu.tsx';
 import IconButton from '@/components/common/IconButton.tsx';
-import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { cn } from '@/lib/cn.ts';
 
 interface ThreadHeaderProps {
@@ -15,8 +18,8 @@ interface ThreadHeaderProps {
   canExportNotes: boolean;
 }
 
-// Rename / Pin thread / Copy link / Delete thread are not built yet (no
-// rename/pin/delete endpoint on a thread) — they open the Coming soon dialog.
+// TODO(coming-soon): Rename / Pin thread / Copy link / Delete thread are disabled
+// until implemented (no rename/pin/delete endpoint on a thread yet).
 const ThreadHeader = ({
   title,
   isPreviewOpen,
@@ -25,7 +28,7 @@ const ThreadHeader = ({
   canExportNotes,
 }: ThreadHeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { showComingSoon } = useComingSoon();
+  // const { showComingSoon } = useComingSoon();
   const closeMenu = () => setIsMenuOpen(false);
   const runMenuAction = (action: () => void) => () => {
     closeMenu();
@@ -56,6 +59,7 @@ const ThreadHeader = ({
             onClick={() => setIsMenuOpen((open) => !open)}
           />
           <DropdownMenu isOpen={isMenuOpen} onClose={closeMenu} align="end" className="top-9">
+            {/* TODO(coming-soon): Rename / Pin thread / Copy link — to be implemented later.
             <DropdownMenu.Item icon={<Pencil className="size-4" />} hint="R" onClick={runMenuAction(() => showComingSoon('Rename thread'))}>
               Rename
             </DropdownMenu.Item>
@@ -71,6 +75,7 @@ const ThreadHeader = ({
             >
               Copy link
             </DropdownMenu.Item>
+            */}
             <DropdownMenu.Item
               icon={<Download className="size-4" />}
               disabled={!canExportNotes}
@@ -78,6 +83,7 @@ const ThreadHeader = ({
             >
               Export notes
             </DropdownMenu.Item>
+            {/* TODO(coming-soon): Delete thread — to be implemented later.
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<Trash2 className="size-4" />}
@@ -86,6 +92,7 @@ const ThreadHeader = ({
             >
               Delete thread
             </DropdownMenu.Item>
+            */}
           </DropdownMenu>
         </div>
       </div>

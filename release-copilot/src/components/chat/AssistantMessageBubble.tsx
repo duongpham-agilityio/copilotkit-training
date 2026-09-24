@@ -3,10 +3,11 @@ import {
   CopilotChatAssistantMessage,
   CopilotChatToolCallsView,
 } from '@copilotkit/react-core/v2';
-import { RotateCcw, ThumbsDown, ThumbsUp } from 'lucide-react';
+// TODO(coming-soon): restore these imports with the Regenerate / feedback buttons below.
+// import { RotateCcw, ThumbsDown, ThumbsUp } from 'lucide-react';
+// import IconButton, { IconButtonSize } from '@/components/common/IconButton.tsx';
+// import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import CopyButton from '@/components/common/CopyButton.tsx';
-import IconButton, { IconButtonSize } from '@/components/common/IconButton.tsx';
-import { useComingSoon } from '@/hooks/use-coming-soon.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { ToastKind } from '@/store/toast-store.ts';
 import { copyText } from '@/lib/clipboard.ts';
@@ -35,14 +36,14 @@ const MARKDOWN_CLASSES = cn(
 
 // The design gives the assistant turn no bubble: just a plain column of
 // text, tool cards and row actions.
-// Regenerate and Good/Bad response are not built yet — they open the Coming
-// soon dialog.
+// TODO(coming-soon): Regenerate and Good/Bad response actions are disabled
+// until they are implemented (they only opened the Coming soon dialog).
 const AssistantMessageBubble = ({
   message,
   messages,
 }: CopilotChatAssistantMessageProps) => {
   const { showToast } = useToast();
-  const { showComingSoon } = useComingSoon();
+  // const { showComingSoon } = useComingSoon();
 
   if (!message.content && !message.toolCalls?.length) return null;
 
@@ -79,6 +80,8 @@ const AssistantMessageBubble = ({
             className="size-7 rounded-[7px]"
             onCopy={handleCopy}
           />
+          {/* TODO(coming-soon): Regenerate / Good response / Bad response —
+              to be implemented later.
           <IconButton
             icon={<RotateCcw className="size-3.75" />}
             size={IconButtonSize.Sm}
@@ -97,6 +100,7 @@ const AssistantMessageBubble = ({
             aria-label="Bad response"
             onClick={() => showComingSoon('Response feedback')}
           />
+          */}
         </div>
       )}
     </div>
