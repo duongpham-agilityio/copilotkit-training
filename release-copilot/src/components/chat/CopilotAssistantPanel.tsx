@@ -19,9 +19,8 @@ const CopilotAssistantPanel = () => {
   }, [agent]);
 
   useDraftThreadRow({
-    agentThreadId: agent.threadId,
+    agent,
     hasMessages: agent.messages.length > 0,
-    isRunning: agent.isRunning,
   });
 
   useChatSendFailureListener();
@@ -38,7 +37,6 @@ const CopilotAssistantPanel = () => {
         }}
         messageView={{
           userMessage: CopilotUserMessage,
-
           className: 'mx-auto flex h-full w-full flex-col gap-6 px-8 pt-7 pb-3',
         }}
       />

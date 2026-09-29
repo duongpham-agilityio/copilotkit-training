@@ -45,10 +45,20 @@ export const releaseCopilotAgent = new Agent({
     {
       model: RELEASE_COPILOT_MODEL,
       maxRetries: 2,
+      modelSettings: {
+        temperature: 0.2,
+        maxOutputTokens: 8000,
+        reasoning: 'low',
+      },
     },
     {
       model: RELEASE_COPILOT_FALLBACK_MODEL,
       maxRetries: 1,
+      modelSettings: {
+        temperature: 0.2,
+        maxOutputTokens: 8000,
+        reasoning: 'low',
+      },
     },
   ],
   tools: {
@@ -99,7 +109,7 @@ export const releaseCopilotAgent = new Agent({
       },
       generateTitle: true,
       workingMemory: {
-        enabled: true,
+        enabled: false,
         scope: 'thread',
         schema: WorkingMemorySchema,
       },
