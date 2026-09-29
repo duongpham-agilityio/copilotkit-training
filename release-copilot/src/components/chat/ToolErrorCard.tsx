@@ -12,10 +12,10 @@ const ToolErrorCard = ({ toolName, detail }: ToolErrorCardProps) => (
   >
     <span className="text-label-sm text-error flex items-center gap-2">
       <AlertTriangle className="size-4 shrink-0" aria-hidden="true" />
-      The copilot sent unusable data for <code className="font-mono">{toolName}</code>
+      Release Builder sent unusable data for <code className="font-mono">{toolName}</code>
     </span>
     <span className="text-body-md text-on-surface-variant break-words">
-      Nothing was updated on screen. Ask the copilot to try again — it usually
+      Nothing was updated on screen. Ask Release Builder to try again — it usually
       succeeds on a second attempt.
     </span>
     <span className="text-label-sm text-on-surface-variant/70 break-words">

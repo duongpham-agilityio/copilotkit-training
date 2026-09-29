@@ -1,4 +1,4 @@
-# App Inventory — Release Notes Copilot
+# App Inventory — Release Notes Builder
 
 Scan date: 2026-09-29 · Branch: `v2-dev` (`6de7ccb`)
 

@@ -39,7 +39,7 @@ export const releaseCopilotAgent = new Agent({
   id: 'release-copilot-agent',
   name: 'Release Builder',
   description:
-    'The chat agent behind Release Notes Copilot: classifies pasted git-log/PR text, drafts release notes for whichever destination the user names, edits a draft in place, and answers questions about using the app.',
+    'The chat agent behind Release Notes Builder: classifies pasted git-log/PR text, drafts release notes for whichever destination the user names, edits a draft in place, and answers questions about using the app.',
   instructions: () => buildReleaseCopilotInstructionsV2(),
   model: [
     {

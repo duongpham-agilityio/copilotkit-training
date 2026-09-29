@@ -115,7 +115,7 @@ If the file does not exist, create it with this header:
 ```markdown
 # Work log — YYYY-MM-DD
 
-Project: Release Notes Copilot (release-copilot) — AI assistant that drafts release notes from git history.
+Project: Release Notes Builder (release-copilot) — AI assistant that drafts release notes from git history.
 ```
 
 Then append (never rewrite earlier entries) one block per shipped task:

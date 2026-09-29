@@ -1,9 +1,9 @@
 ---
 name: release-notes-copilot
-description: Domain conventions for the Release Notes Copilot project — git-log and PR commit classification, commit selection/filtering, per-platform release-note formatting and export rules, chat-driven drafting/editing, and where new code belongs. Use for any work in this repo beyond generic Mastra API usage (covered by the `mastra` skill).
+description: Domain conventions for the Release Notes Builder project — git-log and PR commit classification, commit selection/filtering, per-platform release-note formatting and export rules, chat-driven drafting/editing, and where new code belongs. Use for any work in this repo beyond generic Mastra API usage (covered by the `mastra` skill).
 ---
 
-# Release Notes Copilot — Project Conventions
+# Release Notes Builder — Project Conventions
 
 This skill covers project-specific domain knowledge. For generic Mastra API usage
 (agents, tools, workflows, storage), use the `mastra` skill instead — load both when

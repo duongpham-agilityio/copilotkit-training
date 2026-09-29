@@ -29,7 +29,7 @@ export const useArchiveRelease = (): UseArchiveReleaseResult => {
     mutationFn: async (draft: ReleaseNotesDraft): Promise<void> => {
       const request = buildSaveReleaseHistoryRequest(draft);
       if (!request) {
-        throw new Error('Ask Copilot for a version and title before archiving.');
+        throw new Error('Ask Release Builder for a version and title before archiving.');
       }
 
       const result = await saveReleaseHistory(request);

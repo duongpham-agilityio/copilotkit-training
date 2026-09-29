@@ -6,7 +6,7 @@ const RawMarkdownView = ({ markdown }: RawMarkdownViewProps) => {
   if (!markdown) {
     return (
       <p className="text-body-md text-on-surface-variant px-8 py-7">
-        No content yet — paste a git log or PR text in the chat and ask Copilot
+        No content yet — paste a git log or PR text in the chat and ask Release Builder
         to draft release notes.
       </p>
     );

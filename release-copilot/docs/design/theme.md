@@ -129,7 +129,7 @@ The design style is **Modern Corporate with Glassmorphism accents**. It utilizes
 
 The palette is anchored by a deep **Violet** primary, used sparingly for brand presence and key actions to maintain a high signal-to-noise ratio. 
 
-- **Primary & Secondary:** A range of purples and violets are used for interactive states, progress indicators, and the AI "Copilot" brand identity.
+- **Primary & Secondary:** A range of purples and violets are used for interactive states, progress indicators, and the AI "Release Builder" brand identity.
 - **Surface & Background:** The UI utilizes a very light "off-white" with a slight violet tint (`#fcf8fb`) to reduce eye strain compared to pure white.
 - **Semantic Colors:** Emerald is used for feature additions (FEAT), Rose for bug fixes (FIX), and Purple for architectural changes (CHORE).
 - **Gradients:** A vibrant violet-to-indigo gradient is reserved exclusively for user-originated chat bubbles, creating a clear visual distinction from AI-generated content.
@@ -148,7 +148,7 @@ The typography system is highly functional, using **Inter** for all UI and prose
 
 The system follows a **Fixed-Fluid Hybrid Grid**. On desktop, the layout is split into two primary regions:
 1. **Workspace (65%)**: A fluid area containing data tables and document previews.
-2. **Copilot Sidebar (35%)**: A fixed-width-capable sidebar for AI interaction.
+2. **Chat Sidebar (35%)**: A fixed-width-capable sidebar for AI interaction.
 
 **Spacing Principles:**
 - A **4px baseline grid** governs all internal component spacing.
