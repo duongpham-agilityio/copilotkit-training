@@ -1,5 +1,5 @@
 /*
- * Raw design tokens for Release Notes Copilot (docs/design/theme.md).
+ * Raw design tokens for Release Notes Builder (docs/design/theme.md).
  *
  * This is the ONLY file that should change when swapping themes: values only,
  * no Tailwind wiring. `src/index.css` maps these into Tailwind's `@theme` via

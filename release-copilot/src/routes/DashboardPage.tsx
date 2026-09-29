@@ -82,7 +82,7 @@ const DashboardPage = () => {
       />
       <DashboardLayout
         chat={
-          <ErrorBoundary title="Copilot panel unavailable">
+          <ErrorBoundary title="Chat panel unavailable">
             <CopilotAssistantPanel />
           </ErrorBoundary>
         }
