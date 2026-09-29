@@ -25,7 +25,7 @@ const SEND_FAILED_CODES: ReadonlySet<CopilotKitCoreErrorCode> = new Set([
 
 const toFailureTitle = (code: CopilotKitCoreErrorCode): string =>
   code === CopilotKitCoreErrorCode.AGENT_THREAD_LOCKED
-    ? 'Copilot is still answering a previous message.'
+    ? 'Release Builder is still answering a previous message.'
     : 'Message failed to send.';
 
 const findLastUserMessageId = (agent: AbstractAgent): string | undefined =>

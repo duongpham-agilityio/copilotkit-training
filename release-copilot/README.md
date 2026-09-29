@@ -1,4 +1,4 @@
-# Release Notes Copilot
+# Release Notes Builder
 
 A chat-driven web app that turns raw `git log` output or pasted PR titles/descriptions
 into polished release notes for whatever destination you name, then archives, exports, or
@@ -7,10 +7,10 @@ posts them to Slack.
 ## Overview
 
 Sign in, paste your `git log` output — or PR titles/descriptions — into the chat panel.
-The copilot parses and classifies each entry (feature / fix / chore / breaking), reports
+The builder parses and classifies each entry (feature / fix / chore / breaking), reports
 a short summary of what it read, and on request drafts release notes for the destination
 you name. The draft renders into a Live Preview panel you can copy, export, or archive to
-History; asking the copilot to send it posts the notes to Slack. Built on
+History; asking the builder to send it posts the notes to Slack. Built on
 [CopilotKit](https://www.copilotkit.ai/) for the chat interface and
 [Mastra](https://mastra.ai/) for the agent, skills, tools, memory, storage, guardrails,
 scorers, and observability.

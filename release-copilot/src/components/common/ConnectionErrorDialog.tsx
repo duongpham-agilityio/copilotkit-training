@@ -5,7 +5,7 @@ import Button, { ButtonSize, ButtonVariant } from './Button.tsx';
 
 // Mounted once in App, next to ToastViewport. Opens when CopilotKit can't reach
 // the runtime; dismissing keeps it closed until the connection recovers and
-// fails again, so History stays usable while the copilot is down.
+// fails again, so History stays usable while Release Builder is down.
 const ConnectionErrorDialog = () => {
   const { hasConnectionError, errorMessage } = useRuntimeConnection();
   const [isDismissed, setIsDismissed] = useState(false);
@@ -55,7 +55,7 @@ const ConnectionErrorDialog = () => {
           id="connection-error-dialog-description"
           className="text-body-md text-on-surface-variant mt-1.5"
         >
-          Can’t reach the copilot server, so chat is unavailable. Check your
+          Can’t reach the Release Builder server, so chat is unavailable. Check your
           connection, then reload the page.
         </p>
         {errorMessage && (
